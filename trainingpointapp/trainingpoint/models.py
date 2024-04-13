@@ -26,16 +26,16 @@ class BaseModel(models.Model):
 
 
 class Khoa(BaseModel):
-    ma_khoa = models.CharField()
-    ten_khoa = models.CharField()
+    ma_khoa = models.CharField(max_length=10)
+    ten_khoa = models.CharField(max_length=255)
 
     def __str__(self):
         return self.ten_khoa
 
 
 class Lop(BaseModel):
-    ma_lop = models.CharField()
-    ten_lop = models.CharField()
+    ma_lop = models.CharField(max_length=10)
+    ten_lop = models.CharField(max_length=255)
     khoa = models.ForeignKey(Khoa, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -47,7 +47,7 @@ class SinhVien(BaseModel):
     ho_ten = models.CharField(max_length=255)
     ngay_sinh = models.DateField()
     gioi_tinh = models.BooleanField()
-    dia_chi = models.CharField()
+    dia_chi = models.TextField()
     lop = models.ForeignKey(Lop, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -55,22 +55,23 @@ class SinhVien(BaseModel):
 
 
 class Dieu(BaseModel):
-    ma_dieu = models.CharField()
-    ten_dieu = models.CharField()
+    ma_dieu = models.CharField(max_length=10)
+    ten_dieu = models.CharField(max_length=255)
 
 
 class HocKy_NamHoc(models.Model):
     class HocKyChoices(models.IntegerChoices):
-        ONE = 1, 'One'
-        TWO = 2, 'Two'
-        THREE = 3, 'Three'
+        ONE = 1, 'Một'
+        TWO = 2, 'Hai'
+        THREE = 3, 'Ba'
 
     hoc_ky = models.IntegerField(choices=HocKyChoices.choices)
     nam_hoc = models.CharField(max_length=9, unique=True)
 
 
 class HoatDongNgoaiKhoa(BaseModel):
-    ten_hoat_dong = models.CharField()
+    ma_hoat_dong = models.CharField(max_length=10, unique=True)
+    ten_hoat_dong = models.TextField()
     ngay = models.DateTimeField()
     description = RichTextField(null=True)
     diem_ren_luyen = models.IntegerField(default=15)
@@ -132,7 +133,7 @@ class Comment(TuongTac):
 
 class Like(TuongTac):
     class Meta:
-        unique_together = ('TaiKhoan', 'BaiViet')
+        unique_together = ('tai_khoan', 'bai_viet')
 
 
 class DiemRenLuyen(BaseModel):

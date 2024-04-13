@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 CKEDITOR_UPLOAD_PATH = "ckeditors/images/%Y/%m"
 
-AUTH_USER_MODEL = 'courses.User'
+AUTH_USER_MODEL = 'trainingpoint.TaiKhoan'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'trainingpointapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'coursedb',
+        'NAME': 'trainingpointdb',
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': ''  # mặc định localhost

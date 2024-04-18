@@ -26,7 +26,7 @@ class BaseModel(models.Model):
 
 
 class Khoa(BaseModel):
-    ma_khoa = models.CharField(max_length=10)
+    ma_khoa = models.CharField(max_length=10, unique=True)
     ten_khoa = models.CharField(max_length=255)
 
     def __str__(self):
@@ -34,7 +34,7 @@ class Khoa(BaseModel):
 
 
 class Lop(BaseModel):
-    ma_lop = models.CharField(max_length=10)
+    ma_lop = models.CharField(max_length=10, unique=True)
     ten_lop = models.CharField(max_length=255)
     khoa = models.ForeignKey(Khoa, on_delete=models.CASCADE)
 
@@ -43,10 +43,15 @@ class Lop(BaseModel):
 
 
 class SinhVien(BaseModel):
-    mssv = models.CharField(max_length=10)
+    mssv = models.CharField(max_length=10, unique=True)
     ho_ten = models.CharField(max_length=255)
     ngay_sinh = models.DateField()
-    gioi_tinh = models.BooleanField()
+
+    class GioiTinhChoices(models.IntegerChoices):
+        NAM = 1, 'Nam'
+        NU = 2, 'Nữ'
+
+    gioi_tinh = models.IntegerField(choices=GioiTinhChoices)
     dia_chi = models.TextField()
     lop = models.ForeignKey(Lop, on_delete=models.CASCADE)
 
@@ -55,7 +60,7 @@ class SinhVien(BaseModel):
 
 
 class Dieu(BaseModel):
-    ma_dieu = models.CharField(max_length=10)
+    ma_dieu = models.CharField(max_length=10, unique=True)
     ten_dieu = models.CharField(max_length=255)
 
 
@@ -74,7 +79,7 @@ class HoatDongNgoaiKhoa(BaseModel):
     ten_hoat_dong = models.TextField()
     ngay = models.DateTimeField()
     description = RichTextField(null=True)
-    diem_ren_luyen = models.IntegerField(default=15)
+    diem_ren_luyen = models.IntegerField(default=5)
     dieu = models.ForeignKey(Dieu, on_delete=models.CASCADE)
     hk_nh = models.ForeignKey(HocKy_NamHoc, on_delete=models.CASCADE)
     sinh_vien = models.ManyToManyField(SinhVien, through='ThamGia')

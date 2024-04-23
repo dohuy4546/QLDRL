@@ -71,7 +71,7 @@ class HocKy_NamHoc(models.Model):
         THREE = 3, 'Ba'
 
     hoc_ky = models.IntegerField(choices=HocKyChoices.choices)
-    nam_hoc = models.CharField(max_length=9, unique=True)
+    nam_hoc = models.CharField(max_length=9)
 
 
 class HoatDongNgoaiKhoa(BaseModel):

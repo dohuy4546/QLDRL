@@ -65,13 +65,15 @@ class Dieu(BaseModel):
 
 
 class HocKy_NamHoc(models.Model):
+    class Meta:
+        unique_together = ('hoc_ky', 'nam_hoc')
     class HocKyChoices(models.IntegerChoices):
         ONE = 1, 'Một'
         TWO = 2, 'Hai'
         THREE = 3, 'Ba'
 
     hoc_ky = models.IntegerField(choices=HocKyChoices.choices)
-    nam_hoc = models.CharField(max_length=9, unique=True)
+    nam_hoc = models.CharField(max_length=9)
 
 
 class HoatDongNgoaiKhoa(BaseModel):

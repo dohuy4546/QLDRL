@@ -65,6 +65,8 @@ class Dieu(BaseModel):
 
 
 class HocKy_NamHoc(models.Model):
+    class Meta:
+        unique_together = ('hoc_ky', 'nam_hoc')
     class HocKyChoices(models.IntegerChoices):
         ONE = 1, 'Một'
         TWO = 2, 'Hai'

@@ -149,9 +149,6 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
 
     @action(methods=['get'], url_path='thamgias', detail=True)
     def get_thamgias(self, request, pk):
-        #######
-        # Ét o ét cứu
-        #######
         hoatdong = self.get_object()
         thamgias = hoatdong.thamgia_set.all()
         return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,

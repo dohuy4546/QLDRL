@@ -93,6 +93,7 @@ class ThamGia(models.Model):
     hoat_dong_ngoai_khoa = models.ForeignKey(HoatDongNgoaiKhoa, on_delete=models.CASCADE)
 
     class StateChoices(models.IntegerChoices):
+        DangKy = 0, 'Đăng ký'
         DiemDanh = 1, 'Điểm danh'
         BaoThieu = 2, 'Báo thiếu'
 

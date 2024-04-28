@@ -9,7 +9,8 @@ r.register('lops', views.LopViewSet, basename='lops')
 r.register('khoas', views.KhoaViewSet, basename='khoas')
 r.register('dieus', views.DieuViewSet, basename='dieus')
 r.register('hoatdongs', views.HoatDongNgoaiKhoaViewSet, basename='hoatdongs')
-
+r.register('thamgias', views.ThamGiaViewSet, basename='thamgias')
+r.register('minhchungs', views.MinhChungViewSet, basename='minhchungs')
 
 urlpatterns = [
     path('', include(r.urls)),

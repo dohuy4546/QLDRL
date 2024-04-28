@@ -12,8 +12,12 @@ class TaiKhoan(AbstractUser):
         SinhVien = 1, 'Sinh Viên'
         TroLySinhVien = 2, 'Trợ lý sinh viên'
         CVCTSV = 3, 'Chuyên viên công tác sinh viên'
+        ADMIN = 4, 'Admin'
 
     role = models.IntegerField(choices=RoleChoices.choices, null=True)
+
+    def __str__(self):
+        return self.username
 
 
 class BaseModel(models.Model):
@@ -31,6 +35,13 @@ class Khoa(BaseModel):
 
     def __str__(self):
         return self.ten_khoa
+
+
+class TroLySinhVien_Khoa(BaseModel):
+    tro_ly_sinh_vien = models.ForeignKey(TaiKhoan,
+                                         on_delete=models.CASCADE,
+                                         limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
+    khoa = models.ForeignKey(Khoa, on_delete=models.CASCADE)
 
 
 class Lop(BaseModel):
@@ -63,10 +74,14 @@ class Dieu(BaseModel):
     ma_dieu = models.CharField(max_length=10, unique=True)
     ten_dieu = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.ten_dieu
+
 
 class HocKy_NamHoc(models.Model):
     class Meta:
         unique_together = ('hoc_ky', 'nam_hoc')
+
     class HocKyChoices(models.IntegerChoices):
         ONE = 1, 'Một'
         TWO = 2, 'Hai'
@@ -74,6 +89,9 @@ class HocKy_NamHoc(models.Model):
 
     hoc_ky = models.IntegerField(choices=HocKyChoices.choices)
     nam_hoc = models.CharField(max_length=9)
+
+    def __str__(self):
+        return self.hoc_ky and self.nam_hoc
 
 
 class HoatDongNgoaiKhoa(BaseModel):
@@ -85,6 +103,9 @@ class HoatDongNgoaiKhoa(BaseModel):
     dieu = models.ForeignKey(Dieu, on_delete=models.CASCADE)
     hk_nh = models.ForeignKey(HocKy_NamHoc, on_delete=models.CASCADE)
     sinh_vien = models.ManyToManyField(SinhVien, through='ThamGia')
+
+    def __str__(self):
+        return self.ten_hoat_dong
 
 
 # Bảng trung gian giữa hoạt động ngoại khóa và sinh viên
@@ -100,6 +121,9 @@ class ThamGia(models.Model):
     state = models.IntegerField(choices=StateChoices, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.sinh_vien.mssv} - {self.hoat_dong_ngoai_khoa.ten_hoat_dong}"
 
 
 class MinhChung(BaseModel):

@@ -44,3 +44,14 @@ class ThamGiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThamGia
         fields = '__all__'
+
+
+class MinhChungSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['anh_minh_chung'] = instance.anh_minh_chung.url
+
+        return rep
+    class Meta:
+        model = MinhChung
+        fields = '__all__'

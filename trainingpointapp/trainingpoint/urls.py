@@ -14,7 +14,8 @@ r.register('baiviets', views.BaiVietViewSet, basename="baiviets")
 r.register('tags', views.TagViewSet, basename="tags")
 r.register('taikhoans', views.TaiKhoanViewset, basename="taikhoans")
 r.register('comments', views.CommentViewset, basename="comments")
-
+r.register('thamgias', views.ThamGiaViewSet, basename='thamgias')
+r.register('minhchungs', views.MinhChungViewSet, basename='minhchungs')
 
 
 urlpatterns = [

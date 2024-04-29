@@ -127,7 +127,17 @@ class DiemRenLuyenSerializer(serializers.ModelSerializer):
 class DiemRenLuyenDetails(DiemRenLuyenSerializer):
     sinh_vien = SinhVienSerializer(many=True)
     hk_nh = HockyNamhocSerializer(many=True)
+
     class Meta:
         model = DiemRenLuyenSerializer.Meta.model
         fields = DiemRenLuyenSerializer.Meta.fields + ['sinh_vien', 'hk_nh']
 
+class MinhChungSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['anh_minh_chung'] = instance.anh_minh_chung.url
+
+        return rep
+    class Meta:
+        model = MinhChung
+        fields = '__all__'

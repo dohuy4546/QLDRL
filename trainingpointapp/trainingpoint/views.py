@@ -1,11 +1,10 @@
+
 from rest_framework import viewsets, generics, status, parsers, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 
-
-# Create your views here.
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = SinhVien.objects.filter(active=True)
@@ -160,3 +159,91 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         #     hoatdongngoaikhoas = hoatdongngoaikhoas.filter(ten_hoat_dong__icontains=q)
         # return Response(serializers.HoatDongNgoaiKhoaSerializer(hoatdongngoaikhoas, many=True).data,
         #                 status=status.HTTP_200_OK)
+
+
+class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
+    serializer_class = serializers.BaivietTagSerializer
+    pagination_class = paginators.BaiVietPaginator
+
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated:
+            return serializers.AuthenticatedBaiVietTagSerializer
+
+        return self.serializer_class
+
+    def get_queryset(self):
+        queries = self.queryset
+
+        q = self.request.query_params.get("q")
+        if q:
+            queries = queries.filter(title__icontains=q)
+
+        return queries
+
+    def get_permissions(self):
+        if self.action in ['add_comment', 'like']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny]
+
+    @action(methods=['get'], url_path="comments", detail=True)
+    def get_comment(self, request, pk):
+        comments = self.get_object().comment_set.select_related('tai_khoan').all()
+        return Response(serializers.CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
+
+    @action(methods=['post'], url_path='comments', detail=True)
+    def add_comment(self, request, pk):
+        c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
+                                   , content=request.data.get('content'))
+
+        return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['post'], url_path='likes', detail=True)
+    def like(self, request, pk):
+        li, created = Like.objects.get_or_create(bai_viet=self.get_object(),
+                                                tai_khoan=request.user)
+
+        if not created:
+            li.active = not li.active
+            li.save()
+
+        return Response(serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data, status=status.HTTP_201_CREATED)
+
+
+class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+
+
+class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
+    queryset = TaiKhoan.objects.filter(is_active=True).all()
+    serializer_class = serializers.TaiKhoanSerializer
+    parser_classes = [parsers.MultiPartParser, ]
+    def get_permissions(self):
+        if self.action in ['get_current_user']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['get', 'patch'], url_path='current-taikhoans', detail=False)
+    def get_current_user(self, request):
+        user = request.user
+        if request.method.__eq__("PATCH"):
+            for k, v in request.data.items():
+                setattr(user, k, v) #user.k = v (user.name = v)
+            user.save()
+
+        return Response(serializers.TaiKhoanSerializer(user).data)
+
+
+class CommentViewset(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [perms.CommentOwner, ]
+
+
+
+
+

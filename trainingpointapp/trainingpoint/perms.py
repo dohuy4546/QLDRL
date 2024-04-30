@@ -7,7 +7,7 @@ class CommentOwner(permissions.IsAuthenticated):
         return super().has_permission(request, view) and request.user == comment.tai_khoan
 
 
-class TaoHoatDong(permissions.IsAuthenticated):
+class TuongTacHoatDong(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, hoatdong):
         return (super().has_permission(request, view) and
                 ((request.TaiKhoan.role == TaiKhoan.RoleChoices.TroLySinhVien) or

@@ -133,8 +133,6 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
                         status=status.HTTP_200_OK)
 
 
-# generics.ListCreateAPIView, generics.UpdateAPIView,generics.DestroyAPIView)
-
 class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView,
                                generics.DestroyAPIView):
     queryset = HoatDongNgoaiKhoa.objects.filter(active=True)
@@ -153,15 +151,13 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             return queryset
 
     def get_permissions(self):
-        print(self.action)
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             if isinstance(self.request.user, AnonymousUser):
                 return [permissions.IsAuthenticated()]
             else:
                 if (self.request.user.is_authenticated and \
-                        (self.request.user.role not in [TaiKhoan.RoleChoices.CVCTSV,
-                                                        TaiKhoan.RoleChoices.TroLySinhVien]
-                         or self.request.user.is_authenticated)):
+                        (self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
+                                                        TaiKhoan.RoleChoices.TroLySinhVien])):
                     return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Q
 
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -178,9 +179,14 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         # return Response(serializers.HoatDongNgoaiKhoaSerializer(hoatdongngoaikhoas, many=True).data,
         #                 status=status.HTTP_200_OK)
 
-from django.db.models import Q
+
+class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
+    queryset = HocKy_NamHoc.objects.all()
+    serializer_class = serializers.HockyNamhocSerializer
+
+
 class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
-    queryset = BaiViet.objects.filter(active=True)
+    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
     serializer_class = serializers.BaivietTagSerializer
 
     def get_serializer_class(self):
@@ -247,11 +253,26 @@ class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAP
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
 
+    def get_queryset(self):
+        queries = self.queryset
+        q = self.request.query_params.get("q")
+        if q:
+            queries = queries.filter(name__icontains=q)
+
+        return queries
+
+    @action(methods=['get'], url_path='baiviets', detail=True)
+    def get_baiviet(self, request, pk):
+        baiviet = self.get_object().baiviets.all()
+        return Response(serializers.BaiVietSerializer(baiviet, many=True).data,
+                        status=status.HTTP_200_OK)
+
 
 class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
     queryset = TaiKhoan.objects.filter(is_active=True).all()
     serializer_class = serializers.TaiKhoanSerializer
     parser_classes = [parsers.MultiPartParser, ]
+
     def get_permissions(self):
         if self.action in ['get_current_user']:
             return [permissions.IsAuthenticated()]
@@ -269,15 +290,42 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
         return Response(serializers.TaiKhoanSerializer(user).data)
 
 
-class CommentViewset(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+class CommentViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = [perms.CommentOwner, ]
 
 
-class DiemRenLuyenViewset(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = DiemRenLuyen.objects.all()
     serializer_class = serializers.DiemRenLuyenSerializer
+
+    def get_queryset(self):
+        queries = self.queryset
+        diem = self.request.query_params.get("diem")
+        if diem:
+            queries = queries.filter(diem_tong__icontains=diem)
+
+        sv_id = self.request.query_params.get("sv_id")
+        if sv_id:
+            queries = queries.filter(sinh_vien__icontains=sv_id)
+
+        sv_name = self.request.query_params.get("sv_name")
+        if sv_name:
+            sv_ids = SinhVien.objects.filter(ho_ten__icontains=sv_name).values_list('id', flat=True)
+            queries = queries.filter(sinh_vien__in=sv_ids)
+
+        hk = self.request.query_params.get("hk")
+        if hk:
+            hk_ids = HocKy_NamHoc.objects.filter(hoc_ky=hk).values_list('id', flat=True)
+            queries = queries.filter(hk_nh__in=hk_ids)
+
+        nh = self.request.query_params.get("nh")
+        if nh:
+            nh_ids = HocKy_NamHoc.objects.filter(nam_hoc__icontains=nh).values_list('id', flat=True)
+            queries = queries.filter(hk_nh__in=nh_ids)
+
+        return queries
 
 
 class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):

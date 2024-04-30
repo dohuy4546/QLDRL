@@ -121,16 +121,16 @@ class AuthenticatedBaiVietTagSerializer(BaivietTagSerializer):
 class DiemRenLuyenSerializer(serializers.ModelSerializer):
     class Meta:
         model = DiemRenLuyen
-        fields = ['diem_tong']
+        fields = '__all__'
 
 
-class DiemRenLuyenDetails(DiemRenLuyenSerializer):
-    sinh_vien = SinhVienSerializer(many=True)
-    hk_nh = HockyNamhocSerializer(many=True)
-
-    class Meta:
-        model = DiemRenLuyenSerializer.Meta.model
-        fields = DiemRenLuyenSerializer.Meta.fields + ['sinh_vien', 'hk_nh']
+# class DiemRenLuyenDetails(DiemRenLuyenSerializer):
+#     sinh_vien = SinhVienSerializer(many=True)
+#     hk_nh = HockyNamhocSerializer(many=True)
+#
+#     class Meta:
+#         model = DiemRenLuyenSerializer.Meta.model
+#         fields = DiemRenLuyenSerializer.Meta.fields + ['sinh_vien', 'hk_nh']
 
 class MinhChungSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):

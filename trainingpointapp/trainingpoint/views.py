@@ -4,9 +4,8 @@ from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Q
 
-
-# Create your views here.
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = SinhVien.objects.filter(active=True)
@@ -168,6 +167,161 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoatdong)
         return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,
                         status=status.HTTP_200_OK)
+        # dieu = Dieu.objects.prefetch_related('hoatdongngoaikhoa_set').get(id=pk)
+        # hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
+        # q = self.request.query_params.get('ten_hoat_dong')
+        # if q:
+        #     hoatdongngoaikhoas = hoatdongngoaikhoas.filter(ten_hoat_dong__icontains=q)
+        # return Response(serializers.HoatDongNgoaiKhoaSerializer(hoatdongngoaikhoas, many=True).data,
+        #                 status=status.HTTP_200_OK)
+
+
+class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
+    queryset = HocKy_NamHoc.objects.all()
+    serializer_class = serializers.HockyNamhocSerializer
+
+
+class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
+    serializer_class = serializers.BaivietTagSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated:
+            return serializers.AuthenticatedBaiVietTagSerializer
+
+        return self.serializer_class
+
+    def get_queryset(self):
+        queries = self.queryset
+
+        q = self.request.query_params.get("q")
+        if q:
+            queries = queries.filter(title__icontains=q)
+
+        tag = self.request.query_params.get("tag")
+        if tag:
+            tag_ids = Tag.objects.filter(name__icontains=tag).values_list('id', flat=True)
+            queries = queries.filter(tags__in=tag_ids)
+            # print(queries.query.__str__())
+        return queries
+
+    def get_permissions(self):
+        if self.action in ['add_comment', 'like']:
+            return [permissions.IsAuthenticated()]
+        else:
+            if self.action in ['create', 'update', 'partial_update', 'destroy']:
+                if isinstance(self.request.user, AnonymousUser):
+                    return [permissions.IsAuthenticated()]
+                else:
+                    if (self.request.user.is_authenticated and
+                            self.request.user.role in [TaiKhoan.RoleChoices.TroLySinhVien,
+                                                       TaiKhoan.RoleChoices.ADMIN]):
+                        return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['get'], url_path="comments", detail=True)
+    def get_comment(self, request, pk):
+        comments = self.get_object().comment_set.select_related('tai_khoan').all()
+        return Response(serializers.CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
+
+    @action(methods=['post'], url_path='comments', detail=True)
+    def add_comment(self, request, pk):
+        c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
+                                   , content=request.data.get('content'))
+
+        return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['post'], url_path='likes', detail=True)
+    def like(self, request, pk):
+        li, created = Like.objects.get_or_create(bai_viet=self.get_object(),
+                                                tai_khoan=request.user)
+
+        if not created:
+            li.active = not li.active
+            li.save()
+
+        return Response(serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data, status=status.HTTP_201_CREATED)
+
+
+class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+
+    def get_queryset(self):
+        queries = self.queryset
+        q = self.request.query_params.get("q")
+        if q:
+            queries = queries.filter(name__icontains=q)
+
+        return queries
+
+    @action(methods=['get'], url_path='baiviets', detail=True)
+    def get_baiviet(self, request, pk):
+        baiviet = self.get_object().baiviets.all()
+        return Response(serializers.BaiVietSerializer(baiviet, many=True).data,
+                        status=status.HTTP_200_OK)
+
+
+class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
+    queryset = TaiKhoan.objects.filter(is_active=True).all()
+    serializer_class = serializers.TaiKhoanSerializer
+    parser_classes = [parsers.MultiPartParser, ]
+
+    def get_permissions(self):
+        if self.action in ['get_current_user']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['get', 'patch'], url_path='current-taikhoans', detail=False)
+    def get_current_user(self, request):
+        user = request.user
+        if request.method.__eq__("PATCH"):
+            for k, v in request.data.items():
+                setattr(user, k, v) #user.k = v (user.name = v)
+            user.save()
+
+        return Response(serializers.TaiKhoanSerializer(user).data)
+
+
+class CommentViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [perms.CommentOwner, ]
+
+
+class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+    queryset = DiemRenLuyen.objects.all()
+    serializer_class = serializers.DiemRenLuyenSerializer
+
+    def get_queryset(self):
+        queries = self.queryset
+        diem = self.request.query_params.get("diem")
+        if diem:
+            queries = queries.filter(diem_tong__icontains=diem)
+
+        sv_id = self.request.query_params.get("sv_id")
+        if sv_id:
+            queries = queries.filter(sinh_vien__icontains=sv_id)
+
+        sv_name = self.request.query_params.get("sv_name")
+        if sv_name:
+            sv_ids = SinhVien.objects.filter(ho_ten__icontains=sv_name).values_list('id', flat=True)
+            queries = queries.filter(sinh_vien__in=sv_ids)
+
+        hk = self.request.query_params.get("hk")
+        if hk:
+            hk_ids = HocKy_NamHoc.objects.filter(hoc_ky=hk).values_list('id', flat=True)
+            queries = queries.filter(hk_nh__in=hk_ids)
+
+        nh = self.request.query_params.get("nh")
+        if nh:
+            nh_ids = HocKy_NamHoc.objects.filter(nam_hoc__icontains=nh).values_list('id', flat=True)
+            queries = queries.filter(hk_nh__in=nh_ids)
+
+        return queries
 
 
 class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):

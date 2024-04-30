@@ -7,3 +7,9 @@ class SinhVienPaginator(pagination.PageNumberPagination):
 
 class LopPaginator(pagination.PageNumberPagination):
     page_size = 5
+
+
+class BaiVietPaginator(pagination.PageNumberPagination):
+    page_size = 8
+
+

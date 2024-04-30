@@ -102,7 +102,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'trainingpointdb',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'Abc111@',
+        # 123456
         'HOST': ''  # mặc định localhost
     }
 }
@@ -145,3 +146,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CLIENT_ID = '4eba8S2TpUPaiIhyFmeNtcLzvQfv9pbaorXZUVd1'
+CLIENT_SECRET = 'EvdmZJmwEQ7eFAcBR4RqQFugf6qNcqts1KjR093sxN9Y0vNJy4w8k5eacqqBeKHrFmNtioznWo1OOCTCXZOHXE6rG0ylyIh5yVBUoKHuC4f4fNuyWqqP8zI4G0pr2lwu'

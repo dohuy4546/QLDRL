@@ -184,6 +184,18 @@ class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = HocKy_NamHoc.objects.all()
     serializer_class = serializers.HockyNamhocSerializer
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if isinstance(self.request.user, AnonymousUser):
+                return [permissions.IsAuthenticated()]
+            else:
+                if (self.request.user.is_authenticated and
+                        self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
+                                                   TaiKhoan.RoleChoices.ADMIN]):
+                    return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
 
 class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
@@ -253,6 +265,19 @@ class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAP
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if isinstance(self.request.user, AnonymousUser):
+                return [permissions.IsAuthenticated()]
+            else:
+                if (self.request.user.is_authenticated and
+                        self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
+                                                   TaiKhoan.RoleChoices.TroLySinhVien,
+                                                   TaiKhoan.RoleChoices.ADMIN]):
+                    return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
     def get_queryset(self):
         queries = self.queryset
         q = self.request.query_params.get("q")
@@ -299,6 +324,19 @@ class CommentViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPI
 class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = DiemRenLuyen.objects.all()
     serializer_class = serializers.DiemRenLuyenSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if isinstance(self.request.user, AnonymousUser):
+                return [permissions.IsAuthenticated()]
+            else:
+                if (self.request.user.is_authenticated and
+                        self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
+                                                   TaiKhoan.RoleChoices.TroLySinhVien,
+                                                   TaiKhoan.RoleChoices.ADMIN]):
+                    return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         queries = self.queryset

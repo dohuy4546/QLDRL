@@ -19,6 +19,11 @@ class TaiKhoan(AbstractUser):
     def __str__(self):
         return self.username
 
+    def save(self):
+        user = super(TaiKhoan, self)
+        user.set_password(self.password)
+        user.save()
+        return user
 
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
@@ -57,6 +62,8 @@ class SinhVien(BaseModel):
     mssv = models.CharField(max_length=10, unique=True)
     ho_ten = models.CharField(max_length=255)
     ngay_sinh = models.DateField()
+    cccd = models.CharField(max_length=12, null=False, unique=True)
+    email = models.EmailField(null=False, unique=True)
 
     class GioiTinhChoices(models.IntegerChoices):
         NAM = 1, 'Nam'

@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: trainingpointdb
 -- ------------------------------------------------------
--- Server version	8.2.0
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `auth_group`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `auth_group` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(150) NOT NULL,
+  `name` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,6 +36,7 @@ CREATE TABLE `auth_group` (
 
 LOCK TABLES `auth_group` WRITE;
 /*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
+INSERT INTO `auth_group` VALUES (2,'congtac'),(3,'sinhvien'),(1,'troli');
 /*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,7 +56,7 @@ CREATE TABLE `auth_group_permissions` (
   KEY `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` (`permission_id`),
   CONSTRAINT `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `auth_group_permissions_group_id_b120cbf9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,6 +65,7 @@ CREATE TABLE `auth_group_permissions` (
 
 LOCK TABLES `auth_group_permissions` WRITE;
 /*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+INSERT INTO `auth_group_permissions` VALUES (6,1,49),(7,1,50),(8,1,51),(9,1,52),(10,1,61),(11,1,62),(12,1,63),(1,1,64),(2,1,69),(3,1,70),(4,1,71),(5,1,72),(13,3,41),(14,3,42),(15,3,44),(16,3,45),(17,3,46),(18,3,47),(19,3,48),(20,3,49),(21,3,50),(22,3,51),(23,3,52),(24,3,61),(25,3,62),(26,3,64),(27,3,65),(28,3,66),(29,3,67),(30,3,68),(31,3,69),(32,3,70),(33,3,71),(34,3,72),(35,3,73),(36,3,74),(37,3,75),(38,3,76);
 /*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -76,13 +78,13 @@ DROP TABLE IF EXISTS `auth_permission`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `auth_permission` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `content_type_id` int NOT NULL,
-  `codename` varchar(100) NOT NULL,
+  `codename` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,10 +107,10 @@ DROP TABLE IF EXISTS `django_admin_log`;
 CREATE TABLE `django_admin_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `action_time` datetime(6) NOT NULL,
-  `object_id` longtext,
-  `object_repr` varchar(200) NOT NULL,
+  `object_id` longtext COLLATE utf8mb3_unicode_ci,
+  `object_repr` varchar(200) COLLATE utf8mb3_unicode_ci NOT NULL,
   `action_flag` smallint unsigned NOT NULL,
-  `change_message` longtext NOT NULL,
+  `change_message` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `content_type_id` int DEFAULT NULL,
   `user_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
@@ -117,7 +119,7 @@ CREATE TABLE `django_admin_log` (
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_trainingpoint_taikhoan_id` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`),
   CONSTRAINT `django_admin_log_chk_1` CHECK ((`action_flag` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +128,7 @@ CREATE TABLE `django_admin_log` (
 
 LOCK TABLES `django_admin_log` WRITE;
 /*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
-INSERT INTO `django_admin_log` VALUES (1,'2024-04-25 03:57:29.368757','1','Công nghệ thông tin',1,'[{\"added\": {}}]',8,1),(2,'2024-04-25 03:57:30.899221','1','Lớp IT03',1,'[{\"added\": {}}]',14,1),(3,'2024-04-25 03:57:34.448855','1','Đỗ Gia Huy',1,'[{\"added\": {}}]',15,1),(4,'2024-04-25 03:58:25.073093','1','Đỗ Gia Huy',2,'[]',15,1),(5,'2024-04-25 04:22:24.891092','2','Vũ Ngọc Đang',1,'[{\"added\": {}}]',15,1),(6,'2024-04-25 04:23:48.433915','2','Lớp IT02 Khóa 21',1,'[{\"added\": {}}]',14,1),(7,'2024-04-25 04:23:56.077109','1','Lớp IT03 khóa 21',2,'[{\"changed\": {\"fields\": [\"Ten lop\"]}}]',14,1),(8,'2024-04-25 04:24:00.729034','3','Lê Thanh Danh',1,'[{\"added\": {}}]',15,1),(9,'2024-04-25 04:25:19.901128','2','Kỹ thuật xây dựng',1,'[{\"added\": {}}]',8,1),(10,'2024-04-25 04:26:00.438086','3','Lớp XD 01 Khóa 22',1,'[{\"added\": {}}]',14,1),(11,'2024-04-25 04:26:02.517510','4','Ngô Huy Hoàng',1,'[{\"added\": {}}]',15,1),(12,'2024-04-25 06:35:39.149842','1','Dieu object (1)',1,'[{\"added\": {}}]',6,1),(13,'2024-04-25 06:35:55.515366','2','Dieu object (2)',1,'[{\"added\": {}}]',6,1),(14,'2024-04-25 06:38:44.532248','1','HocKy_NamHoc object (1)',1,'[{\"added\": {}}]',7,1),(15,'2024-04-25 06:38:47.816207','1','HoatDongNgoaiKhoa object (1)',1,'[{\"added\": {}}]',13,1),(16,'2024-04-25 06:39:44.546818','1','HoatDongNgoaiKhoa object (1)',2,'[]',13,1),(17,'2024-04-25 06:40:38.522974','2','HoatDongNgoaiKhoa object (2)',1,'[{\"added\": {}}]',13,1),(18,'2024-04-25 06:41:40.888635','3','HoatDongNgoaiKhoa object (3)',1,'[{\"added\": {}}]',13,1),(19,'2024-04-25 09:05:29.747075','1','ThamGia object (1)',1,'[{\"added\": {}}]',17,1),(20,'2024-04-25 09:05:36.777879','2','ThamGia object (2)',1,'[{\"added\": {}}]',17,1),(21,'2024-04-25 09:05:45.888290','3','ThamGia object (3)',1,'[{\"added\": {}}]',17,1),(22,'2024-04-25 09:05:51.560002','4','ThamGia object (4)',1,'[{\"added\": {}}]',17,1),(23,'2024-04-25 09:05:58.841066','5','ThamGia object (5)',1,'[{\"added\": {}}]',17,1),(24,'2024-04-26 07:08:18.374901','1','2151050153 - Tham gia trồng cây xanh',2,'[{\"changed\": {\"fields\": [\"State\"]}}]',17,1),(25,'2024-04-26 07:08:33.228175','1','MinhChung object (1)',1,'[{\"added\": {}}]',18,1),(26,'2024-04-26 07:08:58.232805','2','2151050152 - Hoạt động khuyến khích học tập 2024',2,'[{\"changed\": {\"fields\": [\"State\"]}}]',17,1),(27,'2024-04-26 07:09:09.967182','2','MinhChung object (2)',1,'[{\"added\": {}}]',18,1),(28,'2024-04-26 07:35:23.382576','1','MinhChung object (1)',3,'',18,1),(29,'2024-04-26 07:35:41.757772','3','MinhChung object (3)',1,'[{\"added\": {}}]',18,1),(30,'2024-04-26 07:50:08.814139','2','MinhChung object (2)',2,'[{\"changed\": {\"fields\": [\"Anh minh chung\"]}}]',18,1),(31,'2024-04-26 11:03:50.699183','4','abcsss',3,'',13,1),(32,'2024-04-28 06:42:33.288805','1','admin',2,'[{\"changed\": {\"fields\": [\"Avatar\", \"Role\"]}}]',10,1),(33,'2024-04-28 06:47:30.669313','2','tlsv1',1,'[{\"added\": {}}]',10,1),(34,'2024-04-28 06:47:36.910673','1','TroLySinhVien_Khoa object (1)',1,'[{\"added\": {}}]',25,1),(35,'2024-04-30 07:52:53.658227','1','Môi trường',1,'[{\"added\": {}}]',9,1),(36,'2024-04-30 07:52:57.826816','1','Bài viết 1',1,'[{\"added\": {}}]',11,1),(37,'2024-04-30 07:53:51.389646','3','sv1',1,'[{\"added\": {}}]',10,1),(38,'2024-04-30 07:54:41.629576','1','Comment object (1)',1,'[{\"added\": {}}]',12,1),(39,'2024-04-30 07:54:54.133985','2','Comment object (2)',1,'[{\"added\": {}}]',12,1),(40,'2024-04-30 07:55:06.604373','1','Like object (1)',1,'[{\"added\": {}}]',19,1),(41,'2024-05-02 06:57:31.611640','4','Ngô Huy Hoàng',2,'[{\"changed\": {\"fields\": [\"Cccd\", \"Email\"]}}]',15,1),(42,'2024-05-02 06:57:45.235329','3','Lê Thanh Danh',2,'[{\"changed\": {\"fields\": [\"Cccd\", \"Email\"]}}]',15,1),(43,'2024-05-02 06:58:01.210246','2','Vũ Ngọc Đang',2,'[{\"changed\": {\"fields\": [\"Cccd\", \"Email\"]}}]',15,1),(44,'2024-05-02 06:58:10.850671','1','Đỗ Gia Huy',2,'[{\"changed\": {\"fields\": [\"Cccd\", \"Email\"]}}]',15,1),(45,'2024-05-02 06:58:13.928925','4','Ngô Huy Hoàng',2,'[]',15,1),(46,'2024-05-02 07:09:03.556198','4','tlsv2',1,'[{\"added\": {}}]',10,1),(47,'2024-05-02 07:16:08.382784','5','tlsv3',3,'',10,1),(48,'2024-05-02 07:17:40.459483','6','tlsv3',3,'',10,1),(49,'2024-05-02 07:19:22.049239','7','tlsv3',3,'',10,1),(50,'2024-05-02 07:20:22.550060','8','tlsv3',3,'',10,1),(51,'2024-05-02 07:22:06.485623','9','tlsv3',3,'',10,1),(52,'2024-05-02 07:30:49.477696','3','sv1',2,'[]',10,1),(53,'2024-05-02 07:31:03.053501','3','sv1',2,'[{\"changed\": {\"fields\": [\"Password\"]}}]',10,1),(54,'2024-05-02 07:37:05.843257','4','tlsv2',2,'[]',10,1),(55,'2024-05-02 07:37:13.450338','3','sv1',2,'[{\"changed\": {\"fields\": [\"Password\"]}}]',10,1),(56,'2024-05-02 07:44:48.281111','2','tlsv1',2,'[]',10,1),(57,'2024-05-02 07:44:54.955635','3','sv1',2,'[]',10,1),(58,'2024-05-02 07:45:01.101658','4','tlsv2',2,'[]',10,1);
+INSERT INTO `django_admin_log` VALUES (1,'2024-04-23 08:06:39.415660','1','troli',1,'[{\"added\": {}}]',3,1),(2,'2024-04-23 08:10:17.465514','2','troli1',1,'[{\"added\": {}}]',10,1),(3,'2024-04-23 08:11:01.341957','2','troli1',2,'[{\"changed\": {\"fields\": [\"Avatar\"]}}]',10,1),(4,'2024-04-23 08:11:34.688691','2','troli1',2,'[]',10,1),(5,'2024-04-23 08:12:59.047435','2','congtac',1,'[{\"added\": {}}]',3,1),(6,'2024-04-23 08:13:19.427423','3','congtac1',1,'[{\"added\": {}}]',10,1),(7,'2024-04-23 08:15:49.947362','3','sinhvien',1,'[{\"added\": {}}]',3,1),(8,'2024-04-23 08:16:06.895093','4','sinhvien1',1,'[{\"added\": {}}]',10,1),(9,'2024-04-23 08:17:18.807945','1','Dieu object (1)',1,'[{\"added\": {}}]',6,1),(10,'2024-04-23 08:17:26.504957','2','Dieu object (2)',1,'[{\"added\": {}}]',6,1),(11,'2024-04-23 08:17:32.371576','3','Dieu object (3)',1,'[{\"added\": {}}]',6,1),(12,'2024-04-23 08:17:37.737296','4','Dieu object (4)',1,'[{\"added\": {}}]',6,1),(13,'2024-04-23 08:17:48.298923','1','HocKy_NamHoc object (1)',1,'[{\"added\": {}}]',7,1),(14,'2024-04-23 08:21:26.603440','1','HoatDongNgoaiKhoa object (1)',1,'[{\"added\": {}}]',13,1),(15,'2024-04-23 08:21:37.080678','1','Tag1',1,'[{\"added\": {}}]',9,1),(16,'2024-04-23 08:21:41.059190','2','Tag2',1,'[{\"added\": {}}]',9,1),(17,'2024-04-23 08:22:36.325651','1','Bai viet 1',1,'[{\"added\": {}}]',11,1),(18,'2024-04-23 08:25:34.163526','2','HocKy_NamHoc object (2)',1,'[{\"added\": {}}]',7,1),(19,'2024-04-23 08:25:40.285176','3','HocKy_NamHoc object (3)',1,'[{\"added\": {}}]',7,1),(20,'2024-04-23 08:25:47.852164','4','HocKy_NamHoc object (4)',1,'[{\"added\": {}}]',7,1),(21,'2024-04-23 08:25:50.001608','2','HoatDongNgoaiKhoa object (2)',1,'[{\"added\": {}}]',13,1),(22,'2024-04-23 08:25:58.193766','2','Bai viet 2',1,'[{\"added\": {}}]',11,1),(23,'2024-04-27 03:22:38.122462','1','Comment object (1)',1,'[{\"added\": {}}]',12,1),(24,'2024-04-27 03:22:46.082943','2','Comment object (2)',1,'[{\"added\": {}}]',12,1),(25,'2024-04-27 03:22:52.767073','3','Comment object (3)',1,'[{\"added\": {}}]',12,1),(26,'2024-04-27 03:22:59.148960','4','Comment object (4)',1,'[{\"added\": {}}]',12,1),(27,'2024-04-29 02:12:19.474766','1','Like object (1)',3,'',19,1),(28,'2024-04-30 03:16:14.112945','1','cntt21',1,'[{\"added\": {}}]',8,1),(29,'2024-04-30 03:16:26.480071','2','cs21',1,'[{\"added\": {}}]',8,1),(30,'2024-04-30 03:16:32.493752','1','it2102',1,'[{\"added\": {}}]',14,1),(31,'2024-04-30 03:16:34.881400','1','sv1',1,'[{\"added\": {}}]',15,1),(32,'2024-04-30 03:17:24.748468','2','cs200',1,'[{\"added\": {}}]',14,1),(33,'2024-04-30 03:17:27.849942','2','sv2',1,'[{\"added\": {}}]',15,1),(34,'2024-04-30 03:17:38.370246','1','DiemRenLuyen object (1)',1,'[{\"added\": {}}]',16,1),(35,'2024-04-30 03:17:47.209708','2','DiemRenLuyen object (2)',1,'[{\"added\": {}}]',16,1),(36,'2024-04-30 03:17:52.934041','3','DiemRenLuyen object (3)',1,'[{\"added\": {}}]',16,1),(37,'2024-04-30 03:18:05.438007','4','DiemRenLuyen object (4)',1,'[{\"added\": {}}]',16,1);
 /*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,11 +141,11 @@ DROP TABLE IF EXISTS `django_content_type`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `django_content_type` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `app_label` varchar(100) NOT NULL,
-  `model` varchar(100) NOT NULL,
+  `app_label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `model` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,11 +167,11 @@ DROP TABLE IF EXISTS `django_migrations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `django_migrations` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `app` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `app` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,7 +180,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2024-04-13 05:42:29.345050'),(2,'contenttypes','0002_remove_content_type_name','2024-04-13 05:42:29.577624'),(3,'auth','0001_initial','2024-04-13 05:42:30.134741'),(4,'auth','0002_alter_permission_name_max_length','2024-04-13 05:42:30.263795'),(5,'auth','0003_alter_user_email_max_length','2024-04-13 05:42:30.275785'),(6,'auth','0004_alter_user_username_opts','2024-04-13 05:42:30.285789'),(7,'auth','0005_alter_user_last_login_null','2024-04-13 05:42:30.296790'),(8,'auth','0006_require_contenttypes_0002','2024-04-13 05:42:30.302791'),(9,'auth','0007_alter_validators_add_error_messages','2024-04-13 05:42:30.312793'),(10,'auth','0008_alter_user_username_max_length','2024-04-13 05:42:30.321795'),(11,'auth','0009_alter_user_last_name_max_length','2024-04-13 05:42:30.337814'),(12,'auth','0010_alter_group_name_max_length','2024-04-13 05:42:30.367807'),(13,'auth','0011_update_proxy_permissions','2024-04-13 05:42:30.378809'),(14,'auth','0012_alter_user_first_name_max_length','2024-04-13 05:42:30.390810'),(15,'trainingpoint','0001_initial','2024-04-13 05:42:35.004322'),(16,'admin','0001_initial','2024-04-13 05:42:35.392776'),(17,'admin','0002_logentry_remove_auto_add','2024-04-13 05:42:35.420786'),(18,'admin','0003_logentry_add_action_flag_choices','2024-04-13 05:42:35.438790'),(19,'sessions','0001_initial','2024-04-13 05:42:35.537811'),(20,'trainingpoint','0002_alter_dieu_ma_dieu_alter_khoa_ma_khoa_and_more','2024-04-18 06:53:01.245927'),(21,'trainingpoint','0003_like','2024-04-18 06:53:01.742199'),(22,'trainingpoint','0004_alter_sinhvien_gioi_tinh','2024-04-18 06:56:54.017703'),(23,'trainingpoint','0005_alter_hoatdongngoaikhoa_diem_ren_luyen','2024-04-18 06:58:34.770078'),(24,'oauth2_provider','0001_initial','2024-04-23 05:15:52.526475'),(25,'oauth2_provider','0002_auto_20190406_1805','2024-04-23 05:15:52.710234'),(26,'oauth2_provider','0003_auto_20201211_1314','2024-04-23 05:15:52.920041'),(27,'oauth2_provider','0004_auto_20200902_2022','2024-04-23 05:15:54.000869'),(28,'oauth2_provider','0005_auto_20211222_2352','2024-04-23 05:15:54.088828'),(29,'oauth2_provider','0006_alter_application_client_secret','2024-04-23 05:15:54.130865'),(30,'oauth2_provider','0007_application_post_logout_redirect_uris','2024-04-23 05:15:54.322094'),(31,'trainingpoint','0006_alter_hocky_namhoc_nam_hoc_and_more','2024-04-23 10:21:04.622937'),(32,'trainingpoint','0007_alter_thamgia_state','2024-04-25 08:56:50.549590'),(33,'trainingpoint','0008_alter_thamgia_state','2024-04-25 08:59:57.257690'),(34,'trainingpoint','0009_trolysinhvien_khoa','2024-04-28 06:38:51.593711'),(35,'trainingpoint','0010_alter_taikhoan_role','2024-04-28 06:42:00.298428'),(36,'trainingpoint','0006_alter_hocky_namhoc_nam_hoc','2024-04-30 07:16:11.981031'),(37,'trainingpoint','0009_merge_20240429_0924','2024-04-30 07:16:11.995037'),(38,'trainingpoint','0011_merge_20240429_1148','2024-04-30 07:16:12.008040'),(39,'trainingpoint','0012_sinhvien_cccd_sinhvien_email','2024-05-02 06:56:28.379558'),(40,'trainingpoint','0013_alter_sinhvien_cccd_alter_sinhvien_email','2024-05-02 06:58:44.714053');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2024-04-23 07:51:44.010433'),(2,'contenttypes','0002_remove_content_type_name','2024-04-23 07:51:46.714640'),(3,'auth','0001_initial','2024-04-23 07:51:49.312352'),(4,'auth','0002_alter_permission_name_max_length','2024-04-23 07:51:49.578674'),(5,'auth','0003_alter_user_email_max_length','2024-04-23 07:51:49.609840'),(6,'auth','0004_alter_user_username_opts','2024-04-23 07:51:49.641092'),(7,'auth','0005_alter_user_last_login_null','2024-04-23 07:51:49.703603'),(8,'auth','0006_require_contenttypes_0002','2024-04-23 07:51:49.719320'),(9,'auth','0007_alter_validators_add_error_messages','2024-04-23 07:51:49.750492'),(10,'auth','0008_alter_user_username_max_length','2024-04-23 07:51:49.781820'),(11,'auth','0009_alter_user_last_name_max_length','2024-04-23 07:51:49.813070'),(12,'auth','0010_alter_group_name_max_length','2024-04-23 07:51:50.031723'),(13,'auth','0011_update_proxy_permissions','2024-04-23 07:51:50.047424'),(14,'auth','0012_alter_user_first_name_max_length','2024-04-23 07:51:50.094213'),(15,'trainingpoint','0001_initial','2024-04-23 07:52:05.078978'),(16,'admin','0001_initial','2024-04-23 07:52:10.047627'),(17,'admin','0002_logentry_remove_auto_add','2024-04-23 07:52:10.203877'),(18,'admin','0003_logentry_add_action_flag_choices','2024-04-23 07:52:11.250745'),(19,'oauth2_provider','0001_initial','2024-04-23 07:52:19.406986'),(20,'oauth2_provider','0002_auto_20190406_1805','2024-04-23 07:52:20.063357'),(21,'oauth2_provider','0003_auto_20201211_1314','2024-04-23 07:52:21.047703'),(22,'oauth2_provider','0004_auto_20200902_2022','2024-04-23 07:52:24.313304'),(23,'oauth2_provider','0005_auto_20211222_2352','2024-04-23 07:52:24.750744'),(24,'oauth2_provider','0006_alter_application_client_secret','2024-04-23 07:52:24.907000'),(25,'oauth2_provider','0007_application_post_logout_redirect_uris','2024-04-23 07:52:25.610133'),(26,'sessions','0001_initial','2024-04-23 07:52:26.110232'),(27,'trainingpoint','0002_alter_dieu_ma_dieu_alter_khoa_ma_khoa_and_more','2024-04-23 07:52:27.909935'),(28,'trainingpoint','0003_like','2024-04-23 07:52:29.722513'),(29,'trainingpoint','0004_alter_sinhvien_gioi_tinh','2024-04-23 07:52:30.285004'),(30,'trainingpoint','0005_alter_hoatdongngoaikhoa_diem_ren_luyen','2024-04-23 07:52:30.472451'),(31,'trainingpoint','0006_alter_hocky_namhoc_nam_hoc','2024-04-23 08:23:49.997692'),(32,'trainingpoint','0006_alter_hocky_namhoc_nam_hoc_and_more','2024-04-29 02:24:35.708395'),(33,'trainingpoint','0007_alter_thamgia_state','2024-04-29 02:24:35.786469'),(34,'trainingpoint','0008_alter_thamgia_state','2024-04-29 02:24:35.895870'),(35,'trainingpoint','0009_merge_20240429_0924','2024-04-29 02:24:35.927149'),(36,'trainingpoint','0009_trolysinhvien_khoa','2024-04-29 04:48:28.174115'),(37,'trainingpoint','0010_alter_taikhoan_role','2024-04-29 04:48:28.252190'),(38,'trainingpoint','0011_merge_20240429_1148','2024-04-29 04:48:28.283473');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -190,12 +192,12 @@ DROP TABLE IF EXISTS `django_session`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `django_session` (
-  `session_key` varchar(40) NOT NULL,
-  `session_data` longtext NOT NULL,
+  `session_key` varchar(40) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `session_data` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,7 +206,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('p0ckljvnc15cnb446nv2xxd5frhg260g','.eJxVjEEOwiAQRe_C2hAgQMGle89AhplBqgaS0q6Md9cmXej2v_f-SyTY1pq2wUuaSZyFFqffLQM-uO2A7tBuXWJv6zJnuSvyoENeO_Hzcrh_BxVG_daWjEeDNqvikFl7HYPNPPlgHHEubiLSNmMszhUdVAwKokbPDIYDg3h_APUDOJ8:1rvWDs:EUx0DLWm1mIssiFdDGT9xXlC-mBH5YQW-Ai8aJvA-Vg','2024-04-27 05:46:44.227805'),('p7sjhijq9g5hy899cqc6kia3qo1pcdes','.eJxVjEEOwiAQRe_C2hAgQMGle89AhplBqgaS0q6Md9cmXej2v_f-SyTY1pq2wUuaSZyFFqffLQM-uO2A7tBuXWJv6zJnuSvyoENeO_Hzcrh_BxVG_daWjEeDNqvikFl7HYPNPPlgHHEubiLSNmMszhUdVAwKokbPDIYDg3h_APUDOJ8:1s0yCI:CVVwJQNFlG19XJ3mRhnAelkcwFAcXBAnoPPNFLt3irU','2024-05-12 06:39:38.368887');
+INSERT INTO `django_session` VALUES ('5qpqxoy3o94yiy16man0uwy6po8bmz1u','.eJxVjDsOwyAQRO9CHSHAGHZTpvcZ0PILTiKQjF1FuXtsyUVSjTTvzbyZo20tbutpcXNkVybZ5bfzFJ6pHiA-qN4bD62uy-z5ofCTdj61mF630_07KNTLvvY62aAHSXlUEUVGkMJCNKgIJQ4arRZWZm0k5jSC8iYR-D0BsgIS7PMFxBw3AQ:1rzB3t:f4xzVsCFzLvln37nx9pNSLIQQDfOTVe6RZEkmiPSKUg','2024-05-07 07:59:33.978488');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,9 +219,9 @@ DROP TABLE IF EXISTS `oauth2_provider_accesstoken`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oauth2_provider_accesstoken` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `token` varchar(255) NOT NULL,
+  `token` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `expires` datetime(6) NOT NULL,
-  `scope` longtext NOT NULL,
+  `scope` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `application_id` bigint DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
   `created` datetime(6) NOT NULL,
@@ -236,7 +238,7 @@ CREATE TABLE `oauth2_provider_accesstoken` (
   CONSTRAINT `oauth2_provider_acce_id_token_id_85db651b_fk_oauth2_pr` FOREIGN KEY (`id_token_id`) REFERENCES `oauth2_provider_idtoken` (`id`),
   CONSTRAINT `oauth2_provider_acce_source_refresh_token_e66fbc72_fk_oauth2_pr` FOREIGN KEY (`source_refresh_token_id`) REFERENCES `oauth2_provider_refreshtoken` (`id`),
   CONSTRAINT `oauth2_provider_acce_user_id_6e4c9a65_fk_trainingp` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -245,6 +247,7 @@ CREATE TABLE `oauth2_provider_accesstoken` (
 
 LOCK TABLES `oauth2_provider_accesstoken` WRITE;
 /*!40000 ALTER TABLE `oauth2_provider_accesstoken` DISABLE KEYS */;
+INSERT INTO `oauth2_provider_accesstoken` VALUES (1,'Xd51dXdVUvqmmSu8ybLvO0fw8oxFZv','2024-04-28 14:12:14.259195','read write',1,1,'2024-04-28 04:12:14.261738','2024-04-28 04:12:14.261738',NULL,NULL),(2,'RsvjwDDi70TbWgx3YZTDUYMG5gBuhc','2024-04-29 12:06:41.952175','read write',1,1,'2024-04-29 02:06:41.953184','2024-04-29 02:06:41.953184',NULL,NULL);
 /*!40000 ALTER TABLE `oauth2_provider_accesstoken` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -257,24 +260,24 @@ DROP TABLE IF EXISTS `oauth2_provider_application`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oauth2_provider_application` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `client_id` varchar(100) NOT NULL,
-  `redirect_uris` longtext NOT NULL,
-  `client_type` varchar(32) NOT NULL,
-  `authorization_grant_type` varchar(32) NOT NULL,
-  `client_secret` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `client_id` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `redirect_uris` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `client_type` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `authorization_grant_type` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `client_secret` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `user_id` bigint DEFAULT NULL,
   `skip_authorization` tinyint(1) NOT NULL,
   `created` datetime(6) NOT NULL,
   `updated` datetime(6) NOT NULL,
-  `algorithm` varchar(5) NOT NULL,
-  `post_logout_redirect_uris` longtext NOT NULL DEFAULT (_utf8mb3''),
+  `algorithm` varchar(5) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `post_logout_redirect_uris` longtext COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT (_utf8mb3''),
   PRIMARY KEY (`id`),
   UNIQUE KEY `client_id` (`client_id`),
   KEY `oauth2_provider_appl_user_id_79829054_fk_trainingp` (`user_id`),
   KEY `oauth2_provider_application_client_secret_53133678` (`client_secret`),
   CONSTRAINT `oauth2_provider_appl_user_id_79829054_fk_trainingp` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -283,7 +286,7 @@ CREATE TABLE `oauth2_provider_application` (
 
 LOCK TABLES `oauth2_provider_application` WRITE;
 /*!40000 ALTER TABLE `oauth2_provider_application` DISABLE KEYS */;
-INSERT INTO `oauth2_provider_application` VALUES (1,'OExYmZeWgGVkOh9VNlZ0EhJHH0xU4nvvPHnRQmuW','','confidential','password','pbkdf2_sha256$720000$qcpV4FGIPLufK0dXGQCztL$Ur5v1DB1Urw8tpzYoiA1XECHNNmmWIEEmYvLFSimxeE=','QLDR',1,0,'2024-04-30 08:44:19.410760','2024-04-30 08:44:19.410760','','');
+INSERT INTO `oauth2_provider_application` VALUES (1,'4eba8S2TpUPaiIhyFmeNtcLzvQfv9pbaorXZUVd1','','confidential','password','pbkdf2_sha256$720000$ePOD2Xd7fbYni1pusFQH3q$HwGUThIL+XJ230hDGwjcm/Qjw9I5ROSBsgSXcNNhvns=','MyApp',1,0,'2024-04-28 04:08:00.142843','2024-04-28 04:08:00.143849','','');
 /*!40000 ALTER TABLE `oauth2_provider_application` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -296,25 +299,25 @@ DROP TABLE IF EXISTS `oauth2_provider_grant`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oauth2_provider_grant` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) NOT NULL,
+  `code` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `expires` datetime(6) NOT NULL,
-  `redirect_uri` longtext NOT NULL,
-  `scope` longtext NOT NULL,
+  `redirect_uri` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `scope` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `application_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   `created` datetime(6) NOT NULL,
   `updated` datetime(6) NOT NULL,
-  `code_challenge` varchar(128) NOT NULL,
-  `code_challenge_method` varchar(10) NOT NULL,
-  `nonce` varchar(255) NOT NULL,
-  `claims` longtext NOT NULL DEFAULT (_utf8mb3''),
+  `code_challenge` varchar(128) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `code_challenge_method` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `nonce` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `claims` longtext COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT (_utf8mb3''),
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   KEY `oauth2_provider_gran_application_id_81923564_fk_oauth2_pr` (`application_id`),
   KEY `oauth2_provider_gran_user_id_e8f62af8_fk_trainingp` (`user_id`),
   CONSTRAINT `oauth2_provider_gran_application_id_81923564_fk_oauth2_pr` FOREIGN KEY (`application_id`) REFERENCES `oauth2_provider_application` (`id`),
   CONSTRAINT `oauth2_provider_gran_user_id_e8f62af8_fk_trainingp` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -335,9 +338,9 @@ DROP TABLE IF EXISTS `oauth2_provider_idtoken`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oauth2_provider_idtoken` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `jti` char(32) NOT NULL,
+  `jti` char(32) COLLATE utf8mb3_unicode_ci NOT NULL,
   `expires` datetime(6) NOT NULL,
-  `scope` longtext NOT NULL,
+  `scope` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `created` datetime(6) NOT NULL,
   `updated` datetime(6) NOT NULL,
   `application_id` bigint DEFAULT NULL,
@@ -348,7 +351,7 @@ CREATE TABLE `oauth2_provider_idtoken` (
   KEY `oauth2_provider_idto_user_id_dd512b59_fk_trainingp` (`user_id`),
   CONSTRAINT `oauth2_provider_idto_application_id_08c5ff4f_fk_oauth2_pr` FOREIGN KEY (`application_id`) REFERENCES `oauth2_provider_application` (`id`),
   CONSTRAINT `oauth2_provider_idto_user_id_dd512b59_fk_trainingp` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -369,7 +372,7 @@ DROP TABLE IF EXISTS `oauth2_provider_refreshtoken`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `oauth2_provider_refreshtoken` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `token` varchar(255) NOT NULL,
+  `token` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `access_token_id` bigint DEFAULT NULL,
   `application_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
@@ -384,7 +387,7 @@ CREATE TABLE `oauth2_provider_refreshtoken` (
   CONSTRAINT `oauth2_provider_refr_access_token_id_775e84e8_fk_oauth2_pr` FOREIGN KEY (`access_token_id`) REFERENCES `oauth2_provider_accesstoken` (`id`),
   CONSTRAINT `oauth2_provider_refr_application_id_2d1c311b_fk_oauth2_pr` FOREIGN KEY (`application_id`) REFERENCES `oauth2_provider_application` (`id`),
   CONSTRAINT `oauth2_provider_refr_user_id_da837fce_fk_trainingp` FOREIGN KEY (`user_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -393,6 +396,7 @@ CREATE TABLE `oauth2_provider_refreshtoken` (
 
 LOCK TABLES `oauth2_provider_refreshtoken` WRITE;
 /*!40000 ALTER TABLE `oauth2_provider_refreshtoken` DISABLE KEYS */;
+INSERT INTO `oauth2_provider_refreshtoken` VALUES (1,'LAbtWtX90rnuVcspmukHFJYO5Ba2fm',1,1,1,'2024-04-28 04:12:14.379129','2024-04-28 04:12:14.379129',NULL),(2,'AuXnXhBH8J3BeOEg2hyZLrFMVrHnd1',2,1,1,'2024-04-29 02:06:42.045070','2024-04-29 02:06:42.045070',NULL);
 /*!40000 ALTER TABLE `oauth2_provider_refreshtoken` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,9 +412,9 @@ CREATE TABLE `trainingpoint_baiviet` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `content` longtext,
-  `image` varchar(255) NOT NULL,
+  `title` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `content` longtext COLLATE utf8mb3_unicode_ci,
+  `image` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `tro_ly_id` bigint NOT NULL,
   `hoat_dong_ngoai_khoa_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
@@ -418,7 +422,7 @@ CREATE TABLE `trainingpoint_baiviet` (
   KEY `trainingpoint_baivie_tro_ly_id_d68632a4_fk_trainingp` (`tro_ly_id`),
   CONSTRAINT `trainingpoint_baivie_hoat_dong_ngoai_khoa_d2e2c787_fk_trainingp` FOREIGN KEY (`hoat_dong_ngoai_khoa_id`) REFERENCES `trainingpoint_hoatdongngoaikhoa` (`id`),
   CONSTRAINT `trainingpoint_baivie_tro_ly_id_d68632a4_fk_trainingp` FOREIGN KEY (`tro_ly_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -427,7 +431,7 @@ CREATE TABLE `trainingpoint_baiviet` (
 
 LOCK TABLES `trainingpoint_baiviet` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_baiviet` DISABLE KEYS */;
-INSERT INTO `trainingpoint_baiviet` VALUES (1,'2024-04-30 07:52:56.099776','2024-04-30 07:52:56.099776',1,'Bài viết 1','<p>B&agrave;i viết số 1</p>','image/upload/v1714463578/rta1hwtsbssdfd7dblgy.jpg',2,1);
+INSERT INTO `trainingpoint_baiviet` VALUES (1,'2024-04-23 08:22:31.639307','2024-04-23 08:22:31.639307',1,'Bai viet 1','<p>Bai viet 1&nbsp;Bai viet 1&nbsp;Bai viet 1&nbsp;Bai viet 1&nbsp;Bai viet 1&nbsp;Bai viet 1</p>','image/upload/v1713860558/vj3iuxyhc4o42b4yrwgo.jpg',2,1),(2,'2024-04-23 08:25:53.836249','2024-04-23 08:25:53.836249',1,'Bai viet 2','<p>Bai viet 2&nbsp;Bai viet 2&nbsp;Bai viet 2&nbsp;Bai viet 2&nbsp;Bai viet 2&nbsp;Bai viet 2&nbsp;</p>','image/upload/v1713860760/bhu93stnax9ntypdcyhi.jpg',2,2);
 /*!40000 ALTER TABLE `trainingpoint_baiviet` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -447,7 +451,7 @@ CREATE TABLE `trainingpoint_baiviet_tags` (
   KEY `trainingpoint_baivie_tag_id_96498648_fk_trainingp` (`tag_id`),
   CONSTRAINT `trainingpoint_baivie_baiviet_id_3098828d_fk_trainingp` FOREIGN KEY (`baiviet_id`) REFERENCES `trainingpoint_baiviet` (`id`),
   CONSTRAINT `trainingpoint_baivie_tag_id_96498648_fk_trainingp` FOREIGN KEY (`tag_id`) REFERENCES `trainingpoint_tag` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -456,7 +460,7 @@ CREATE TABLE `trainingpoint_baiviet_tags` (
 
 LOCK TABLES `trainingpoint_baiviet_tags` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_baiviet_tags` DISABLE KEYS */;
-INSERT INTO `trainingpoint_baiviet_tags` VALUES (1,1,1);
+INSERT INTO `trainingpoint_baiviet_tags` VALUES (1,1,1),(2,2,2);
 /*!40000 ALTER TABLE `trainingpoint_baiviet_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -472,7 +476,7 @@ CREATE TABLE `trainingpoint_comment` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `content` varchar(255) NOT NULL,
+  `content` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `bai_viet_id` bigint NOT NULL,
   `tai_khoan_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
@@ -480,7 +484,7 @@ CREATE TABLE `trainingpoint_comment` (
   KEY `trainingpoint_commen_tai_khoan_id_e072273e_fk_trainingp` (`tai_khoan_id`),
   CONSTRAINT `trainingpoint_commen_bai_viet_id_a2c3e1eb_fk_trainingp` FOREIGN KEY (`bai_viet_id`) REFERENCES `trainingpoint_baiviet` (`id`),
   CONSTRAINT `trainingpoint_commen_tai_khoan_id_e072273e_fk_trainingp` FOREIGN KEY (`tai_khoan_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -489,7 +493,7 @@ CREATE TABLE `trainingpoint_comment` (
 
 LOCK TABLES `trainingpoint_comment` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_comment` DISABLE KEYS */;
-INSERT INTO `trainingpoint_comment` VALUES (1,'2024-04-30 07:54:41.624575','2024-04-30 07:54:41.624575',1,'Hay',1,3),(2,'2024-04-30 07:54:54.129983','2024-04-30 07:54:54.129983',1,'Very good',1,3);
+INSERT INTO `trainingpoint_comment` VALUES (1,'2024-04-27 03:22:37.999316','2024-04-27 03:22:37.999316',1,'comment1',1,2),(2,'2024-04-27 03:22:46.081943','2024-04-27 03:22:46.081943',1,'comment2',2,3),(3,'2024-04-27 03:22:52.765072','2024-04-27 03:22:52.766077',1,'comment3',1,2),(4,'2024-04-27 03:22:59.147971','2024-04-27 03:22:59.147971',1,'comment4',2,4),(5,'2024-04-28 04:17:21.531738','2024-04-28 04:17:21.531738',1,'test',1,1);
 /*!40000 ALTER TABLE `trainingpoint_comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -513,7 +517,7 @@ CREATE TABLE `trainingpoint_diemrenluyen` (
   KEY `trainingpoint_diemre_sinh_vien_id_80a60410_fk_trainingp` (`sinh_vien_id`),
   CONSTRAINT `trainingpoint_diemre_hk_nh_id_623de615_fk_trainingp` FOREIGN KEY (`hk_nh_id`) REFERENCES `trainingpoint_hocky_namhoc` (`id`),
   CONSTRAINT `trainingpoint_diemre_sinh_vien_id_80a60410_fk_trainingp` FOREIGN KEY (`sinh_vien_id`) REFERENCES `trainingpoint_sinhvien` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -522,7 +526,7 @@ CREATE TABLE `trainingpoint_diemrenluyen` (
 
 LOCK TABLES `trainingpoint_diemrenluyen` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_diemrenluyen` DISABLE KEYS */;
-INSERT INTO `trainingpoint_diemrenluyen` VALUES (1,'2024-04-30 07:08:50.604800','2024-04-30 07:08:50.604800',1,80,1,1),(2,'2024-04-30 07:09:07.780143','2024-04-30 07:09:07.780143',1,85,1,2);
+INSERT INTO `trainingpoint_diemrenluyen` VALUES (1,'2024-04-30 03:17:38.212499','2024-04-30 03:17:38.212499',1,50,1,1),(2,'2024-04-30 03:17:47.207551','2024-04-30 03:17:47.207551',1,26,1,2),(3,'2024-04-30 03:17:52.933046','2024-04-30 03:17:52.933046',1,100,4,1),(4,'2024-04-30 03:18:05.436008','2024-04-30 03:18:05.436008',1,70,4,2);
 /*!40000 ALTER TABLE `trainingpoint_diemrenluyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -538,11 +542,11 @@ CREATE TABLE `trainingpoint_dieu` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `ma_dieu` varchar(10) NOT NULL,
-  `ten_dieu` varchar(255) NOT NULL,
+  `ma_dieu` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `ten_dieu` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `trainingpoint_dieu_ma_dieu_3a4ab3bb_uniq` (`ma_dieu`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -551,7 +555,7 @@ CREATE TABLE `trainingpoint_dieu` (
 
 LOCK TABLES `trainingpoint_dieu` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_dieu` DISABLE KEYS */;
-INSERT INTO `trainingpoint_dieu` VALUES (1,'2024-04-25 06:35:39.142909','2024-04-25 06:35:39.142909',1,'HT1','Điều 1'),(2,'2024-04-25 06:35:55.512357','2024-04-25 06:35:55.512357',1,'HT2','Điều 2');
+INSERT INTO `trainingpoint_dieu` VALUES (1,'2024-04-23 08:17:18.806947','2024-04-23 08:17:18.806947',1,'1','Dieu 1'),(2,'2024-04-23 08:17:26.503959','2024-04-23 08:17:26.503959',1,'2','Dieu 2'),(3,'2024-04-23 08:17:32.369578','2024-04-23 08:17:32.370579',1,'3','Dieu 3'),(4,'2024-04-23 08:17:37.735302','2024-04-23 08:17:37.735302',1,'4','Dieu 4');
 /*!40000 ALTER TABLE `trainingpoint_dieu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -567,10 +571,10 @@ CREATE TABLE `trainingpoint_hoatdongngoaikhoa` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `ma_hoat_dong` varchar(10) NOT NULL,
-  `ten_hoat_dong` longtext NOT NULL,
+  `ma_hoat_dong` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `ten_hoat_dong` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `ngay` datetime(6) NOT NULL,
-  `description` longtext,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
   `diem_ren_luyen` int NOT NULL,
   `dieu_id` bigint NOT NULL,
   `hk_nh_id` bigint NOT NULL,
@@ -580,7 +584,7 @@ CREATE TABLE `trainingpoint_hoatdongngoaikhoa` (
   KEY `trainingpoint_hoatdo_hk_nh_id_3c4aba73_fk_trainingp` (`hk_nh_id`),
   CONSTRAINT `trainingpoint_hoatdo_dieu_id_29c4cf28_fk_trainingp` FOREIGN KEY (`dieu_id`) REFERENCES `trainingpoint_dieu` (`id`),
   CONSTRAINT `trainingpoint_hoatdo_hk_nh_id_3c4aba73_fk_trainingp` FOREIGN KEY (`hk_nh_id`) REFERENCES `trainingpoint_hocky_namhoc` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -589,7 +593,7 @@ CREATE TABLE `trainingpoint_hoatdongngoaikhoa` (
 
 LOCK TABLES `trainingpoint_hoatdongngoaikhoa` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_hoatdongngoaikhoa` DISABLE KEYS */;
-INSERT INTO `trainingpoint_hoatdongngoaikhoa` VALUES (1,'2024-04-25 06:38:47.810241','2024-04-25 06:39:44.544148',1,'HĐ2401','Tham gia trồng cây xanh','2024-04-27 15:00:00.000000','<p>Hoạt động trồng c&acirc;y xanh bảo vệ m&ocirc;i trường 2024<br />\r\n&nbsp;</p>',5,2,1),(2,'2024-04-25 06:40:38.519973','2024-04-25 06:40:38.519973',1,'HĐ2402','Hoạt động khuyến khích học tập 2024','2024-04-25 06:40:10.000000','<p>Khuyến kh&iacute;ch học tập, &ocirc;n tập cho k&igrave; thi học k&igrave; 1 năm 2024</p>',5,1,1),(3,'2024-04-25 06:41:40.887633','2024-04-25 06:41:40.887633',1,'HĐ2403','Hoạt động hiến máu tình nguyện 2024 cùng sinh viên trường đại học Mở','2024-04-30 09:00:00.000000','<p>Hiến m&aacute;u t&igrave;nh nguyện năm 2024 c&ugrave;ng sinh vi&ecirc;n trường đại học Mở</p>',5,2,1),(5,'2024-04-26 11:19:09.467680','2024-04-26 11:19:09.467680',1,'HD2513','Hello','2024-04-26 18:19:00.000000','Hello',5,2,1),(6,'2024-04-26 11:22:37.105426','2024-04-26 11:22:37.105426',1,'HD2514','Hello','2024-04-26 18:22:00.000000','Hello',5,1,1);
+INSERT INTO `trainingpoint_hoatdongngoaikhoa` VALUES (1,'2024-04-23 08:21:26.600431','2024-04-23 08:21:26.601456',1,'1','Hoat dong ngoai khoa1','2024-04-23 12:00:00.000000','<p>Hoat dong ngoai khoa1&nbsp;Hoat dong ngoai khoa1&nbsp;Hoat dong ngoai khoa1&nbsp;Hoat dong ngoai khoa1</p>',5,1,1),(2,'2024-04-23 08:25:49.999591','2024-04-23 08:25:50.000608',1,'2','Hoat dong 2','2024-04-23 00:00:00.000000','<p>Hoat dong 2Hoat dong 2Hoat dong 2Hoat dong 2</p>',5,3,2);
 /*!40000 ALTER TABLE `trainingpoint_hoatdongngoaikhoa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -603,10 +607,10 @@ DROP TABLE IF EXISTS `trainingpoint_hocky_namhoc`;
 CREATE TABLE `trainingpoint_hocky_namhoc` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `hoc_ky` int NOT NULL,
-  `nam_hoc` varchar(9) NOT NULL,
+  `nam_hoc` varchar(9) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `trainingpoint_hocky_namhoc_hoc_ky_nam_hoc_9672aae3_uniq` (`hoc_ky`,`nam_hoc`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -615,7 +619,7 @@ CREATE TABLE `trainingpoint_hocky_namhoc` (
 
 LOCK TABLES `trainingpoint_hocky_namhoc` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_hocky_namhoc` DISABLE KEYS */;
-INSERT INTO `trainingpoint_hocky_namhoc` VALUES (1,1,'2024-2025');
+INSERT INTO `trainingpoint_hocky_namhoc` VALUES (1,1,'2022-2023'),(4,1,'2023-2024'),(2,2,'2022-2023'),(3,3,'2022-2023');
 /*!40000 ALTER TABLE `trainingpoint_hocky_namhoc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -631,11 +635,11 @@ CREATE TABLE `trainingpoint_khoa` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `ma_khoa` varchar(10) NOT NULL,
-  `ten_khoa` varchar(255) NOT NULL,
+  `ma_khoa` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `ten_khoa` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `trainingpoint_khoa_ma_khoa_26d2be7b_uniq` (`ma_khoa`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -644,7 +648,7 @@ CREATE TABLE `trainingpoint_khoa` (
 
 LOCK TABLES `trainingpoint_khoa` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_khoa` DISABLE KEYS */;
-INSERT INTO `trainingpoint_khoa` VALUES (1,'2024-04-25 03:57:29.331895','2024-04-25 03:57:29.331895',1,'CNTT','Công nghệ thông tin'),(2,'2024-04-25 04:25:19.900125','2024-04-25 04:25:19.900125',1,'KTXD','Kỹ thuật xây dựng');
+INSERT INTO `trainingpoint_khoa` VALUES (1,'2024-04-30 03:16:14.014803','2024-04-30 03:16:14.014803',1,'it21','cntt21'),(2,'2024-04-30 03:16:26.479160','2024-04-30 03:16:26.479160',1,'21','cs21');
 /*!40000 ALTER TABLE `trainingpoint_khoa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -667,7 +671,7 @@ CREATE TABLE `trainingpoint_like` (
   KEY `trainingpoint_like_bai_viet_id_baef50a3_fk_trainingp` (`bai_viet_id`),
   CONSTRAINT `trainingpoint_like_bai_viet_id_baef50a3_fk_trainingp` FOREIGN KEY (`bai_viet_id`) REFERENCES `trainingpoint_baiviet` (`id`),
   CONSTRAINT `trainingpoint_like_tai_khoan_id_d2304d56_fk_trainingp` FOREIGN KEY (`tai_khoan_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -676,7 +680,7 @@ CREATE TABLE `trainingpoint_like` (
 
 LOCK TABLES `trainingpoint_like` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_like` DISABLE KEYS */;
-INSERT INTO `trainingpoint_like` VALUES (1,'2024-04-30 07:55:06.602372','2024-04-30 07:55:06.602372',1,1,3);
+INSERT INTO `trainingpoint_like` VALUES (2,'2024-04-29 02:17:23.173853','2024-04-29 02:36:05.296320',1,1,1);
 /*!40000 ALTER TABLE `trainingpoint_like` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -692,14 +696,14 @@ CREATE TABLE `trainingpoint_lop` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `ma_lop` varchar(10) NOT NULL,
-  `ten_lop` varchar(255) NOT NULL,
+  `ma_lop` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `ten_lop` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `khoa_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `trainingpoint_lop_ma_lop_00fe0d9e_uniq` (`ma_lop`),
   KEY `trainingpoint_lop_khoa_id_5ca17a50_fk_trainingpoint_khoa_id` (`khoa_id`),
   CONSTRAINT `trainingpoint_lop_khoa_id_5ca17a50_fk_trainingpoint_khoa_id` FOREIGN KEY (`khoa_id`) REFERENCES `trainingpoint_khoa` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -708,7 +712,7 @@ CREATE TABLE `trainingpoint_lop` (
 
 LOCK TABLES `trainingpoint_lop` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_lop` DISABLE KEYS */;
-INSERT INTO `trainingpoint_lop` VALUES (1,'2024-04-25 03:57:30.894219','2024-04-25 04:23:56.072626',1,'DH21IT03','Lớp IT03 khóa 21',1),(2,'2024-04-25 04:23:48.431914','2024-04-25 04:23:48.431914',1,'DH21IT02','Lớp IT02 Khóa 21',1),(3,'2024-04-25 04:26:00.437087','2024-04-25 04:26:00.437087',1,'KT22XD01','Lớp XD 01 Khóa 22',2);
+INSERT INTO `trainingpoint_lop` VALUES (1,'2024-04-30 03:16:32.482829','2024-04-30 03:16:32.482829',1,'it2102','it2102',1),(2,'2024-04-30 03:17:24.746476','2024-04-30 03:17:24.746476',1,'cs22','cs200',2);
 /*!40000 ALTER TABLE `trainingpoint_lop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -724,13 +728,13 @@ CREATE TABLE `trainingpoint_minhchung` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `description` longtext NOT NULL,
-  `anh_minh_chung` varchar(255) NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `anh_minh_chung` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `tham_gia_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `trainingpoint_minhch_tham_gia_id_f447c1a5_fk_trainingp` (`tham_gia_id`),
   CONSTRAINT `trainingpoint_minhch_tham_gia_id_f447c1a5_fk_trainingp` FOREIGN KEY (`tham_gia_id`) REFERENCES `trainingpoint_thamgia` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -739,7 +743,6 @@ CREATE TABLE `trainingpoint_minhchung` (
 
 LOCK TABLES `trainingpoint_minhchung` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_minhchung` DISABLE KEYS */;
-INSERT INTO `trainingpoint_minhchung` VALUES (2,'2024-04-26 07:09:09.279886','2024-04-26 07:50:04.894281',1,'<p>Bổ sung minh chứng</p>','image/upload/v1714117808/rzpmkgcbtaf9yd1rqiud.jpg',2),(3,'2024-04-26 07:35:39.155179','2024-04-26 07:35:39.155179',1,'<p>Bổ sung minh chứng</p>','image/upload/v1714116942/m7fxffxkwtcwq2pza2km.png',1);
 /*!40000 ALTER TABLE `trainingpoint_minhchung` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -755,21 +758,17 @@ CREATE TABLE `trainingpoint_sinhvien` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `mssv` varchar(10) NOT NULL,
-  `ho_ten` varchar(255) NOT NULL,
+  `mssv` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `ho_ten` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `ngay_sinh` date NOT NULL,
   `gioi_tinh` int NOT NULL,
-  `dia_chi` longtext NOT NULL,
+  `dia_chi` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
   `lop_id` bigint NOT NULL,
-  `cccd` varchar(12) NOT NULL,
-  `email` varchar(254) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `trainingpoint_sinhvien_mssv_5ba0afec_uniq` (`mssv`),
-  UNIQUE KEY `trainingpoint_sinhvien_cccd_0e526d26_uniq` (`cccd`),
-  UNIQUE KEY `trainingpoint_sinhvien_email_cffac5bd_uniq` (`email`),
   KEY `trainingpoint_sinhvien_lop_id_5ec37963_fk_trainingpoint_lop_id` (`lop_id`),
   CONSTRAINT `trainingpoint_sinhvien_lop_id_5ec37963_fk_trainingpoint_lop_id` FOREIGN KEY (`lop_id`) REFERENCES `trainingpoint_lop` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -778,7 +777,7 @@ CREATE TABLE `trainingpoint_sinhvien` (
 
 LOCK TABLES `trainingpoint_sinhvien` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_sinhvien` DISABLE KEYS */;
-INSERT INTO `trainingpoint_sinhvien` VALUES (1,'2024-04-25 03:57:34.446858','2024-05-02 06:58:10.847670',1,'2151050153','Đỗ Gia Huy','2003-11-24',1,'abcxyz',1,'723847288309','2151050153huy@ou.edu.vn'),(2,'2024-04-25 04:22:24.882799','2024-05-02 06:58:01.207244',1,'2151050152','Vũ Ngọc Đang','2003-01-14',1,'Địa chỉ nhà sinh viên 2',1,'194780127497','vungocdang@gmail.com'),(3,'2024-04-25 04:24:00.728036','2024-05-02 06:57:45.235329',1,'2151050154','Lê Thanh Danh','2003-03-24',1,'Địa chỉ nhà sinh viên 3',2,'930412738917','lethanhdanh@gmail.com'),(4,'2024-04-25 04:26:02.514507','2024-05-02 06:58:13.928925',1,'2205012312','Ngô Huy Hoàng','2003-05-04',1,'Địa chỉ sinh viên số 4',3,'120930124017','ngohuyhoang@gmail.com');
+INSERT INTO `trainingpoint_sinhvien` VALUES (1,'2024-04-30 03:16:34.879402','2024-04-30 03:16:34.879402',1,'2131231231','sv1','2023-01-04',1,'s',1),(2,'2024-04-30 03:17:27.847940','2024-04-30 03:17:27.847940',1,'21333','sv2','2022-03-01',2,'r',2);
 /*!40000 ALTER TABLE `trainingpoint_sinhvien` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -794,10 +793,10 @@ CREATE TABLE `trainingpoint_tag` (
   `created_date` datetime(6) NOT NULL,
   `updated_date` datetime(6) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `name` varchar(50) NOT NULL,
+  `name` varchar(50) COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -806,7 +805,7 @@ CREATE TABLE `trainingpoint_tag` (
 
 LOCK TABLES `trainingpoint_tag` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_tag` DISABLE KEYS */;
-INSERT INTO `trainingpoint_tag` VALUES (1,'2024-04-30 07:52:53.636222','2024-04-30 07:52:53.636222',1,'Môi trường');
+INSERT INTO `trainingpoint_tag` VALUES (1,'2024-04-23 08:21:37.079653','2024-04-23 08:21:37.079653',1,'Tag1'),(2,'2024-04-23 08:21:41.057164','2024-04-23 08:21:41.057164',1,'Tag2');
 /*!40000 ALTER TABLE `trainingpoint_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -819,21 +818,21 @@ DROP TABLE IF EXISTS `trainingpoint_taikhoan`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `trainingpoint_taikhoan` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `password` varchar(128) NOT NULL,
+  `password` varchar(128) COLLATE utf8mb3_unicode_ci NOT NULL,
   `last_login` datetime(6) DEFAULT NULL,
   `is_superuser` tinyint(1) NOT NULL,
-  `username` varchar(150) NOT NULL,
-  `first_name` varchar(150) NOT NULL,
-  `last_name` varchar(150) NOT NULL,
-  `email` varchar(254) NOT NULL,
+  `username` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `first_name` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `last_name` varchar(150) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `email` varchar(254) COLLATE utf8mb3_unicode_ci NOT NULL,
   `is_staff` tinyint(1) NOT NULL,
   `is_active` tinyint(1) NOT NULL,
   `date_joined` datetime(6) NOT NULL,
-  `avatar` varchar(255) DEFAULT NULL,
+  `avatar` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `role` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -842,7 +841,7 @@ CREATE TABLE `trainingpoint_taikhoan` (
 
 LOCK TABLES `trainingpoint_taikhoan` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_taikhoan` DISABLE KEYS */;
-INSERT INTO `trainingpoint_taikhoan` VALUES (1,'pbkdf2_sha256$720000$VFfe6amx1NfjzlIEOk7xg7$Hf6mbQYK9n+niizXjaJYbedZ9GjI7aFEeCdwF+yilv4=','2024-04-28 06:39:38.000000',1,'admin','','','',1,1,'2024-04-13 05:46:08.000000','image/upload/v1714286553/cvu3zlq7fqqyqtio6nlf.png',4),(2,'pbkdf2_sha256$720000$xBLMqmSTPMDSYHGxh3MOoH$5Y4WR5o63skhGwF4/9trjdK779ly59Lj51rxmR0KJ4M=',NULL,0,'tlsv1','Do','Huy','dohuy4546@gmail.com',0,1,'2024-04-28 06:46:28.000000','image/upload/v1714286851/wzqhifaboofej120k4ce.jpg',2),(3,'pbkdf2_sha256$720000$iWPx7uFTJv6E0DZiZoQPTl$Ql/JZryolSbJrxk7KesS2dvaQY+gNLwBLTAzKjKWRuc=',NULL,0,'sv1','Đỗ','Huy','2151050153huy@ou.edu.vn',0,1,'2024-04-30 07:53:11.000000','image/upload/v1714463632/v7fkd1dxh43r7kw2rs0a.png',1),(4,'pbkdf2_sha256$720000$5elMFN6UeeA7MGSFGTnj1Z$D6vboffxDteNVo545AAbjI1P8jdJL8nlKwoGCN/RTYo=',NULL,0,'tlsv2','Vũ','Đang','vungocdang@ou.edu.vn',1,1,'2024-05-02 07:08:03.000000','image/upload/v1714633746/q8ze5d6cm2sxryrapob1.jpg',2);
+INSERT INTO `trainingpoint_taikhoan` VALUES (1,'pbkdf2_sha256$720000$pGza5KeXcumG7aWRf4c2AD$A6JLW9OKwAieE3aF7aH2DEnIYQYaXXYpS2ZHMmZ8N9g=','2024-04-23 07:59:33.921567',1,'admin','','','abc@gmail.com',1,1,'2024-04-23 07:59:17.856150',NULL,NULL),(2,'troli1',NULL,0,'troli1','troli1','','',0,1,'2024-04-23 08:00:25.000000','image/upload/v1713859863/t2bx7vv7kh7xshggtdzw.png',2),(3,'congtac1',NULL,0,'congtac1','congtac1','','',0,1,'2024-04-23 08:11:34.000000','image/upload/v1713860001/qmk1lfy4lcoyoc20q4ds.jpg',3),(4,'sinhvien1','2024-04-23 08:13:26.000000',0,'sinhvien1','sinhvien1','','',0,1,'2024-04-23 08:13:19.000000','image/upload/v1713860168/higjsqhnr8drwmgqlnop.png',1),(5,'pbkdf2_sha256$720000$rX6Ape6TQlXBj3MkRy5Aha$JOgC8PCgwn1bSq5R68CdDhmbhBMRpdRismAk0dg+tsg=',NULL,0,'test','abc','df','',0,1,'2024-04-27 08:33:03.032267',NULL,2),(6,'pbkdf2_sha256$720000$AWa3Ugk6aGzcyeImp7TEW2$ZEKKiJzH5nE0ltknIWPuHJ8QYlNHmkDRMwJ1vr2Mnpc=',NULL,0,'test1','abc','df','',0,1,'2024-04-27 08:33:32.136711',NULL,2),(7,'pbkdf2_sha256$720000$gsRlE9tTXSfnzU14CXu53F$wdC3FfTBABLWADD4LbsZHo/YvAtI8QkKmge3QhGDoWM=',NULL,0,'test123','abc','df','',0,1,'2024-04-27 08:41:12.750998',NULL,2),(8,'pbkdf2_sha256$720000$zgYUihr9HYxSmQIwpGtMjl$MgtTxsKV3wqENMop+ZSLVH0g2G7PMCpZ55LvF7xbo5o=',NULL,0,'test123s','abc','df','',0,1,'2024-04-27 08:42:05.945213',NULL,2);
 /*!40000 ALTER TABLE `trainingpoint_taikhoan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -862,7 +861,7 @@ CREATE TABLE `trainingpoint_taikhoan_groups` (
   KEY `trainingpoint_taikhoan_groups_group_id_ce9e76a9_fk_auth_group_id` (`group_id`),
   CONSTRAINT `trainingpoint_taikho_taikhoan_id_22d55c3d_fk_trainingp` FOREIGN KEY (`taikhoan_id`) REFERENCES `trainingpoint_taikhoan` (`id`),
   CONSTRAINT `trainingpoint_taikhoan_groups_group_id_ce9e76a9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -871,6 +870,7 @@ CREATE TABLE `trainingpoint_taikhoan_groups` (
 
 LOCK TABLES `trainingpoint_taikhoan_groups` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_taikhoan_groups` DISABLE KEYS */;
+INSERT INTO `trainingpoint_taikhoan_groups` VALUES (1,2,1),(2,3,2),(3,4,3);
 /*!40000 ALTER TABLE `trainingpoint_taikhoan_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -890,7 +890,7 @@ CREATE TABLE `trainingpoint_taikhoan_user_permissions` (
   KEY `trainingpoint_taikho_permission_id_6f169ded_fk_auth_perm` (`permission_id`),
   CONSTRAINT `trainingpoint_taikho_permission_id_6f169ded_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `trainingpoint_taikho_taikhoan_id_3ccbe85f_fk_trainingp` FOREIGN KEY (`taikhoan_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -899,6 +899,7 @@ CREATE TABLE `trainingpoint_taikhoan_user_permissions` (
 
 LOCK TABLES `trainingpoint_taikhoan_user_permissions` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_taikhoan_user_permissions` DISABLE KEYS */;
+INSERT INTO `trainingpoint_taikhoan_user_permissions` VALUES (1,2,64);
 /*!40000 ALTER TABLE `trainingpoint_taikhoan_user_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -921,7 +922,7 @@ CREATE TABLE `trainingpoint_thamgia` (
   KEY `trainingpoint_thamgi_sinh_vien_id_2db71d83_fk_trainingp` (`sinh_vien_id`),
   CONSTRAINT `trainingpoint_thamgi_hoat_dong_ngoai_khoa_07fbed16_fk_trainingp` FOREIGN KEY (`hoat_dong_ngoai_khoa_id`) REFERENCES `trainingpoint_hoatdongngoaikhoa` (`id`),
   CONSTRAINT `trainingpoint_thamgi_sinh_vien_id_2db71d83_fk_trainingp` FOREIGN KEY (`sinh_vien_id`) REFERENCES `trainingpoint_sinhvien` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -930,7 +931,6 @@ CREATE TABLE `trainingpoint_thamgia` (
 
 LOCK TABLES `trainingpoint_thamgia` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_thamgia` DISABLE KEYS */;
-INSERT INTO `trainingpoint_thamgia` VALUES (1,2,'2024-04-25 09:05:29.746117','2024-04-26 07:08:18.351946',1,1),(2,2,'2024-04-25 09:05:36.761950','2024-04-26 07:08:58.230799',2,2),(3,0,'2024-04-25 09:05:45.885292','2024-04-25 09:05:45.885292',2,1),(4,0,'2024-04-25 09:05:51.559018','2024-04-25 09:05:51.559018',3,3),(5,0,'2024-04-25 09:05:58.838592','2024-04-25 09:05:58.838592',1,4);
 /*!40000 ALTER TABLE `trainingpoint_thamgia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -953,7 +953,7 @@ CREATE TABLE `trainingpoint_trolysinhvien_khoa` (
   KEY `trainingpoint_trolys_tro_ly_sinh_vien_id_40fe8a1c_fk_trainingp` (`tro_ly_sinh_vien_id`),
   CONSTRAINT `trainingpoint_trolys_khoa_id_6642e7cd_fk_trainingp` FOREIGN KEY (`khoa_id`) REFERENCES `trainingpoint_khoa` (`id`),
   CONSTRAINT `trainingpoint_trolys_tro_ly_sinh_vien_id_40fe8a1c_fk_trainingp` FOREIGN KEY (`tro_ly_sinh_vien_id`) REFERENCES `trainingpoint_taikhoan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -962,7 +962,6 @@ CREATE TABLE `trainingpoint_trolysinhvien_khoa` (
 
 LOCK TABLES `trainingpoint_trolysinhvien_khoa` WRITE;
 /*!40000 ALTER TABLE `trainingpoint_trolysinhvien_khoa` DISABLE KEYS */;
-INSERT INTO `trainingpoint_trolysinhvien_khoa` VALUES (1,'2024-04-28 06:47:36.907671','2024-04-28 06:47:36.907671',1,1,2);
 /*!40000 ALTER TABLE `trainingpoint_trolysinhvien_khoa` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -975,4 +974,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-02 14:46:30
+-- Dump completed on 2024-04-30 14:50:33

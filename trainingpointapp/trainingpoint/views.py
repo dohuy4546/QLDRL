@@ -15,11 +15,12 @@ class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
         if isinstance(self.request.user, AnonymousUser):
             return [permissions.IsAuthenticated()]
         else:
-            if self.request.user == TaiKhoan.RoleChoices.SinhVien:
+            if self.request.user.role == TaiKhoan.RoleChoices.SinhVien:
                 if self.request.user.email == self.get_object().email:
-                    return permissions.IsAuthenticated()
-            elif self.request.user.role in [TaiKhoan.RoleChoices.TroLySinhVien, TaiKhoan.RoleChoices.CVCTSV]:
-                return permissions.IsAuthenticated()
+                    return [permissions.IsAuthenticated()]
+            elif (self.request.user.role == TaiKhoan.RoleChoices.TroLySinhVien or
+                  self.request.user.role == TaiKhoan.RoleChoices.CVCTSV):
+                return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         queryset = self.queryset

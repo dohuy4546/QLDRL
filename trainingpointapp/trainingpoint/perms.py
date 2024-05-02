@@ -7,8 +7,13 @@ class CommentOwner(permissions.IsAuthenticated):
         return super().has_permission(request, view) and request.user == comment.tai_khoan
 
 
+class SinhVienOwner(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, sinhvien):
+        return super().has_permission(request, view) and request.user.email == sinhvien.email
+
+
 class TuongTacHoatDong(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, hoatdong):
         return (super().has_permission(request, view) and
                 ((request.TaiKhoan.role == TaiKhoan.RoleChoices.TroLySinhVien) or
-                (request.TaiKhoan.role == TaiKhoan.RoleChoices.CVCTSV)))
+                 (request.TaiKhoan.role == TaiKhoan.RoleChoices.CVCTSV)))

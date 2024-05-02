@@ -1,4 +1,3 @@
-from pexpect import searcher_re
 from trainingpoint.models import *
 from rest_framework import serializers
 
@@ -53,10 +52,16 @@ class HockyNamhocSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TaiKhoanSerializer(ItemSerializer):
+class TaiKhoanSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['avatar'] = instance.avatar.url
+
+        return rep
+
     class Meta:
         model = TaiKhoan
-        fields = '__all__'
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'avatar', 'role', 'is_staff']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -67,7 +72,7 @@ class TaiKhoanSerializer(ItemSerializer):
         data = validated_data.copy()
 
         taikhoan = TaiKhoan(**data)
-        taikhoan.set_password(data["password"])
+        taikhoan.set_password(data['password'])
         taikhoan.save()
 
         return taikhoan
@@ -138,6 +143,7 @@ class MinhChungSerializer(serializers.ModelSerializer):
         rep['anh_minh_chung'] = instance.anh_minh_chung.url
 
         return rep
+
     class Meta:
         model = MinhChung
         fields = '__all__'

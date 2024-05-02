@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.hashers import make_password
 from django.utils.html import mark_safe
 from trainingpoint.models import *
 from django import forms

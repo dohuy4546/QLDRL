@@ -4,13 +4,22 @@ from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Q
 
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = SinhVien.objects.filter(active=True)
     serializer_class = serializers.SinhVienSerializer
     pagination_class = paginators.SinhVienPaginator
+
+    def get_permissions(self):
+        if isinstance(self.request.user, AnonymousUser):
+            return [permissions.IsAuthenticated()]
+        else:
+            if self.request.user == TaiKhoan.RoleChoices.SinhVien:
+                if self.request.user.email == self.get_object().email:
+                    return permissions.IsAuthenticated()
+            elif self.request.user.role in [TaiKhoan.RoleChoices.TroLySinhVien, TaiKhoan.RoleChoices.CVCTSV]:
+                return permissions.IsAuthenticated()
 
     def get_queryset(self):
         queryset = self.queryset
@@ -101,6 +110,17 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
     queryset = Dieu.objects.filter(active=True)
     serializer_class = serializers.DieuSerializer
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if isinstance(self.request.user, AnonymousUser):
+                return [permissions.IsAuthenticated()]
+            else:
+                if (self.request.user.is_authenticated and
+                        (self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
+                                                    TaiKhoan.RoleChoices.TroLySinhVien])):
+                    return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
     def get_queryset(self):
         queryset = self.queryset
         if self.action == 'list':
@@ -151,13 +171,15 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             return queryset
 
     def get_permissions(self):
+        if self.action in ['get_thamgias']:
+            return [permissions.IsAuthenticated()]
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             if isinstance(self.request.user, AnonymousUser):
                 return [permissions.IsAuthenticated()]
             else:
-                if (self.request.user.is_authenticated and \
+                if (self.request.user.is_authenticated and
                         (self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV,
-                                                        TaiKhoan.RoleChoices.TroLySinhVien])):
+                                                    TaiKhoan.RoleChoices.TroLySinhVien])):
                     return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
@@ -220,29 +242,41 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
 
         return [permissions.AllowAny()]
 
-    @action(methods=['get'], url_path="comments", detail=True)
-    def get_comment(self, request, pk):
-        comments = self.get_object().comment_set.select_related('tai_khoan').all()
-        return Response(serializers.CommentSerializer(comments, many=True).data,
-                        status=status.HTTP_200_OK)
+    #
+    # @action(methods=['post'], url_path='comments', detail=True)
+    # def add_comment(self, request, pk):
+    #     print("add")
+    #     c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
+    #                                , content=request.data.get('content'))
+    #
+    #     return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['post'], url_path='comments', detail=True)
-    def add_comment(self, request, pk):
-        c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
-                                   , content=request.data.get('content'))
+    @action(methods=['get', 'post'], url_path="comments", detail=True)
+    def get_add_comment(self, request, pk):
+        if request.method == 'GET':
+            print("get")
+            comments = self.get_object().comment_set.select_related('tai_khoan').all()
+            return Response(serializers.CommentSerializer(comments, many=True).data,
+                            status=status.HTTP_200_OK)
+        elif request.method == 'POST':
+            print("add")
+            c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
+                                       , content=request.data.get('content'))
 
-        return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], url_path='likes', detail=True)
     def like(self, request, pk):
         li, created = Like.objects.get_or_create(bai_viet=self.get_object(),
-                                                tai_khoan=request.user)
+                                                 tai_khoan=request.user)
 
         if not created:
             li.active = not li.active
             li.save()
 
-        return Response(serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data,
+            status=status.HTTP_201_CREATED)
 
 
 class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
@@ -280,19 +314,20 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
         user = request.user
         if request.method.__eq__("PATCH"):
             for k, v in request.data.items():
-                setattr(user, k, v) #user.k = v (user.name = v)
+                setattr(user, k, v)  # user.k = v (user.name = v)
             user.save()
 
         return Response(serializers.TaiKhoanSerializer(user).data)
 
 
-class CommentViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = [perms.CommentOwner, ]
 
 
-class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.DestroyAPIView,
+                          generics.UpdateAPIView):
     queryset = DiemRenLuyen.objects.all()
     serializer_class = serializers.DiemRenLuyenSerializer
 

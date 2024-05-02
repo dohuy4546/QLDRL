@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "trainingpointmobileapp",
+    "slug": "trainingpointmobileapp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "trainingpointmobileapp"
+}

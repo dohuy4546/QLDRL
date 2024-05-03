@@ -12,6 +12,8 @@ class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     pagination_class = paginators.SinhVienPaginator
 
     def get_permissions(self):
+        if self.action == "sinhvien_is_valid":
+            return [permissions.AllowAny()];
         if isinstance(self.request.user, AnonymousUser):
             return [permissions.IsAuthenticated()]
         else:
@@ -32,6 +34,15 @@ class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
             if mssv:
                 queryset = queryset.filter(mssv=mssv)
         return queryset
+
+    @action(methods=['get'], url_path='is_valid', detail=False)
+    def sinhvien_is_valid(self, request):
+        email = self.request.query_params.get('email')
+        if email:
+            sinhvien = SinhVien.objects.filter(email=email)
+            if sinhvien:
+                return Response(data={'is_valid': True}, status=status.HTTP_200_OK)
+        return Response(data={'is_valid': False}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LopViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -344,6 +355,15 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
             user.save()
 
         return Response(serializers.TaiKhoanSerializer(user).data)
+
+    @action(methods=['get'], url_path='is_valid', detail=False)
+    def taikhoan_is_valid(self, request):
+        email = self.request.query_params.get('email')
+        if email:
+            taikhoan = TaiKhoan.objects.filter(email=email)
+            if taikhoan:
+                return Response(data={'is_valid': True}, status=status.HTTP_200_OK)
+        return Response(data={'is_valid': False}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyAPIView, generics.UpdateAPIView):

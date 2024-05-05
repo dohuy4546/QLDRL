@@ -363,7 +363,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
             taikhoan = TaiKhoan.objects.filter(email=email)
             if taikhoan:
                 return Response(data={'is_valid': True}, status=status.HTTP_200_OK)
-        return Response(data={'is_valid': False}, status=status.HTTP_404_NOT_FOUND)
+        return Response(data={'is_valid': False}, status=status.HTTP_200_OK)
 
 
 class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
@@ -471,3 +471,5 @@ class MinhChungViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Up
                 queryset = queryset.filter(tham_gia__in=thamgias)
 
             return queryset
+
+

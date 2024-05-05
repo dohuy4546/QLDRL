@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-bv8-hjp%a06$o6%k7c5hnmp%6=f5pboqwqjm@jcpx)6u1s^37j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.3.154', '192.168.3.107', '*']
 
 import cloudinary
 
@@ -149,6 +149,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CLIENT_ID = '4eba8S2TpUPaiIhyFmeNtcLzvQfv9pbaorXZUVd1'
 #CLIENT_SECRET = 'EvdmZJmwEQ7eFAcBR4RqQFugf6qNcqts1KjR093sxN9Y0vNJy4w8k5eacqqBeKHrFmNtioznWo1OOCTCXZOHXE6rG0ylyIh5yVBUoKHuC4f4fNuyWqqP8zI4G0pr2lwu'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'dohuy4547@gmail.com'  # Thay bằng email của bạn
+EMAIL_HOST_PASSWORD = 'fmhu gltf mnrn vwrs'  # Thay bằng mật khẩu của bạn
+
 
 CLIENT_ID = 'OExYmZeWgGVkOh9VNlZ0EhJHH0xU4nvvPHnRQmuW'
 CLIENT_SECRET = 'aTb4HYnfulQ38Mz1ZS0ZfbjJWq5pfAjB2NPWeqltioGDbdTVLgT1eWF2f4NDUwKWmQwyAXlkX1K854qcBrOC9zoAa8Vfsxxhmus6rZNqj0LtpOGhvOAnx11dwXQESj8R'

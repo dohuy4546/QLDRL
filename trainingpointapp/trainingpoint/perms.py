@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import permissions
 from trainingpoint.models import TaiKhoan
 
@@ -15,5 +16,10 @@ class SinhVienOwner(permissions.IsAuthenticated):
 class TuongTacHoatDong(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, hoatdong):
         return (super().has_permission(request, view) and
-                ((request.TaiKhoan.role == TaiKhoan.RoleChoices.TroLySinhVien) or
-                 (request.TaiKhoan.role == TaiKhoan.RoleChoices.CVCTSV)))
+                ((request.user.role == TaiKhoan.RoleChoices.TroLySinhVien) or
+                 (request.user.role == TaiKhoan.RoleChoices.CVCTSV)))
+
+
+class TaoTroLy(permissions.IsAuthenticated):
+    def has_permission(self, request, view):
+        return request.user and (request.user.is_superuser or request.user.role == TaiKhoan.RoleChoices.CVCTSV)

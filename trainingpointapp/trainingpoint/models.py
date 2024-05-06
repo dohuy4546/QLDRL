@@ -6,7 +6,7 @@ from cloudinary.models import CloudinaryField
 
 # Create your models here.
 class TaiKhoan(AbstractUser):
-    avatar = CloudinaryField(null=True)
+    avatar = CloudinaryField('avatar', null=True)
 
     class RoleChoices(models.IntegerChoices):
         SinhVien = 1, 'Sinh Viên'
@@ -19,11 +19,15 @@ class TaiKhoan(AbstractUser):
     def __str__(self):
         return self.username
 
-    def save(self):
-        user = super(TaiKhoan, self)
-        user.set_password(self.password)
-        user.save()
-        return user
+    def save(self, *args, **kwargs):
+        # Call the parent class's save method
+        super().save(*args, **kwargs)
+
+        # Set password using set_password method
+        self.set_password(self.password)
+
+        # Save the user
+        super().save(*args, **kwargs)
 
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)

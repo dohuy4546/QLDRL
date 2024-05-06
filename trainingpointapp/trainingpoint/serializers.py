@@ -55,13 +55,13 @@ class HockyNamhocSerializer(serializers.ModelSerializer):
 class TaiKhoanSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
+        print(instance)
+        print(rep)
         rep['avatar'] = instance.avatar.url
-
         return rep
-
     class Meta:
         model = TaiKhoan
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'avatar', 'role', 'is_staff']
+        fields = ['id', 'email', 'username', 'password', 'avatar', 'role']
         extra_kwargs = {
             'password': {
                 'write_only': True

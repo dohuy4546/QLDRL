@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://192.168.1.87:8000/';
+const BASE_URL = 'http://192.168.3.154:8000/';
 
 
 export const endpoints = {
@@ -19,6 +19,7 @@ export const endpoints = {
     'lop': '/lops/',
     'sinh_vien': '/sinhviens/',
     'send_mail': '/send_mail/',
+    'khoa': '/khoas/',
 }
 
 export default axios.create({

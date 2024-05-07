@@ -353,11 +353,14 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
     parser_classes = [parsers.MultiPartParser, ]
 
     def get_permissions(self):
+        if self.action in ['taikhoan_is_valid']:
+            return [permissions.AllowAny()]
         if self.action in ['get_current_user']:
             return [permissions.IsAuthenticated()]
         elif self.action == "create":
             if isinstance(self.request.user, AnonymousUser):
                 if self.request.data and (self.request.data.get('role') == str(TaiKhoan.RoleChoices.SinhVien)):
+                    print("hello")
                     return [permissions.AllowAny()]
                 else:
                     return [permissions.IsAuthenticated()]
@@ -386,10 +389,18 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
     @action(methods=['get'], url_path='is_valid', detail=False)
     def taikhoan_is_valid(self, request):
         email = self.request.query_params.get('email')
+        username = self.request.query_params.get('username')
+
         if email:
             taikhoan = TaiKhoan.objects.filter(email=email)
-            if taikhoan:
-                return Response(data={'is_valid': True}, status=status.HTTP_200_OK)
+            if taikhoan.exists():
+                return Response(data={'is_valid': True, 'message': 'Email đã tồn tại'}, status=status.HTTP_200_OK)
+
+        if username:
+            taikhoan = TaiKhoan.objects.filter(username=username)
+            if taikhoan.exists():
+                return Response(data={'is_valid': True, 'message': 'Username đã tồn tại'}, status=status.HTTP_200_OK)
+
         return Response(data={'is_valid': False}, status=status.HTTP_200_OK)
 
 

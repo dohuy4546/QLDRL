@@ -5,7 +5,7 @@ import React from "react";
 import Styles from "./Styles";
 import * as ImagePicker from 'expo-image-picker';
 import APIs, { endpoints } from "../../configs/APIs";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ThemTroLySinhVien = () => {
     const [selectedKhoa, setSelectedKhoa] = React.useState();
     const [avatar, setAvatar] = React.useState(null);
@@ -33,7 +33,27 @@ const ThemTroLySinhVien = () => {
         }
     };
 
+    const getAccessToken = async () => {
+        try {
+            const accessToken = await AsyncStorage.getItem('access-token');
+            if (accessToken !== null) {
+                // Mục đã được tìm thấy trong AsyncStorage
+                console.log('Access token:', accessToken);
+                return accessToken;
+            } else {
+                // Mục không tồn tại trong AsyncStorage
+                console.log('Access token not found');
+                return null;
+            }
+        } catch (error) {
+            // Xử lý lỗi nếu có
+            console.error('Error getting access token:', error);
+            return null;
+        }
+    };
+
     React.useEffect(() => {
+        getAccessToken();
         getKhoas();
     }, []);
 
@@ -87,7 +107,7 @@ const ThemTroLySinhVien = () => {
                             setSelectedKhoa(itemValue)
                         }>
                         {khoa.map(k => (
-                            <Picker.Item label={k.ten_khoa} value={k.id} />
+                            <Picker.Item label={k.ten_khoa} value={k.id} key={k.id} />
                         ))}
                     </Picker>
                 </View>

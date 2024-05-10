@@ -130,6 +130,7 @@ const DangKy = ({ route, navigation }) => {
                 });
                 console.log(response.data);
                 Alert.alert('Tạo tài khoản thành công!');
+                navigation.replace("DangNhap");
             } catch (ex) {
                 setLoading(false);
                 ToastAndroid.show(ex.message, ToastAndroid.LONG);
@@ -139,6 +140,10 @@ const DangKy = ({ route, navigation }) => {
             }
         }
     };
+
+    const login = () => {
+        navigation.replace("DangNhap");
+    }
 
     // Kiểm tra sự thay đổi params của route dùng để check otp có nhập thành công hay không
     React.useEffect(() => {
@@ -192,8 +197,9 @@ const DangKy = ({ route, navigation }) => {
                     style={Styles.margin_bottom_20}
                 />
                 {loading === true ? <ActivityIndicator /> : <>
-                    <PaperButton mode="elevated" onPress={validateDangKy}>Đăng ký</PaperButton>
+                    <PaperButton mode="contained" style={Styles.margin_bottom_20} onPress={validateDangKy}>Đăng ký</PaperButton>
                 </>}
+                <PaperButton mode="elevated" style={Styles.margin_bottom_20} onPress={login}>Đã có tài khoản? Đăng nhập</PaperButton>
             </View>
         </ScrollView>
     );

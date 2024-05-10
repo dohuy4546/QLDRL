@@ -102,7 +102,7 @@ class HocKy_NamHoc(models.Model):
     nam_hoc = models.CharField(max_length=9)
 
     def __str__(self):
-        return self.hoc_ky and self.nam_hoc
+        return f"{self.hoc_ky} - {self.nam_hoc}"
 
 
 class HoatDongNgoaiKhoa(BaseModel):
@@ -154,7 +154,7 @@ class BaiViet(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField(null=True)
     image = CloudinaryField()
-    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE)
+    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE, limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
     hoat_dong_ngoai_khoa = models.ForeignKey(HoatDongNgoaiKhoa, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True, related_name='baiviets')
 

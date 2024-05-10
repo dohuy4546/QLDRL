@@ -235,7 +235,7 @@ class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
         return [permissions.AllowAny()]
 
 
-class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
     queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
     serializer_class = serializers.BaivietTagSerializer
 
@@ -298,6 +298,14 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
                                        , content=request.data.get('content'))
 
             return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], url_path='tac_gia', detail=True)
+    def getTacGia(self, request, pk):
+        baiviet = self.get_object()
+        print(baiviet.id)
+        tacgia = TaiKhoan.objects.get(id=baiviet.id)
+        return Response(serializers.TaiKhoanSerializer(tacgia).data,
+                        status=status.HTTP_200_OK)
 
     @action(methods=['post'], url_path='likes', detail=True)
     def like(self, request, pk):

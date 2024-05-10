@@ -99,7 +99,7 @@ class TagSerializer(serializers.ModelSerializer):
 class BaiVietSerializer(ItemSerializer):
     class Meta:
         model = BaiViet
-        fields = ['title', 'image', 'created_date', 'updated_date']
+        fields = ['id', 'title', 'image', 'created_date', 'updated_date', 'tro_ly']
 
 
 class BaivietTagSerializer(BaiVietSerializer):

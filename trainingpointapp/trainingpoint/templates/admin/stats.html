@@ -1,0 +1,91 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<h1>Thống kê điểm rèn luyện</h1>
+<div >
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+    <label for="malop">Chọn lớp: </label>
+        {% csrf_token %}
+        <select id="malop" name="malop">
+            {% for l in lops %}
+            <option value={{l.ma_lop}}>{{l.ma_lop}}</option>
+            {% endfor %}
+        </select>
+        <select id="hocky" name="hocky">
+            {% for hk in hockynamhocs %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+
+        <select id="namhoc" name="namhoc">
+            {% for nh in hockynamhocs %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Tìm">
+    </form>
+<div id="statspdf">
+    {% if statsDiemrenluyen %}
+        {% for s in statsDiemrenluyen %}
+        <h1 style="color: blue">Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }} , Điểm rèn luyện: {{s.diem_tong}}</h1>
+        {% for stg in statsThamgia %}
+            {% if stg.sinh_vien.mssv == s.sinh_vien.mssv %}
+            <h2 style="color: blue">{{stg.hoat_dong_ngoai_khoa.dieu.ten_dieu}} - {{stg.hoat_dong_ngoai_khoa.diem_ren_luyen}}đ</h2>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    {% endif %}
+</div>
+    <div style="width: 50%;">
+         <canvas id="myChart"></canvas>
+    </div>
+</div>
+<div>
+    <button onclick="exportToPDF()">Xuất PDF</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script>
+
+    function exportToPDF() {
+    console.info(statspdf)
+    var config = {
+        filename: 'stats.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    }
+    html2pdf().set(config).from(statspdf).save();
+
+}
+
+    window.onload = function() {
+          const ctx = document.getElementById('myChart');
+            let labels = [];
+            let data = [];
+            {% if statsThanhTich%}
+                {% for s in statsThanhTich %}
+                labels.push('{{ s.thanh_tich }}')
+                data.push({{ s.count }})
+                {% endfor %}
+            {% endif %}
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: '# Số lượng',
+                data: data,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+    }
+</script>
+{% endblock %}

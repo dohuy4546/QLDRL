@@ -16,7 +16,7 @@ export default StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start !important',
         marginBottom: 10,
         width: '100%',
         maxWidth: "100%",
@@ -28,8 +28,8 @@ export default StyleSheet.create({
         maxWidth: "100%",
     },
     avatar: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         borderRadius: 25,
         marginRight: 10,
     },

@@ -9,14 +9,15 @@ import OTP from '../TaiKhoan/OTP';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import MyContext from '../../configs/MyContext';
+import ChiTietHoatDong from '../HoatDong/ChiTietHoatDong';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => (
-    <Stack.Navigator initialRouteName="OTP">
-        <Stack.Screen name="OTP" component={OTP} />
-        {/* Thêm các màn hình khác nếu cần */}
+    <Stack.Navigator initialRouteName="OTP" screenOptions={{ unmountOnBlur: true }} >
+        <Stack.Screen name="ChiTietHoatDong" component={ChiTietHoatDong} options={{ headerShown: false }} />
+        <Stack.Screen name="OTP" component={OTP} options={{ headerShown: false }} />
     </Stack.Navigator>
 );
 
@@ -108,6 +109,16 @@ const Main = ({ navigation }) => {
                         return <Icon name="cog" size={size} color={color} />;
                     },
                 }}
+                listeners={({ navigation }) => ({
+                    tabPress: (event) => {
+                        event.preventDefault();
+                        navigation.navigate("Main", {
+                            screen: "Stack", params: {
+                                screen: 'OTP'
+                            }
+                        });
+                    }
+                })}
             />
         </Tab.Navigator>
     )

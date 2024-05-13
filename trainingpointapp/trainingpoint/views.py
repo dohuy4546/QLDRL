@@ -5,7 +5,6 @@ from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
 
-
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = SinhVien.objects.filter(active=True)
     serializer_class = serializers.SinhVienSerializer
@@ -171,7 +170,7 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
 
 class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView,
                                generics.DestroyAPIView):
-    queryset = HoatDongNgoaiKhoa.objects.filter(active=True)
+    queryset = HoatDongNgoaiKhoa.objects.all()
     serializer_class = serializers.HoatDongNgoaiKhoaSerializer
 
     def get_queryset(self):
@@ -180,14 +179,14 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             q = self.request.query_params.get('ten_hoat_dong')
             if q:
                 queryset = queryset.filter(ten_hoat_dong__icontains=q)
-            ma_hoat_dong = self.request.query_params.get('ma_hoat_dong')
-            if ma_hoat_dong:
-                queryset = queryset.filter(ma_hoat_dong=ma_hoat_dong)
+            id = self.request.query_params.get('id')
+            if id:
+                queryset = queryset.filter(id=id)
 
             return queryset
 
     def get_permissions(self):
-        if self.action in ['get_thamgias']:
+        if self.action in ['get_thamgias', 'getCurrentThamGia']:
             return [permissions.IsAuthenticated()]
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             if isinstance(self.request.user, AnonymousUser):
@@ -201,12 +200,38 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
                     raise exceptions.PermissionDenied()
         return [permissions.AllowAny()]
 
-    @action(methods=['get'], url_path='thamgias', detail=True)
+    @action(methods=['get', 'post'], url_path='thamgias', detail=True)
     def get_thamgias(self, request, pk):
-        hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
-        thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoatdong)
-        return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,
-                        status=status.HTTP_200_OK)
+        if request.method == 'GET':
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoatdong)
+            return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,
+                            status=status.HTTP_200_OK)
+        elif request.method == 'POST':
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            if hoatdong.active != True:
+                raise exceptions.PermissionDenied()
+            else:
+                sinhvien = SinhVien.objects.get(email=request.user.email)
+                if sinhvien:
+                    thamgias, created = ThamGia.objects.get_or_create(hoat_dong_ngoai_khoa = hoatdong, sinh_vien = sinhvien)
+                    if created:
+                        return Response(data={'created': True},
+                                        status=status.HTTP_201_CREATED)
+                    else:
+                        thamgias.delete()
+                    return Response(data={'deleted': True}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='current_thamgia', detail=True)
+    def getCurrentThamGia(self, request, pk):
+        try:
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            sinhvien = SinhVien.objects.get(email=request.user.email)
+            thamgia = ThamGia.objects.get(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
+            return Response(serializers.ThamGiaSerializer(thamgia).data, status=status.HTTP_200_OK)
+        except ThamGia.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         # dieu = Dieu.objects.prefetch_related('hoatdongngoaikhoa_set').get(id=pk)
         # hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
         # q = self.request.query_params.get('ten_hoat_dong')
@@ -235,7 +260,8 @@ class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
         return [permissions.AllowAny()]
 
 
-class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
+class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,
+                     generics.RetrieveAPIView):
     queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
     serializer_class = serializers.BaivietTagSerializer
 
@@ -320,6 +346,12 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
             serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data,
             status=status.HTTP_201_CREATED)
 
+    @action(methods=['get'], url_path='hoatdong', detail=True)
+    def getHoatDong(self, request, pk):
+        baiviet = self.get_object()
+        return Response(serializers.HoatDongNgoaiKhoaSerializer(baiviet.hoat_dong_ngoai_khoa).data,
+                        status=status.HTTP_200_OK)
+
 
 class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Tag.objects.all()
@@ -377,7 +409,8 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
                     return [permissions.IsAuthenticated()]
                 else:
                     raise exceptions.PermissionDenied()
-            elif self.request.data and self.request.data.get('role') in [str(TaiKhoan.RoleChoices.CVCTSV), str(TaiKhoan.RoleChoices.ADMIN)]:
+            elif self.request.data and self.request.data.get('role') in [str(TaiKhoan.RoleChoices.CVCTSV),
+                                                                         str(TaiKhoan.RoleChoices.ADMIN)]:
                 if self.request.user.role == TaiKhoan.RoleChoices.ADMIN.value:
                     return [permissions.IsAuthenticated()]
                 else:
@@ -416,6 +449,12 @@ class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyA
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = [perms.CommentOwner, ]
+
+    @action(methods=['get'], url_path='taikhoan', detail=True)
+    def getCommentTaiKhoan(self, request, pk):
+        comment = self.get_object()
+        taikhoan = TaiKhoan.objects.get(id=comment.tai_khoan.id)
+        return Response(serializers.TaiKhoanSerializer(taikhoan).data)
 
 
 class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.DestroyAPIView,

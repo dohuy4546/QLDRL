@@ -129,7 +129,7 @@ class ThamGia(models.Model):
         DiemDanh = 1, 'Điểm danh'
         BaoThieu = 2, 'Báo thiếu'
 
-    state = models.IntegerField(choices=StateChoices, null=True)
+    state = models.IntegerField(choices=StateChoices, default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

@@ -17,6 +17,7 @@ r.register('comments', views.CommentViewset, basename="comments")
 r.register('thamgias', views.ThamGiaViewSet, basename='thamgias')
 r.register('minhchungs', views.MinhChungViewSet, basename='minhchungs')
 r.register('diemrenluyens', views.DiemRenLuyenViewset, basename='diemrenluyens')
+r.register('hocky_namhoc', views.HocKyNamHocViewset, basename='hocky_namhoc')
 r.register('send_mail', send_mail.SendEmailViewSet, basename='send_mail')
 urlpatterns = [
     path('', include(r.urls))

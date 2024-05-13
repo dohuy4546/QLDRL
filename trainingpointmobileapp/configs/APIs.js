@@ -23,7 +23,15 @@ export const endpoints = {
     'send_mail': '/send_mail/',
     'khoa': '/khoas/',
     'bai_viet': '/baiviets/',
-    'tac_gia': (bai_viet_id) => `/baiviets/${bai_viet_id}/tac_gia/`
+    'bai_viet_hoat_dong': (bai_viet_id) => `/baiviets/${bai_viet_id}/hoatdong/`,
+    'tac_gia': (bai_viet_id) => `/baiviets/${bai_viet_id}/tac_gia/`,
+    'comments': (bai_viet_id) => `/baiviets/${bai_viet_id}/comments/`,
+    'commentUser': (comment_id) => `/comments/${comment_id}/taikhoan/`,
+    'liked': (bai_viet_id) => `/baiviets/${bai_viet_id}/likes/`,
+    'current_thamgia': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/current_thamgia/`,
+    'tham_gia_hoat_dong': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/thamgias/`,
+    'hoat_dong': '/hoatdongs/',
+    'hocky_namhoc': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`
 }
 
 export const authAPI = (accessToken) => axios.create({

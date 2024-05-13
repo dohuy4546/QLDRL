@@ -35,7 +35,7 @@ const BanTin = ({ route, navigation }) => {
                         {baiViets.map(b => {
                             return (
                                 <BaiViet
-                                    key={b.id}
+                                    key={`baiViet${b.id}`}
                                     baiviet={b}
                                 />
                             );

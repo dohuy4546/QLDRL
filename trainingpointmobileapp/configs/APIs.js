@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = 'http://192.168.3.154:8000/';
+// const BASE_URL = 'http://192.168.3.154:8000/';
+const BASE_URL = 'http://192.168.1.3:8000/';
 
 
 export const endpoints = {
@@ -31,13 +32,14 @@ export const endpoints = {
     'current_thamgia': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/current_thamgia/`,
     'tham_gia_hoat_dong': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/thamgias/`,
     'hoat_dong': '/hoatdongs/',
-    'hocky_namhoc': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`
+    'hocky_namhoc': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`,
+    'tham_gia' : '/thamgias/'
 }
 
 export const authAPI = (accessToken) => axios.create({
     baseURL: BASE_URL,
     headers: {
-        Authorization: `Bearer ${accessToken ? accessToken : AsyncStorage.getItem("acess-token")}`
+        Authorization: `Bearer ${accessToken ? accessToken : AsyncStorage.getItem("access-token")}`
     }
 })
 

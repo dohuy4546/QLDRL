@@ -5,6 +5,9 @@ from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
 
+from trainingpoint.serializers import HoatDongNgoaiKhoaSerializer
+
+
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = SinhVien.objects.filter(active=True)
     serializer_class = serializers.SinhVienSerializer
@@ -168,8 +171,7 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
                         status=status.HTTP_200_OK)
 
 
-class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView,
-                               generics.DestroyAPIView):
+class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,):
     queryset = HoatDongNgoaiKhoa.objects.all()
     serializer_class = serializers.HoatDongNgoaiKhoaSerializer
 
@@ -183,7 +185,15 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             if id:
                 queryset = queryset.filter(id=id)
 
-            return queryset
+            hoc_ky = self.request.query_params.get("hoc_ky")
+            if hoc_ky:
+                queryset = queryset.filter(hk_nh__hoc_ky=hoc_ky)
+
+            nam_hoc = self.request.query_params.get("nam_hoc")
+            if nam_hoc:
+                queryset = queryset.filter(hk_nh__nam_hoc=nam_hoc)
+
+        return queryset
 
     def get_permissions(self):
         if self.action in ['get_thamgias', 'getCurrentThamGia']:
@@ -241,23 +251,9 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         #                 status=status.HTTP_200_OK)
 
 
-class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
+class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView):
     queryset = HocKy_NamHoc.objects.all()
     serializer_class = serializers.HockyNamhocSerializer
-
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            if isinstance(self.request.user, AnonymousUser):
-                return [permissions.IsAuthenticated()]
-            else:
-                if (self.request.user.is_authenticated and
-                        self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV.value,
-                                                   TaiKhoan.RoleChoices.ADMIN.value]):
-                    return [permissions.IsAuthenticated()]
-                else:
-                    raise exceptions.PermissionDenied()
-
-        return [permissions.AllowAny()]
 
 
 class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,
@@ -505,7 +501,7 @@ class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics
         return queries
 
 
-class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):
+class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,):
     queryset = ThamGia.objects.all()
     serializer_class = serializers.ThamGiaSerializer
 
@@ -527,7 +523,7 @@ class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):
                 sinhvien = SinhVien.objects.get(mssv=mssv)
                 queryset = queryset.filter(sinh_vien=sinhvien)
 
-            return queryset
+        return queryset
 
     @action(methods=['get'], url_path='minhchungs', detail=True)
     def get_thamgias(self, request, pk):

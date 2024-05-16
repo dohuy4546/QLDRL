@@ -29,6 +29,7 @@ class TaiKhoan(AbstractUser):
         # Save the user
         super().save(*args, **kwargs)
 
+
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -76,6 +77,7 @@ class SinhVien(BaseModel):
     gioi_tinh = models.IntegerField(choices=GioiTinhChoices)
     dia_chi = models.TextField()
     lop = models.ForeignKey(Lop, on_delete=models.CASCADE)
+    tai_khoan = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.ho_ten

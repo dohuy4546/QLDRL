@@ -13,6 +13,8 @@ import { authAPI, endpoints } from './configs/APIs';
 import Logout from './components/TaiKhoan/DangXuat';
 import BaiViet from './components/BanTin/BaiViet';
 import DangXuat from './components/TaiKhoan/DangXuat';
+import QuanLyHoatDong from './components/HoatDong/QuanLyHoatDong';
+import ChiTietHoatDong from './components/HoatDong/ChiTietHoatDong';
 
 
 
@@ -62,6 +64,8 @@ export default function App({ navigation }) {
           <Stack.Screen name="DangKy" component={DangKy} />
           <Stack.Screen name="OTP" component={OTP} />
           <Stack.Screen name="ThemTaiKhoanTroLy" component={ThemTroLySinhVien} />
+
+          
         </Stack.Navigator>
       </NavigationContainer>
     </MyContext.Provider>

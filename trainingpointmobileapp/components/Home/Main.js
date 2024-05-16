@@ -10,6 +10,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import MyContext from '../../configs/MyContext';
 import ChiTietHoatDong from '../HoatDong/ChiTietHoatDong';
+import QuanLyHoatDong from '../HoatDong/QuanLyHoatDong';
+import BaoThieuHoatDong from '../HoatDong/BaoThieuHoatDong';
+import TaiKhoan from '../TaiKhoan/TaiKhoan';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -18,6 +21,13 @@ const StackNavigator = () => (
     <Stack.Navigator initialRouteName="OTP" screenOptions={{ unmountOnBlur: true }} >
         <Stack.Screen name="ChiTietHoatDong" component={ChiTietHoatDong} options={{ headerShown: false }} />
         <Stack.Screen name="OTP" component={OTP} options={{ headerShown: false }} />
+    </Stack.Navigator>
+);
+
+const HoatDongStackNavigator = () => (
+    <Stack.Navigator >
+        <Stack.Screen name="QuanLiHoatDong" component={QuanLyHoatDong} options={{ headerShown: false }}/>
+        <Stack.Screen name="ChiTietHoatDong" title="Chi tiết hoạt động" component={ChiTietHoatDong} options={{ title: "", headerTransparent:true}}/>
     </Stack.Navigator>
 );
 
@@ -80,16 +90,38 @@ const Main = ({ navigation }) => {
                     },
                 }}
             />
-            {role == 1 && <Tab.Screen
-                name="OTP"
-                component={OTP}
+            <Tab.Screen
+                name="QuanLyHoatDong"
+                component={HoatDongStackNavigator}
                 options={{
-                    tabBarLabel: 'OTP',
+                    tabBarLabel: 'Hoạt động',
                     tabBarIcon: ({ color, size }) => {
-                        return <Icon name="home" size={size} color={color} />;
+                        return <Icon name="calendar" size={size} color={color} />;
                     },
                 }}
-            />}
+            />
+            
+            {role == 1 && <>
+                <Tab.Screen
+                    name="OTP"
+                    component={OTP}
+                    options={{
+                        tabBarLabel: 'OTP',
+                        tabBarIcon: ({ color, size }) => {
+                            return <Icon name="home" size={size} color={color} />;
+                        },
+                    }} />
+                    <Tab.Screen
+                    name="BaoThieuHoatDong"
+                    component={BaoThieuHoatDong}
+                    options={{
+                        tabBarLabel: 'Báo thiếu',
+                        tabBarIcon: ({ color, size }) => {
+                            return <Icon name="calendar-alert" size={size} color={color} />;
+                        },
+                    }} />
+                </>
+            }
             {role == 2 && <Tab.Screen
                 name="ThemTroLySinhVien"
                 component={ThemTroLySinhVien}
@@ -120,6 +152,15 @@ const Main = ({ navigation }) => {
                     }
                 })}
             />
+            <Tab.Screen
+                    name="TaiKhoan"
+                    component={TaiKhoan}
+                    options={{
+                        tabBarLabel: 'Thông tin',
+                        tabBarIcon: ({ color, size }) => {
+                            return <Icon name="account-circle" size={size} color={color} />;
+                        },
+                    }} />
         </Tab.Navigator>
     )
 }

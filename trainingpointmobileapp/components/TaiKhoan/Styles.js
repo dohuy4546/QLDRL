@@ -5,6 +5,9 @@ export default StyleSheet.create({
         flex: 1,
         marginTop: 20,
         padding: 20
+    }, title: {
+        fontSize: 50,
+        fontWeight: "bold",
     }, subject: {
         fontSize: 30,
         fontWeight: "bold",
@@ -17,7 +20,7 @@ export default StyleSheet.create({
     }, avatar: {
         width: 200,
         height: 200,
-        borderRadius: 100
+        borderRadius: 100,
     }, margin_bottom_40: {
         marginBottom: 40
     }, margin_bottom_20: {

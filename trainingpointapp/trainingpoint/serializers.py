@@ -41,6 +41,8 @@ class HoatDongNgoaiKhoaSerializer(serializers.ModelSerializer):
 
 
 class ThamGiaSerializer(serializers.ModelSerializer):
+    sinh_vien=SinhVienSerializer()
+    hoat_dong_ngoai_khoa=HoatDongNgoaiKhoaSerializer()
     class Meta:
         model = ThamGia
         fields = '__all__'
@@ -61,7 +63,7 @@ class TaiKhoanSerializer(serializers.ModelSerializer):
         return rep
     class Meta:
         model = TaiKhoan
-        fields = ['id', 'email', 'username', 'password', 'avatar', 'role']
+        fields = ['id', 'email', 'username', 'password', 'avatar', 'role', 'first_name', 'last_name']
         extra_kwargs = {
             'password': {
                 'write_only': True

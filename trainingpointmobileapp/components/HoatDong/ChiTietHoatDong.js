@@ -10,7 +10,7 @@ const ChiTietHoatDong = ({ route }) => {
     const [user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole] = React.useContext(MyContext);
     const [hoatDong, setHoatDong] = React.useState();
     const [loading, setLoading] = React.useState(false);
-    const { hoatdong } = route.params;
+    const  hoatdong  = route.params?.hoat_dong_id;
     const { width } = useWindowDimensions();
     const [date, setDate] = useState();
     const [time, setTime] = useState();
@@ -40,6 +40,7 @@ const ChiTietHoatDong = ({ route }) => {
         }
     };
 
+
     React.useEffect(() => {
         getHoatDong();
     }, [])
@@ -68,13 +69,13 @@ const ChiTietHoatDong = ({ route }) => {
                         </View>
                         <View style={styles.info}>
                             <Text style={styles.label}>
-                                Ngày:
+                                Thời gian:
                             </Text>
                             <Text style={styles.fs_20}>
-                                {date} || {time}
+                                {time} ngày {date}
                             </Text>
                         </View>
-                        <View style={styles.mb_10}>
+                        <View style={styles.mb_20}>
                             <Text style={styles.label}>
                                 Mô tả:
                             </Text>
@@ -116,8 +117,8 @@ const ChiTietHoatDong = ({ route }) => {
                             </Text>
                         </View>
                     </View>}
-                <PaperButton mode='contained-tonal' style={styles.alignSelf_center}>Đăng ký tham gia</PaperButton>
-            </View>
+                    {/* <PaperButton mode='contained-tonal' style={styles.alignSelf_center} >Đăng ký tham gia</PaperButton> */}
+                </View>
         </ScrollView>
     );
 };
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     heading: {
-        fontSize: 24,
+        fontSize: 25,
         fontWeight: 'bold',
         marginBottom: 20,
         alignSelf: 'center',
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontWeight: 'bold',
-        fontSize: 25,
+        fontSize: 20,
         marginRight: 20
     },
     fs_20: {

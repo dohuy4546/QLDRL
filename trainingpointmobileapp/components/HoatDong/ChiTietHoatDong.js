@@ -10,7 +10,7 @@ const ChiTietHoatDong = ({ route }) => {
     const [user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole] = React.useContext(MyContext);
     const [hoatDong, setHoatDong] = React.useState();
     const [loading, setLoading] = React.useState(false);
-    const  hoatdong  = route.params?.hoat_dong_id;
+    const hoatdong = route.params?.hoat_dong_id;
     const { width } = useWindowDimensions();
     const [date, setDate] = useState();
     const [time, setTime] = useState();
@@ -24,6 +24,7 @@ const ChiTietHoatDong = ({ route }) => {
         try {
             const token = await AsyncStorage.getItem("access-token");
             let res = await authAPI(token).get(`${endpoints['hoat_dong']}?id=${hoatdong}`);
+            console.log(res.data[0]);
             setHoatDong(res.data[0]);
             const datetime = new Date(res.data[0].ngay);
             const year = datetime.getFullYear();
@@ -34,6 +35,7 @@ const ChiTietHoatDong = ({ route }) => {
             setDate(`${day}-${month}-${year}`);
             setTime(`${hours}:${minutes}`);
             const hoc_ky = await authAPI(token).get(endpoints['hocky_namhoc'](res.data[0].hk_nh));
+            console.log(hoc_ky.data);
             setHocKyNamHoc(hoc_ky.data);
         } catch (ex) {
             console.log(ex);
@@ -117,8 +119,8 @@ const ChiTietHoatDong = ({ route }) => {
                             </Text>
                         </View>
                     </View>}
-                    {/* <PaperButton mode='contained-tonal' style={styles.alignSelf_center} >Đăng ký tham gia</PaperButton> */}
-                </View>
+                {/* <PaperButton mode='contained-tonal' style={styles.alignSelf_center} >Đăng ký tham gia</PaperButton> */}
+            </View>
         </ScrollView>
     );
 };

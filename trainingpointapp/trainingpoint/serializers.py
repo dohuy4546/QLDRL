@@ -41,8 +41,9 @@ class HoatDongNgoaiKhoaSerializer(serializers.ModelSerializer):
 
 
 class ThamGiaSerializer(serializers.ModelSerializer):
-    sinh_vien=SinhVienSerializer()
-    hoat_dong_ngoai_khoa=HoatDongNgoaiKhoaSerializer()
+    sinh_vien = SinhVienSerializer()
+    hoat_dong_ngoai_khoa = HoatDongNgoaiKhoaSerializer()
+
     class Meta:
         model = ThamGia
         fields = '__all__'

@@ -17,6 +17,7 @@ const BaoThieuHoatDong = () => {
         try {
             let url = `${endpoints['tham_gia']}`;
             let res = await APIs.get(url);
+            console.log(res.data);
             setHoatDong(res.data)
             hoatDong.map(hd => console.info((user.id === hd.sinh_vien.tai_khoan && hd.state == 0)))
 
@@ -26,16 +27,16 @@ const BaoThieuHoatDong = () => {
 
     }
 
-    const baoThieu = async(id) => {
+    const baoThieu = async (id) => {
         setTrangThai(2)
-        
+
         const token = await AsyncStorage.getItem('access-token');
         try {
             let res = await authAPI(token).patch(`${endpoints['tham_gia']}${id}/`, {
                 'state': trangThai,
             });
-        
-            
+
+
         } catch (ex) {
             console.error(ex);
         }
@@ -43,25 +44,26 @@ const BaoThieuHoatDong = () => {
 
     useEffect(() => {
         loadHoatDong();
-    }, [hocKy, namHoc]);
+    }, []);
 
     return (
         <ScrollView>
             {hoatDong.map(hd =>
-                        user.id === hd.sinh_vien.tai_khoan && hd.state == 0 ? (
-                            <TouchableOpacity key={hd.id}>
-                                <List.Item
-                                    style={[Styles.subject, Styles.margin]}
-                                    title={() => <Text style={Styles.title}>{hd.hoat_dong_ngoai_khoa.ten_hoat_dong}</Text>}
-                                    description={() =>  <Text style={{ color: "red" }}>Đã đăng kí - chưa điểm danh </Text>}
-                                    right={() => <Button buttonColor="green" mode="contained" style={{ height: 50 }}
-                                    onPress={() => {
-                                        baoThieu(hd.id);}
-                                    }>Báo thiếu</Button>}
-                                />
-                            </TouchableOpacity>
-                        ) : null
-                    )}
+                user.id === hd.sinh_vien.tai_khoan && hd.state == 0 ? (
+                    <TouchableOpacity key={hd.id}>
+                        <List.Item
+                            style={[Styles.subject, Styles.margin]}
+                            title={() => <Text style={Styles.title}>{hd.hoat_dong_ngoai_khoa.ten_hoat_dong}</Text>}
+                            description={() => <Text style={{ color: "red" }}>Đã đăng kí - chưa điểm danh </Text>}
+                            right={() => <Button buttonColor="green" mode="contained" style={{ height: 50 }}
+                                onPress={() => {
+                                    baoThieu(hd.id);
+                                }
+                                }>Báo thiếu</Button>}
+                        />
+                    </TouchableOpacity>
+                ) : null
+            )}
         </ScrollView>
     )
 }

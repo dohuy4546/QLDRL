@@ -1,4 +1,4 @@
-package com.trainingpointmobileapp
+package com.anonymous.trainingpointmobileapp
 
 import android.app.Application
 import android.content.res.Configuration

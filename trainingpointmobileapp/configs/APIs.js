@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // const BASE_URL = 'http://192.168.3.154:8000/';
-const BASE_URL = 'http://192.168.1.3:8000/';
+const BASE_URL = 'http://192.168.3.154:8000/';
 
 
 export const endpoints = {
@@ -33,7 +33,8 @@ export const endpoints = {
     'tham_gia_hoat_dong': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/thamgias/`,
     'hoat_dong': '/hoatdongs/',
     'hocky_namhoc': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`,
-    'tham_gia' : '/thamgias/'
+    'tham_gia': '/thamgias/',
+    'dieu': '/dieus/',
 }
 
 export const authAPI = (accessToken) => axios.create({

@@ -47,13 +47,14 @@
 <script>
 
     function exportToPDF() {
+    var element = document.getElementById('myChart');
     console.info(statspdf)
     var config = {
         filename: 'stats.pdf',
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     }
-    html2pdf().set(config).from(statspdf).save();
+    html2pdf().set(element).from(statspdf).save();
 
 }
 

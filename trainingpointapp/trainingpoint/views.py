@@ -5,7 +5,6 @@ from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
 
-from trainingpoint.serializers import HoatDongNgoaiKhoaSerializer
 
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -251,10 +250,23 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         #                 status=status.HTTP_200_OK)
 
 
-class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView):
+class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveAPIView, generics.DestroyAPIView):
     queryset = HocKy_NamHoc.objects.all()
     serializer_class = serializers.HockyNamhocSerializer
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            if isinstance(self.request.user, AnonymousUser):
+                return [permissions.IsAuthenticated()]
+            else:
+                if (self.request.user.is_authenticated and
+                        self.request.user.role in [TaiKhoan.RoleChoices.CVCTSV.value,
+                                                   TaiKhoan.RoleChoices.ADMIN.value]):
+                    return [permissions.IsAuthenticated()]
+                else:
+                    raise exceptions.PermissionDenied()
+
+        return [permissions.AllowAny()]
 
 class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,
                      generics.RetrieveAPIView):
@@ -506,7 +518,7 @@ class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
     serializer_class = serializers.ThamGiaSerializer
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = ThamGia.objects.all()
         if self.action == 'list':
             namhoc = self.request.query_params.get('nam_hoc')
             if namhoc:
@@ -518,9 +530,9 @@ class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
                 hocky_namhoc = HocKy_NamHoc.objects.filter(hoc_ky=hocky)
                 hoatdong_ids = HoatDongNgoaiKhoa.objects.filter(hk_nh__in=hocky_namhoc).values_list('id', flat=True)
                 queryset = queryset.filter(hoat_dong_ngoai_khoa_id__in=hoatdong_ids)
-            mssv = self.request.query_params.get('mssv')
-            if mssv:
-                sinhvien = SinhVien.objects.get(mssv=mssv)
+            email = self.request.query_params.get('email')
+            if email:
+                sinhvien = SinhVien.objects.get(email=email)
                 queryset = queryset.filter(sinh_vien=sinhvien)
 
         return queryset

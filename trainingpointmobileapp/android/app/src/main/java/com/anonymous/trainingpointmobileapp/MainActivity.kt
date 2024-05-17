@@ -1,4 +1,4 @@
-package com.trainingpointmobileapp
+package com.anonymous.trainingpointmobileapp
 
 import android.os.Build
 import android.os.Bundle

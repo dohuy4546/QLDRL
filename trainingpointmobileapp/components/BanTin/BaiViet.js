@@ -18,7 +18,8 @@ const BaiViet = (props) => {
     const [baiVietId, setBaiVietId] = useState(null);
     const [liked, setLiked] = useState(false);
     const [active, setActive] = useState(false);
-    const [isThamGia, setIsThamGia] = useState(false);
+    const [isDangKy, setIsDangKy] = useState(false);
+    const [isDiemDanh, setIsDiemDanh] = useState(false);
     const { width } = useWindowDimensions();
     const navigation = useNavigation();
 
@@ -58,7 +59,7 @@ const BaiViet = (props) => {
             }
             res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong.id));
             if (res.status == '200') {
-                setIsThamGia(true);
+                setIsDangKy(true);
             }
         } catch (ex) {
             console.log("Lỗi lòi lz");
@@ -67,11 +68,15 @@ const BaiViet = (props) => {
 
     const handleThamGia = async (hoatdong_id) => {
         try {
-            if (isThamGia == true) {
+            if (isDangKy == true) {
                 const token = await AsyncStorage.getItem("access-token");
-                let res = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](hoatdong_id));
-                Alert.alert("Hủy đăng ký thành công!");
-                setIsThamGia(false);
+                let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong_id));
+                let isDiemDanh = res.data.state;
+                if (isDiemDanh == 0) {
+                    let res = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](hoatdong_id));
+                    Alert.alert("Hủy đăng ký thành công!");
+                    setIsDangKy(false);
+                }
             } else {
                 navigation.replace("Main", {
                     screen: 'Stack',
@@ -88,9 +93,26 @@ const BaiViet = (props) => {
         }
     }
 
+    const checkIsDiemDanh = async (id) => {
+        try {
+            const token = await AsyncStorage.getItem("access-token");
+            let h = await authAPI(token).get(endpoints['bai_viet_hoat_dong'](id));
+            let hoatdong = h.data.id;
+            let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong));
+            let isThamGia = res.data.state;
+            if (isThamGia == 1) {
+                setIsDiemDanh(true);
+            }
+        } catch (ex) {
+            console.log(ex)
+        }
+
+    }
+
 
     React.useEffect(() => {
         if (props && props.baiviet) {
+            checkIsDiemDanh(props.baiviet.id);
             getAuthor(props.baiviet.id);
             getStateHoatDong(props.baiviet.id);
             setLiked(props.baiviet.liked);
@@ -135,11 +157,12 @@ const BaiViet = (props) => {
                 <Image source={{ uri: baiViet.image }} style={Styles.image} />
                 <View style={Styles.bottom}>
                     <PaperButton
-                        mode={isThamGia ? 'contained' : 'elevated'}
+                        mode={isDangKy ? 'contained' : 'elevated'}
                         style={{ marginRight: 5, borderRadius: 10 }}
                         onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
+                        disabled={isDiemDanh}
                     >
-                        {isThamGia ? 'Hủy đăng ký' : 'Đăng ký'}
+                        {!isDiemDanh ? isDangKy ? 'Hủy đăng ký' : 'Đăng ký' : 'Đã tham gia'}
                     </PaperButton>
                     <PaperButton
                         icon={liked ? 'thumb-up' : 'thumb-up-outline'}

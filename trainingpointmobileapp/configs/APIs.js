@@ -32,7 +32,8 @@ export const endpoints = {
     'current_thamgia': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/current_thamgia/`,
     'tham_gia_hoat_dong': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/thamgias/`,
     'hoat_dong': '/hoatdongs/',
-    'hocky_namhoc': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`,
+    'hocky_namhoc_id': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`,
+    'hocky_namhoc': `/hocky_namhoc/`,
     'tham_gia': '/thamgias/',
     'dieu': '/dieus/',
 }

@@ -3,7 +3,7 @@ import { Modal, View, ScrollView } from 'react-native';
 import { TextInput, Button, ActivityIndicator } from 'react-native-paper';
 import Styles from './Styles';
 import Comment from './Comment';
-import { authAPI, endpoints } from '../../configs/APIs';
+import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -13,6 +13,8 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
     const [height, setHeight] = useState(45);
     const [loading, setLoading] = useState(false);
     const [listComment, setListComment] = useState([]);
+    const [page, setPage] = useState(1);
+
     const handlePostComment = async () => {
         if (comment != '') {
             const token = await AsyncStorage.getItem("access-token");
@@ -28,15 +30,25 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
     const getComments = async (id) => {
         setLoading(true);
         try {
-            const token = await AsyncStorage.getItem("access-token");
-            let res = await authAPI(token).get(endpoints['comments'](id));
-            let comments = res.data;
-            for (let comment of comments) {
-                let res = await authAPI(token).get(endpoints['commentUser'](comment.id));
-                let taikhoan = res.data;
-                comment.taikhoan = taikhoan;
+            if (page > 0) {
+                const token = await AsyncStorage.getItem("access-token");
+                let res = await authAPI(token).get(`${endpoints['comments'](id)}?page=${page}`);
+                let comments = res.data;
+                if (comments.next === null)
+                    setPage(0);
+                for (let comment of comments.results) {
+                    let res = await authAPI(token).get(endpoints['commentUser'](comment.id));
+                    console.log(res.data);
+                    let taikhoan = res.data;
+                    comment.taikhoan = taikhoan;
+                }
+                if (page === 1)
+                    setListComment(comments.results);
+                else
+                    setListComment(current => {
+                        return [...current, ...comments.results];
+                    });
             }
-            setListComment(comments);
         } catch (ex) {
             console.log("Lỗi");
         } finally {
@@ -46,17 +58,29 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
         // console.log(comments[0].taikhoan.id);
     }
 
+    const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+        const paddingToBottom = 20;
+        return layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom;
+    };
+
+    const loadMore = ({ nativeEvent }) => {
+        if (!loading && page > 0 && isCloseToBottom(nativeEvent)) {
+            setPage(page + 1);
+        }
+    }
+
     React.useEffect(() => {
         if (baiviet != null) {
             getComments(baiviet);
         }
-    }, [baiviet]);
+    }, [baiviet, page]);
 
     return (
-        <Modal visible={visible} animationType="slide">
+        <Modal visible={visible} animationType="slide" >
             <View style={loading ? [Styles.container, { justifyContent: 'center' }] : Styles.container}>
                 {loading ? <ActivityIndicator></ActivityIndicator> :
-                    <ScrollView style={{ width: '100%', marginBottom: 50 }}>
+                    <ScrollView style={{ width: '100%', marginBottom: 50 }} onScroll={loadMore}>
                         {listComment.map(c => <Comment comment={c} key={c.id} />)}
                     </ScrollView>
                 }

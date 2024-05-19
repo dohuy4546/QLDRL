@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
-
+from rest_framework.views import APIView
 
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -170,7 +170,8 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
                         status=status.HTTP_200_OK)
 
 
-class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,):
+class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView,
+                               generics.DestroyAPIView, ):
     queryset = HoatDongNgoaiKhoa.objects.all()
     serializer_class = serializers.HoatDongNgoaiKhoaSerializer
 
@@ -223,7 +224,7 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             else:
                 sinhvien = SinhVien.objects.get(email=request.user.email)
                 if sinhvien:
-                    thamgias, created = ThamGia.objects.get_or_create(hoat_dong_ngoai_khoa = hoatdong, sinh_vien = sinhvien)
+                    thamgias, created = ThamGia.objects.get_or_create(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
                     if created:
                         return Response(data={'created': True},
                                         status=status.HTTP_201_CREATED)
@@ -239,7 +240,7 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             thamgia = ThamGia.objects.get(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
             return Response(serializers.ThamGiaSerializer(thamgia).data, status=status.HTTP_200_OK)
         except ThamGia.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         # dieu = Dieu.objects.prefetch_related('hoatdongngoaikhoa_set').get(id=pk)
         # hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
@@ -250,7 +251,8 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
         #                 status=status.HTTP_200_OK)
 
 
-class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveAPIView, generics.DestroyAPIView):
+class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveAPIView,
+                         generics.DestroyAPIView):
     queryset = HocKy_NamHoc.objects.all()
     serializer_class = serializers.HockyNamhocSerializer
 
@@ -268,10 +270,12 @@ class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.
 
         return [permissions.AllowAny()]
 
+
 class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,
                      generics.RetrieveAPIView):
-    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
+    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True).order_by("-created_date")
     serializer_class = serializers.BaivietTagSerializer
+    pagination_class = paginators.BaiVietPaginator
 
     def get_serializer_class(self):
         if self.request.user.is_authenticated:
@@ -322,10 +326,16 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
     @action(methods=['get', 'post'], url_path="comments", detail=True)
     def get_add_comment(self, request, pk):
         if request.method == 'GET':
-            print("get")
-            comments = self.get_object().comment_set.select_related('tai_khoan').all()
-            return Response(serializers.CommentSerializer(comments, many=True).data,
-                            status=status.HTTP_200_OK)
+            custom_paginator = paginators.CommentPaginator()
+            comments = self.get_object().comment_set.select_related('tai_khoan').order_by('-created_date').all()
+            page_data = custom_paginator.paginate_queryset(comments, request, view=self)
+            serializer = serializers.CommentSerializer(page_data, many=True)
+            next_page_url = custom_paginator.get_next_link()
+            response_data = {
+                'next': next_page_url,
+                'results': serializer.data
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
         elif request.method == 'POST':
             print("add")
             c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
@@ -456,7 +466,12 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
 class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
+    pagination_class = paginators.CommentPaginator
     permission_classes = [perms.CommentOwner, ]
+
+    def get_permissions(self):
+        if self.action in 'getCommentTaiKhoan':
+            return [permissions.AllowAny()]
 
     @action(methods=['get'], url_path='taikhoan', detail=True)
     def getCommentTaiKhoan(self, request, pk):
@@ -513,7 +528,7 @@ class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics
         return queries
 
 
-class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,):
+class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, ):
     queryset = ThamGia.objects.all()
     serializer_class = serializers.ThamGiaSerializer
 

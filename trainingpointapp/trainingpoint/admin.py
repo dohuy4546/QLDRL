@@ -15,7 +15,40 @@ class MyAdminSite(admin.AdminSite):
     site_header = 'iTrainingPoint'
 
     def get_urls(self):
-        return [path('diemrenluyen-stats/', self.stats_view, name='stats_view')] + super().get_urls()
+        return [path('diemrenluyen-stats/', self.stats_view, name='stats_view'),
+                path('sinhvien-info/', self.sinhvien_info_view, name='sinhvien_info_view'), ] + super().get_urls()
+
+    def sinhvien_info_view(self, request):
+        hockynamhocs = HocKy_NamHoc.objects.all()
+        listDieu = Dieu.objects.all()
+
+        if request.POST.get('mssv'):
+            mssv = request.POST.get('mssv')
+        else:
+            mssv = ""
+
+        if request.POST.get('hocky'):
+            hocky = int(request.POST.get('hocky'))
+        else:
+            hocky = 0
+
+        if request.POST.get('namhoc'):
+            namhoc = request.POST.get('namhoc')
+        else:
+            namhoc = ""
+
+        hk_nh = HocKy_NamHoc.objects.get(hoc_ky=hocky, nam_hoc=namhoc)
+
+        listThamGia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
+                       .filter(state=1, sinh_vien__mssv=mssv, hoat_dong_ngoai_khoa__hk_nh=hk_nh))
+
+
+
+        return TemplateResponse(request, 'admin/sinhvien-info.html', {
+            'listDieu': listDieu,
+            'hockynamhocs': hockynamhocs,
+            'listThamGia': listThamGia,
+        })
 
     def stats_view(self, request):
         lops = Lop.objects.all()
@@ -84,10 +117,33 @@ class TaiKhoanAdmin(admin.ModelAdmin):
 class MinhChungAdmin(admin.ModelAdmin):
     readonly_fields = ['my_image']  # phải có để hiện ảnh trong trang admin. Trùng tên hàm phía dưới
     form = MinhChungForm
+    actions = ['confirm_missing', 'unconfirm_missing']
+    list_display = ['id', 'tham_gia', 'active']
 
     def my_image(self, minhchung):
         if minhchung.anh_minh_chung:
             return mark_safe(f"<img width='200' src='{minhchung.anh_minh_chung.url}' />")
+
+    # Tạo custom action xác nhận báo thiếu
+    def confirm_missing(self, request, queryset):
+        for minhchung in queryset:
+            tham_gia = minhchung.tham_gia
+            if tham_gia:
+                tham_gia.state = 1
+                tham_gia.save()
+            minhchung.delete()
+
+    confirm_missing.short_description = "Xác nhận báo thiếu"  # Tên của action trong giao diện admin
+
+    # Tạo custom action hủy xác nhận báo thiếu
+    def unconfirm_missing(self, request, queryset):
+        for minhchung in queryset:
+            tham_gia = minhchung.tham_gia
+            if tham_gia:
+                tham_gia.delete()
+            minhchung.delete()
+
+    unconfirm_missing.short_description = "Hủy xác nhận báo thiếu"
 
 
 admin_site.register(TaiKhoan, TaiKhoanAdmin)

@@ -19,7 +19,6 @@ export default StyleSheet.create({
     }, title: {
         fontSize: 20,
         fontWeight: "bold",
-        color: myTheme.colors.primary,
     }, row: {
         flexDirection: "row"
     }, wrap: {
@@ -34,5 +33,17 @@ export default StyleSheet.create({
         backgroundColor: myTheme.colors.background
     }, bd_radius_20: {
         borderRadius: 20
+    },
+    background_primary: {
+        backgroundColor: myTheme.colors.primary
+    },
+    color_onPrimary: {
+        color: myTheme.colors.onPrimary
+    },
+    color_primary: {
+        color: myTheme.colors.primary
+    },
+    color_outline: {
+        color: myTheme.colors.secondaryContainer
     }
 });

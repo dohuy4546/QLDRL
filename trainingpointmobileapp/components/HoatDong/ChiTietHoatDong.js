@@ -34,7 +34,7 @@ const ChiTietHoatDong = ({ route }) => {
             const minutes = ('0' + datetime.getMinutes()).slice(-2);
             setDate(`${day}-${month}-${year}`);
             setTime(`${hours}:${minutes}`);
-            const hoc_ky = await authAPI(token).get(endpoints['hocky_namhoc'](res.data[0].hk_nh));
+            const hoc_ky = await authAPI(token).get(endpoints['hocky_namhoc_id'](res.data[0].hk_nh));
             console.log(hoc_ky.data);
             setHocKyNamHoc(hoc_ky.data);
         } catch (ex) {

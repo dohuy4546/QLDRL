@@ -68,30 +68,32 @@ const BaiViet = (props) => {
 
     const handleThamGia = async (hoatdong_id) => {
         try {
-            if (isDangKy == true) {
-                const token = await AsyncStorage.getItem("access-token");
-                let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong_id));
-                let isDiemDanh = res.data.state;
-                if (isDiemDanh == 0) {
-                    let res = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](hoatdong_id));
+            const token = await AsyncStorage.getItem("access-token");
+            let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong_id));
+            let isDiemDanh = res.data.state;
+            if (isDiemDanh != 1 && isDiemDanh != 2) {
+                let res = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](hoatdong_id));
+                if (isDangKy == true) {
                     Alert.alert("Hủy đăng ký thành công!");
-                    setIsDangKy(false);
+                } else {
+                    Alert.alert("Đăng ký thành công!");
                 }
-            } else {
-                navigation.replace("Main", {
-                    screen: 'Stack',
-                    params: {
-                        screen: 'ChiTietHoatDong',
-                        params: {
-                            hoatdong: hoatdong_id
-                        }
-                    }
-                });
+                setIsDangKy(!isDangKy);
             }
         } catch (ex) {
             console.log(ex);
         }
     }
+
+    // navigation.replace("Main", {
+    //     screen: 'Stack',
+    //     params: {
+    //         screen: 'ChiTietHoatDong',
+    //         params: {
+    //             hoatdong: hoatdong_id
+    //         }
+    //     }
+    // });
 
     const checkIsDiemDanh = async (id) => {
         try {

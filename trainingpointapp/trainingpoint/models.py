@@ -141,7 +141,8 @@ class ThamGia(models.Model):
 class MinhChung(BaseModel):
     description = RichTextField()
     anh_minh_chung = CloudinaryField()
-    tham_gia = models.ForeignKey(ThamGia, on_delete=models.CASCADE)
+    tham_gia = models.ForeignKey(ThamGia, on_delete=models.CASCADE,
+                                 limit_choices_to={'state': ThamGia.StateChoices.BaoThieu})
 
 
 class Tag(BaseModel):
@@ -155,7 +156,8 @@ class BaiViet(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField(null=True)
     image = CloudinaryField()
-    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE, limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
+    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE,
+                               limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
     hoat_dong_ngoai_khoa = models.ForeignKey(HoatDongNgoaiKhoa, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True, related_name='baiviets')
 

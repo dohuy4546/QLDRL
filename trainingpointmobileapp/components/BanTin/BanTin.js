@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, RefreshControl } from 'react-native';
 import { Button, Text, Searchbar, ActivityIndicator } from 'react-native-paper';
 import BaiViet from './BaiViet';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
@@ -16,8 +16,7 @@ const BanTin = ({ route, navigation }) => {
                 setLoading(true);
                 const token = await AsyncStorage.getItem('access-token');
                 if (token) {
-                    let baiviets = await authAPI(token).get(`${endpoints['bai_viet']}?page=${page}`);
-                    console.log(baiviets.data);
+                    let baiviets = await authAPI(token).get(`${endpoints['bai_viet']}?page=${page}&q=${q}`);
                     if (baiviets.data.next === null)
                         setPage(0);
                     if (page === 1)
@@ -29,7 +28,6 @@ const BanTin = ({ route, navigation }) => {
                 }
             }
         } catch (ex) {
-            console.log("Lỗi");
         } finally {
             setLoading(false);
         }
@@ -46,6 +44,7 @@ const BanTin = ({ route, navigation }) => {
 
     const loadMore = ({ nativeEvent }) => {
         if (!loading && page > 0 && isCloseToBottom(nativeEvent)) {
+            console.log("ok");
             setPage(page + 1);
         }
     }
@@ -61,8 +60,9 @@ const BanTin = ({ route, navigation }) => {
                 <Searchbar placeholder="Nhập từ khóa..." onChangeText={(t) => search(t, setQ)} value={q} />
             </View>
             <ScrollView keyboardShouldPersistTaps='handled' style={{ marginTop: 70 }} onScroll={loadMore}>
-                {loading && <ActivityIndicator></ActivityIndicator>}
-                {baiViets === null ? <></> :
+                <RefreshControl onRefresh={() => loadBaiViets()} />
+                {loading && page == 1 && <ActivityIndicator></ActivityIndicator>}
+                {baiViets === null && baiViets.length != 0 ? <></> :
                     <>
                         {baiViets.map(b => {
                             return (
@@ -73,6 +73,7 @@ const BanTin = ({ route, navigation }) => {
                             );
                         })}
                     </>}
+                {loading && page > 1 && <ActivityIndicator />}
             </ScrollView>
         </>
     )

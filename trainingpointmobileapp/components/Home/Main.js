@@ -11,8 +11,9 @@ import React from 'react';
 import MyContext from '../../configs/MyContext';
 import ChiTietHoatDong from '../HoatDong/ChiTietHoatDong';
 import QuanLyHoatDong from '../HoatDong/QuanLyHoatDong';
-import BaoThieuHoatDong from '../HoatDong/BaoThieuHoatDong';
+import BaoThieuHoatDong from '../BaoThieu/BaoThieuHoatDong';
 import TaiKhoan from '../TaiKhoan/TaiKhoan';
+import MinhChungBaoThieu from '../BaoThieu/MinhChungBaoThieu';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -26,13 +27,20 @@ const StackNavigator = () => (
 
 const HoatDongStackNavigator = () => (
     <Stack.Navigator >
-        <Stack.Screen name="QuanLiHoatDong" component={QuanLyHoatDong} options={{ headerShown: false }}/>
-        <Stack.Screen name="ChiTietHoatDong" title="Chi tiết hoạt động" component={ChiTietHoatDong} options={{ title: "", headerTransparent:true}}/>
+        <Stack.Screen name="QuanLiHoatDong" component={QuanLyHoatDong} options={{ headerShown: false }} />
+        <Stack.Screen name="ChiTietHoatDong" title="Chi tiết hoạt động" component={ChiTietHoatDong} options={{ title: "", headerTransparent: true }} />
+    </Stack.Navigator>
+);
+
+const BaoThieuStackNavigator = () => (
+    <Stack.Navigator >
+        <Stack.Screen name="BaoThieu" component={BaoThieuHoatDong} options={{ headerShown: false }} />
+        <Stack.Screen name="MinhChungBaoThieu" component={MinhChungBaoThieu} options={{ title: "" }} />
     </Stack.Navigator>
 );
 
 const Main = ({ navigation }) => {
-    const [user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole] = React.useContext(MyContext);
+    const [user, dispatch, role, setRole] = React.useContext(MyContext);
     return (
         <Tab.Navigator
             screenOptions={{
@@ -100,29 +108,16 @@ const Main = ({ navigation }) => {
                     },
                 }}
             />
-            
-            {role == 1 && <>
-                <Tab.Screen
-                    name="OTP"
-                    component={OTP}
-                    options={{
-                        tabBarLabel: 'OTP',
-                        tabBarIcon: ({ color, size }) => {
-                            return <Icon name="home" size={size} color={color} />;
-                        },
-                    }} />
-                    <Tab.Screen
-                    name="BaoThieuHoatDong"
-                    component={BaoThieuHoatDong}
-                    options={{
-                        tabBarLabel: 'Báo thiếu',
-                        tabBarIcon: ({ color, size }) => {
-                            return <Icon name="calendar-alert" size={size} color={color} />;
-                        },
-                    }} />
-                </>
-            }
-            {role == 2 && <Tab.Screen
+            <Tab.Screen
+                name="BaoThieuHoatDong"
+                component={BaoThieuStackNavigator}
+                options={{
+                    tabBarLabel: 'Báo thiếu',
+                    tabBarIcon: ({ color, size }) => {
+                        return <Icon name="calendar-alert" size={size} color={color} />;
+                    },
+                }} />
+            {role != 1 && <Tab.Screen
                 name="ThemTroLySinhVien"
                 component={ThemTroLySinhVien}
                 options={{
@@ -133,34 +128,14 @@ const Main = ({ navigation }) => {
                 }}
             />}
             <Tab.Screen
-                name="Stack"
-                component={StackNavigator}
+                name="Profile"
+                component={TaiKhoan}
                 options={{
-                    tabBarLabel: 'Stack',
+                    tabBarLabel: 'Thông tin',
                     tabBarIcon: ({ color, size }) => {
-                        return <Icon name="cog" size={size} color={color} />;
+                        return <Icon name="account-circle" size={size} color={color} />;
                     },
-                }}
-                listeners={({ navigation }) => ({
-                    tabPress: (event) => {
-                        event.preventDefault();
-                        navigation.navigate("Main", {
-                            screen: "Stack", params: {
-                                screen: 'OTP'
-                            }
-                        });
-                    }
-                })}
-            />
-            <Tab.Screen
-                    name="TaiKhoan"
-                    component={TaiKhoan}
-                    options={{
-                        tabBarLabel: 'Thông tin',
-                        tabBarIcon: ({ color, size }) => {
-                            return <Icon name="account-circle" size={size} color={color} />;
-                        },
-                    }} />
+                }} />
         </Tab.Navigator>
     )
 }

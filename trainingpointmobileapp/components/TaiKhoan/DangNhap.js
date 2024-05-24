@@ -10,7 +10,7 @@ import Styles from "./Styles";
 const DangNhap = ({ navigation }) => {
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
-    const [user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole] = useContext(MyContext);
+    const [user, dispatch, role, setRole] = useContext(MyContext);
 
     const login = async () => {
         try {
@@ -30,14 +30,14 @@ const DangNhap = ({ navigation }) => {
             await AsyncStorage.setItem('access-token', res.data.access_token)
 
             let user = await authAPI(res.data.access_token).get(endpoints['current_taikhoan']);
+            let user_role = user.data.role;
+            setRole(user_role);
             dispatch({
                 "type": "login",
                 "payload": user.data
             });
             console.log(user.data.role);
-            let user_role = user.data.role;
-            setRole(user_role);
-            setIsAuthenticated(true);
+            console.log(user_role);
         } catch (ex) {
             console.error(ex);
         }
@@ -53,7 +53,7 @@ const DangNhap = ({ navigation }) => {
 
             <PaperTextInput value={username} label="Username" mode="outlined" onChangeText={t => setUsername(t)} placeholder="Username..." style={Styles.margin_bottom_20} />
             <PaperTextInput value={password} label="Password" mode="outlined" onChangeText={t => setPassword(t)} secureTextEntry={true} placeholder="Password..." style={Styles.margin_bottom_20} />
-            
+
             <PaperButton onPress={login} mode="contained" style={Styles.margin_bottom_20}>Đăng nhập</PaperButton>
             <PaperButton onPress={register} mode="elevated">Đăng ký</PaperButton>
         </View>

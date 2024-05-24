@@ -8,6 +8,14 @@ from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.urls import path
 
+from import_export.admin import ImportExportModelAdmin, ExportActionMixin
+from import_export.resources import ModelResource
+from import_export.fields import Field
+from import_export import resources, fields
+from import_export.widgets import ForeignKeyWidget
+from django.http import HttpResponse
+import csv
+
 
 # Register your models here.
 
@@ -41,8 +49,6 @@ class MyAdminSite(admin.AdminSite):
 
         listThamGia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
                        .filter(state=1, sinh_vien__mssv=mssv, hoat_dong_ngoai_khoa__hk_nh=hk_nh))
-
-
 
         return TemplateResponse(request, 'admin/sinhvien-info.html', {
             'listDieu': listDieu,
@@ -131,7 +137,6 @@ class MinhChungAdmin(admin.ModelAdmin):
             if tham_gia:
                 tham_gia.state = 1
                 tham_gia.save()
-            minhchung.delete()
 
     confirm_missing.short_description = "Xác nhận báo thiếu"  # Tên của action trong giao diện admin
 
@@ -145,6 +150,54 @@ class MinhChungAdmin(admin.ModelAdmin):
 
     unconfirm_missing.short_description = "Hủy xác nhận báo thiếu"
 
+class ThamGiaResource(ModelResource):
+    sinh_vien_mssv = Field(attribute='sinh_vien__mssv', column_name='MSSV')
+    sinh_vien_ho_ten = Field(attribute='sinh_vien__ho_ten', column_name='Họ Tên')
+    state = Field(attribute='state', column_name='Trạng Thái')
+
+    class Meta:
+        model = ThamGia
+        fields = ('id', 'sinh_vien_mssv', 'sinh_vien_ho_ten', 'state')
+
+
+class HoatDongNgoaiKhoaAdmin(ExportActionMixin, admin.ModelAdmin):
+    actions = ['export_tham_gia']
+
+    def export_tham_gia(self, request, queryset):
+        tham_gia_queryset = ThamGia.objects.filter(hoat_dong_ngoai_khoa__in=queryset)
+        resource = ThamGiaResource()
+        dataset = resource.export(tham_gia_queryset)
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="tham_gia_export.csv"'
+        response.write(u'\ufeff'.encode('utf8'))
+        writer = csv.writer(response)
+        writer.writerow(resource.get_export_headers())
+
+        for row in dataset:
+            writer.writerow(row)
+        return response
+
+
+
+
+class ImportResource(resources.ModelResource):
+    class Meta:
+        model = ThamGia
+        fields = ('id', 'sinh_vien', 'hoat_dong_ngoai_khoa', 'state')
+
+    def before_import_row(self, row, **kwargs):
+        try:
+            tham_gia = ThamGia.objects.get(id=row['id'])
+            if 'Trạng Thái' in row:
+                tham_gia.state = row['Trạng Thái']
+            tham_gia.save()
+        except ThamGia.DoesNotExist:
+            pass
+
+
+class ThamGiaAdmin(ImportExportModelAdmin):
+    resource_class = ImportResource
+
 
 admin_site.register(TaiKhoan, TaiKhoanAdmin)
 admin_site.register(Khoa)
@@ -152,8 +205,8 @@ admin_site.register(Lop)
 admin_site.register(SinhVien)
 admin_site.register(Dieu)
 admin_site.register(HocKy_NamHoc)
-admin_site.register(HoatDongNgoaiKhoa)
-admin_site.register(ThamGia)
+admin_site.register(HoatDongNgoaiKhoa, HoatDongNgoaiKhoaAdmin)
+admin_site.register(ThamGia, ThamGiaAdmin)
 admin_site.register(MinhChung, MinhChungAdmin)
 admin_site.register(Tag)
 admin_site.register(BaiViet)

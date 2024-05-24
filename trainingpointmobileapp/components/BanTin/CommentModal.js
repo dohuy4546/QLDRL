@@ -79,11 +79,12 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
     return (
         <Modal visible={visible} animationType="slide" >
             <View style={loading ? [Styles.container, { justifyContent: 'center' }] : Styles.container}>
-                {loading ? <ActivityIndicator></ActivityIndicator> :
+                {loading && page == 1 ? <ActivityIndicator></ActivityIndicator> :
                     <ScrollView style={{ width: '100%', marginBottom: 50 }} onScroll={loadMore}>
                         {listComment.map(c => <Comment comment={c} key={c.id} />)}
                     </ScrollView>
                 }
+                {loading && page > 1 && <ActivityIndicator></ActivityIndicator>}
                 <View style={{
                     position: 'absolute', bottom: 20,
                     flex: 1, flexDirection: 'row', width: '85%', justifyContent: 'center', alignItems: 'flex-end'

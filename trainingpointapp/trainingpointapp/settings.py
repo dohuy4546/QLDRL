@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'oauth2_provider',
+    'import_export',
 ]
 
 REST_FRAMEWORK = {
@@ -100,7 +101,7 @@ WSGI_APPLICATION = 'trainingpointapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'trainingpointdb',
+        'NAME': 'trainingpointdb2',
         'USER': 'root',
         'PASSWORD': '123456',
         # Abc111@

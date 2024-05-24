@@ -1,30 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions, ScrollView, Alert, Linking } from 'react-native';
 import { ActivityIndicator, Button as PaperButton } from 'react-native-paper';
 import MyContext from '../../configs/MyContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, endpoints } from '../../configs/APIs';
 import RenderHTML from 'react-native-render-html';
 
-const ChiTietHoatDong = ({ route }) => {
-    const [user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole] = React.useContext(MyContext);
+const ChiTietHoatDong = ({ route, navigation }) => {
+    const [user, , role] = React.useContext(MyContext);
     const [hoatDong, setHoatDong] = React.useState();
     const [loading, setLoading] = React.useState(false);
     const hoatdong = route.params?.hoat_dong_id;
+    const xuatExcel = route.params?.xuatExcel || false;
     const { width } = useWindowDimensions();
     const [date, setDate] = useState();
     const [time, setTime] = useState();
     const [hocKyNamHoc, setHocKyNamHoc] = useState();
 
-    const handleRegisterPress = () => {
-        alert('Bạn đã đăng ký tham gia hoạt động thành công!');
-    };
 
     const getHoatDong = async () => {
         try {
             const token = await AsyncStorage.getItem("access-token");
             let res = await authAPI(token).get(`${endpoints['hoat_dong']}?id=${hoatdong}`);
-            console.log(res.data[0]);
+            // console.log(res.data[0]);
             setHoatDong(res.data[0]);
             const datetime = new Date(res.data[0].ngay);
             const year = datetime.getFullYear();
@@ -35,13 +33,25 @@ const ChiTietHoatDong = ({ route }) => {
             setDate(`${day}-${month}-${year}`);
             setTime(`${hours}:${minutes}`);
             const hoc_ky = await authAPI(token).get(endpoints['hocky_namhoc_id'](res.data[0].hk_nh));
-            console.log(hoc_ky.data);
+            // console.log(hoc_ky.data);
             setHocKyNamHoc(hoc_ky.data);
         } catch (ex) {
             console.log(ex);
         }
     };
 
+
+
+    const handleXuatdanhSach = async () => {
+        const token = await AsyncStorage.getItem("access-token");
+        const xuatdanhsach = await authAPI(token).get(endpoints['xuat_danh_sach'](hoatDong.id));
+        const supported = await Linking.canOpenURL(xuatdanhsach.request.responseURL);
+        if (supported) {
+            await Linking.openURL(xuatdanhsach.request.responseURL);
+        } else {
+            console.error("Không thể mở url");
+        }
+    }
 
     React.useEffect(() => {
         getHoatDong();
@@ -119,7 +129,7 @@ const ChiTietHoatDong = ({ route }) => {
                             </Text>
                         </View>
                     </View>}
-                {/* <PaperButton mode='contained-tonal' style={styles.alignSelf_center} >Đăng ký tham gia</PaperButton> */}
+                {xuatExcel && role != 1 ? <PaperButton mode='contained-tonal' style={styles.alignSelf_center} onPress={handleXuatdanhSach} >Xuất danh sách tham gia</PaperButton> : <></>}
             </View>
         </ScrollView>
     );

@@ -35,7 +35,13 @@ export const endpoints = {
     'hocky_namhoc_id': (hocky_namhoc_id) => `/hocky_namhoc/${hocky_namhoc_id}/`,
     'hocky_namhoc': `/hocky_namhoc/`,
     'tham_gia': '/thamgias/',
+    'update_tham_gia': (tham_gia_id) => `/thamgias/${tham_gia_id}/`,
+    'bao_thieu_tham_gia': (tham_gia_id) => `/thamgias/${tham_gia_id}/baothieu/`,
     'dieu': '/dieus/',
+    'tong_diem': '/diemrenluyens/',
+    'minh_chung': '/minhchungs/',
+    'huy_minh_chung': (minh_chung_id) => `/minhchungs/${minh_chung_id}/huyminhchung/`,
+    'xuat_danh_sach': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/danhsach/`
 }
 
 export const authAPI = (accessToken) => axios.create({

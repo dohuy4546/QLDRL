@@ -9,8 +9,10 @@ import RenderHTML from 'react-native-render-html';
 import moment from 'moment';
 import 'moment/locale/vi'
 import { useNavigation } from '@react-navigation/native';
+import MyContext from '../../configs/MyContext';
 
 const BaiViet = (props) => {
+    const [, , role] = React.useContext(MyContext);
     const [expanded, setExpanded] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [baiViet, setBaiViet] = useState(null);
@@ -62,7 +64,6 @@ const BaiViet = (props) => {
                 setIsDangKy(true);
             }
         } catch (ex) {
-            console.log("Lỗi lòi lz");
         }
     }
 
@@ -81,7 +82,6 @@ const BaiViet = (props) => {
                 setIsDangKy(!isDangKy);
             }
         } catch (ex) {
-            console.log(ex);
         }
     }
 
@@ -106,7 +106,6 @@ const BaiViet = (props) => {
                 setIsDiemDanh(true);
             }
         } catch (ex) {
-            console.log(ex)
         }
 
     }
@@ -158,14 +157,15 @@ const BaiViet = (props) => {
                 )}
                 <Image source={{ uri: baiViet.image }} style={Styles.image} />
                 <View style={Styles.bottom}>
-                    <PaperButton
-                        mode={isDangKy ? 'contained' : 'elevated'}
-                        style={{ marginRight: 5, borderRadius: 10 }}
-                        onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
-                        disabled={isDiemDanh}
-                    >
-                        {!isDiemDanh ? isDangKy ? 'Hủy đăng ký' : 'Đăng ký' : 'Đã tham gia'}
-                    </PaperButton>
+                    {role == 1 &&
+                        <PaperButton
+                            mode={isDangKy ? 'contained' : 'elevated'}
+                            style={{ marginRight: 5, borderRadius: 10 }}
+                            onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
+                            disabled={isDiemDanh}
+                        >
+                            {!isDiemDanh ? isDangKy ? 'Hủy đăng ký' : 'Đăng ký' : 'Đã tham gia'}
+                        </PaperButton>}
                     <PaperButton
                         icon={liked ? 'thumb-up' : 'thumb-up-outline'}
                         size={24}

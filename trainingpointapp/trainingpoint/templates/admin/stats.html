@@ -3,35 +3,50 @@
 <h1>Thống kê điểm rèn luyện</h1>
 <div >
     <form method="POST" action="{% url 'admin:stats_view' %}">
-    <label for="malop">Chọn lớp: </label>
         {% csrf_token %}
-        <select id="malop" name="malop">
-            {% for l in lops %}
-            <option value={{l.ma_lop}}>{{l.ma_lop}}</option>
-            {% endfor %}
-        </select>
         <select id="hocky" name="hocky">
+            <option>Học kỳ</option>
             {% for hk in hockynamhocs %}
             <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
             {% endfor %}
         </select>
-
         <select id="namhoc" name="namhoc">
+            <option>Năm học</option>
             {% for nh in hockynamhocs %}
             <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
             {% endfor %}
         </select>
+    <label for="malop">Chọn lớp: </label>
+        <select id="malop" name="malop">
+            <option>Lớp</option>
+            {% for l in lops %}
+            <option value={{l.ma_lop}}>{{l.ma_lop}}</option>
+            {% endfor %}
+        </select>
+    <label for="thanhtich">Hoặc chọn thành tích: </label>
+        <select id="thanhtich" name="thanhtich">
+            <option>Thành tích</option>
+            <option value="Xuất sắc">Xuất sắc</option>
+            <option value="Giỏi">Giỏi</option>
+            <option value="Khá">Khá</option>
+            <option value="Trung bình">Trung bình</option>
+            <option value="Yếu">Yếu</option>
+            <option value="Kém">Kém</option>
+        </select>
         <input type="submit" value="Tìm">
     </form>
+
 <div id="statspdf">
     {% if statsDiemrenluyen %}
         {% for s in statsDiemrenluyen %}
-        <h1 style="color: blue">Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }} , Điểm rèn luyện: {{s.diem_tong}}</h1>
-        {% for stg in statsThamgia %}
-            {% if stg.sinh_vien.mssv == s.sinh_vien.mssv %}
-            <h2 style="color: blue">{{stg.hoat_dong_ngoai_khoa.dieu.ten_dieu}} - {{stg.hoat_dong_ngoai_khoa.diem_ren_luyen}}đ</h2>
-            {% endif %}
-        {% endfor %}
+        <div>
+            <h1 style="color: blue">Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }} , Điểm rèn luyện: {{s.diem_tong}}</h1>
+            {% for stg in statsThamgia %}
+                {% if stg.sinh_vien.mssv == s.sinh_vien.mssv %}
+                <p style="color: blue">{{stg.hoat_dong_ngoai_khoa.dieu.ten_dieu}} - {{stg.hoat_dong_ngoai_khoa.diem_ren_luyen}}đ</p>
+                {% endif %}
+            {% endfor %}
+        </div>
     {% endfor %}
     {% endif %}
 </div>
@@ -46,10 +61,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 <script>
 
+    function AddZero(num) {
+    return (num >= 0 && num < 10) ? "0" + num : num + "";
+}
+
     function exportToPDF() {
-    console.info(statspdf)
+    {% for s in statsDiemrenluyen %}
+        hk = document.getElementById('hocky').value
+        nh = document.getElementById('namhoc').value
+    {% endfor %}
+
+    var now = new Date();
+    var strDateTime = [[AddZero(now.getDate()),
+        AddZero(now.getMonth() + 1),
+        now.getFullYear()].join("/"),
+        [AddZero(now.getHours()),
+        AddZero(now.getMinutes())].join(":"),
+        now.getHours() >= 12 ? "PM" : "AM"].join(" ");
+
     var config = {
-        filename: 'stats.pdf',
+        filename: `stats_${hk}_${nh}_${strDateTime}.pdf`,
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     }
@@ -61,10 +92,10 @@
           const ctx = document.getElementById('myChart');
             let labels = [];
             let data = [];
-            {% if statsThanhTich%}
-                {% for s in statsThanhTich %}
+            {% if statsCountThanhTich%}
+                {% for s in statsCountThanhTich %}
                 labels.push('{{ s.thanh_tich }}')
-                data.push({{ s.count }})
+                data.push({{ s.count_thanhTich }})
                 {% endfor %}
             {% endif %}
           new Chart(ctx, {

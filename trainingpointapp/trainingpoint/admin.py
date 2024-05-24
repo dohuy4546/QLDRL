@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import Count, When, Case, Value, CharField
 from django.template.response import TemplateResponse
 from django.utils.html import mark_safe
+from rest_framework import permissions
 
 from trainingpoint.models import *
 from django import forms
@@ -21,25 +22,30 @@ class MyAdminSite(admin.AdminSite):
         lops = Lop.objects.all()
         hockynamhocs = HocKy_NamHoc.objects.all()
 
-        if request.POST.get('malop'):
+        if request.POST.get('malop') and request.POST.get('malop') != "Lớp":
             malop = request.POST.get('malop')
         else:
             malop = ""
 
-        if request.POST.get('hocky'):
+        if request.POST.get('hocky') and request.POST.get('hocky') != "Học kỳ":
             hocky = int(request.POST.get('hocky'))
         else:
             hocky = 0
 
-        if request.POST.get('namhoc'):
+        if request.POST.get('namhoc') and request.POST.get('namhoc') != "Năm học":
             namhoc = request.POST.get('namhoc')
         else:
             namhoc = ""
+
+        if request.POST.get('thanhtich') and request.POST.get('thanhtich') != "Thành tích":
+            thanhtich = request.POST.get('namhoc')
+        else:
+            thanhtich = ""
         statsDiemrenluyen = (DiemRenLuyen.objects.select_related('sinh_vien', 'hk_nh')
                              .filter(sinh_vien__lop__ma_lop__icontains=malop, hk_nh__hoc_ky=hocky,
                                      hk_nh__nam_hoc=namhoc))
 
-        statsThanhtich = (statsDiemrenluyen
+        statsCountThanhTich = (statsDiemrenluyen
                           .annotate(thanh_tich=Case(
             When(diem_tong__gte=90, then=Value("Xuất sắc")),
             When(diem_tong__gte=80, then=Value("Giỏi")),
@@ -48,17 +54,31 @@ class MyAdminSite(admin.AdminSite):
             When(diem_tong__gte=50, then=Value("Yếu")),
             default=Value("Kém"),
             output_field=CharField(max_length=50)
-        )).values('thanh_tich').annotate(count=Count('thanh_tich')))
+        )).values('thanh_tich').annotate(count_thanhTich=Count('thanh_tich')))
 
         statsThamgia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
                         .filter(state=1))
 
+        statsThanhTich = (statsDiemrenluyen
+                        .annotate(thanh_tich=Case(
+            When(diem_tong__gte=90, then=Value("Xuất sắc")),
+            When(diem_tong__gte=80, then=Value("Giỏi")),
+            When(diem_tong__gte=70, then=Value("Khá")),
+            When(diem_tong__gte=60, then=Value("Trung bình")),
+            When(diem_tong__gte=50, then=Value("Yếu")),
+            default=Value("Kém"),
+            output_field=CharField(max_length=50)
+        )).filter(thanh_tich__icontains=thanhtich))
+
+        print(statsThanhTich)
         return TemplateResponse(request, 'admin/stats.html', {
             'statsDiemrenluyen': statsDiemrenluyen,
-            'statsThanhTich': statsThanhtich,
+            'statsCountThanhTich': statsCountThanhTich,
             'statsThamgia': statsThamgia,
+            'statsThanhTich': statsThanhTich,
             'lops': lops,
             'hockynamhocs': hockynamhocs
+
         })
 
 

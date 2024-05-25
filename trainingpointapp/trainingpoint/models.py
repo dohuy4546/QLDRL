@@ -77,7 +77,6 @@ class SinhVien(BaseModel):
     gioi_tinh = models.IntegerField(choices=GioiTinhChoices)
     dia_chi = models.TextField()
     lop = models.ForeignKey(Lop, on_delete=models.CASCADE)
-    tai_khoan = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.ho_ten
@@ -86,7 +85,7 @@ class SinhVien(BaseModel):
 class Dieu(BaseModel):
     ma_dieu = models.CharField(max_length=10, unique=True)
     ten_dieu = models.CharField(max_length=255)
-
+    diem_toi_da = models.IntegerField(default=30)
     def __str__(self):
         return self.ten_dieu
 
@@ -142,7 +141,8 @@ class ThamGia(models.Model):
 class MinhChung(BaseModel):
     description = RichTextField()
     anh_minh_chung = CloudinaryField()
-    tham_gia = models.ForeignKey(ThamGia, on_delete=models.CASCADE)
+    tham_gia = models.ForeignKey(ThamGia, on_delete=models.CASCADE,
+                                 limit_choices_to={'state': ThamGia.StateChoices.BaoThieu})
 
 
 class Tag(BaseModel):
@@ -156,7 +156,8 @@ class BaiViet(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField(null=True)
     image = CloudinaryField()
-    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE, limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
+    tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE,
+                               limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
     hoat_dong_ngoai_khoa = models.ForeignKey(HoatDongNgoaiKhoa, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True, related_name='baiviets')
 

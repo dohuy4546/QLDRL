@@ -1,0 +1,57 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<h1>Thống kê điểm rèn luyện</h1>
+<div>
+    <form method="POST" action="{% url 'admin:sinhvien_info_view' %}">
+        {% csrf_token %}
+        <input type="text" placeholder="Mã số sinh viên" name="mssv">
+        <select id="hocky" name="hocky">
+            {% for hk in hockynamhocs %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+
+        <select id="namhoc" name="namhoc">
+            {% for nh in hockynamhocs %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Tìm">
+    </form>
+    <div id="sinhVienInfo">
+        {% if listThamGia %}
+        <ul>
+            {% with tongDiemTatCaDieu=0 %}
+            {% for dieu in listDieu %}
+                <li>{{ dieu.ten_dieu }}:
+                    <ol>
+                        {% with tongDiem=0 %}
+                            {% for thamgia in listThamGia %}
+                                {% if thamgia.hoat_dong_ngoai_khoa.dieu == dieu %}
+                                    {% if tongDiem <= 30 %}
+                                        {% with tongDiem=tongDiem|add:thamgia.hoat_dong_ngoai_khoa.diem_ren_luyen %}
+                                        {% endwith %}
+                                    {% endif %}
+                                <li>Tên hoạt động: {{ thamgia.hoat_dong_ngoai_khoa.ten_hoat_dong }}</li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if tongDiem <= 30 %}
+                                {% with tongDiemTatCaDieu=tongDiemTatCaDieu|add:tongDiem %}
+                                {% endwith %}
+                            {% else %}
+                                {% with tongDiemTatCaDieu=tongDiemTatCaDieu|add:30 %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
+                    </ol>
+                    Tổng điểm {{ dieu.ten_dieu }}: {% if tongDiem <= 30 %} {{ tongDiem }} {% else %} 15 {% endif %}
+                </li>
+
+            {% endfor %}
+            <li>Tổng điểm rèn luyện: {{tongDiemTatCaDieu}}</li>
+            {%  endwith %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

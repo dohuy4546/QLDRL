@@ -9,8 +9,10 @@ import RenderHTML from 'react-native-render-html';
 import moment from 'moment';
 import 'moment/locale/vi'
 import { useNavigation } from '@react-navigation/native';
+import MyContext from '../../configs/MyContext';
 
 const BaiViet = (props) => {
+    const [, , role] = React.useContext(MyContext);
     const [expanded, setExpanded] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [baiViet, setBaiViet] = useState(null);
@@ -18,7 +20,8 @@ const BaiViet = (props) => {
     const [baiVietId, setBaiVietId] = useState(null);
     const [liked, setLiked] = useState(false);
     const [active, setActive] = useState(false);
-    const [isThamGia, setIsThamGia] = useState(false);
+    const [isDangKy, setIsDangKy] = useState(false);
+    const [isDiemDanh, setIsDiemDanh] = useState(false);
     const { width } = useWindowDimensions();
     const navigation = useNavigation();
 
@@ -58,39 +61,59 @@ const BaiViet = (props) => {
             }
             res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong.id));
             if (res.status == '200') {
-                setIsThamGia(true);
+                setIsDangKy(true);
             }
         } catch (ex) {
-            console.log("Lỗi lòi lz");
         }
     }
 
     const handleThamGia = async (hoatdong_id) => {
         try {
-            if (isThamGia == true) {
-                const token = await AsyncStorage.getItem("access-token");
+            const token = await AsyncStorage.getItem("access-token");
+            let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong_id));
+            let isDiemDanh = res.data.state;
+            if (isDiemDanh != 1 && isDiemDanh != 2) {
                 let res = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](hoatdong_id));
-                Alert.alert("Hủy đăng ký thành công!");
-                setIsThamGia(false);
-            } else {
-                navigation.replace("Main", {
-                    screen: 'Stack',
-                    params: {
-                        screen: 'ChiTietHoatDong',
-                        params: {
-                            hoatdong: hoatdong_id
-                        }
-                    }
-                });
+                if (isDangKy == true) {
+                    Alert.alert("Hủy đăng ký thành công!");
+                } else {
+                    Alert.alert("Đăng ký thành công!");
+                }
+                setIsDangKy(!isDangKy);
             }
         } catch (ex) {
-            console.log(ex);
         }
+    }
+
+    // navigation.replace("Main", {
+    //     screen: 'Stack',
+    //     params: {
+    //         screen: 'ChiTietHoatDong',
+    //         params: {
+    //             hoatdong: hoatdong_id
+    //         }
+    //     }
+    // });
+
+    const checkIsDiemDanh = async (id) => {
+        try {
+            const token = await AsyncStorage.getItem("access-token");
+            let h = await authAPI(token).get(endpoints['bai_viet_hoat_dong'](id));
+            let hoatdong = h.data.id;
+            let res = await authAPI(token).get(endpoints['current_thamgia'](hoatdong));
+            let isThamGia = res.data.state;
+            if (isThamGia == 1) {
+                setIsDiemDanh(true);
+            }
+        } catch (ex) {
+        }
+
     }
 
 
     React.useEffect(() => {
         if (props && props.baiviet) {
+            checkIsDiemDanh(props.baiviet.id);
             getAuthor(props.baiviet.id);
             getStateHoatDong(props.baiviet.id);
             setLiked(props.baiviet.liked);
@@ -134,13 +157,15 @@ const BaiViet = (props) => {
                 )}
                 <Image source={{ uri: baiViet.image }} style={Styles.image} />
                 <View style={Styles.bottom}>
-                    <PaperButton
-                        mode={isThamGia ? 'contained' : 'elevated'}
-                        style={{ marginRight: 5, borderRadius: 10 }}
-                        onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
-                    >
-                        {isThamGia ? 'Hủy đăng ký' : 'Đăng ký'}
-                    </PaperButton>
+                    {role == 1 &&
+                        <PaperButton
+                            mode={isDangKy ? 'contained' : 'elevated'}
+                            style={{ marginRight: 5, borderRadius: 10 }}
+                            onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
+                            disabled={isDiemDanh}
+                        >
+                            {!isDiemDanh ? isDangKy ? 'Hủy đăng ký' : 'Đăng ký' : 'Đã tham gia'}
+                        </PaperButton>}
                     <PaperButton
                         icon={liked ? 'thumb-up' : 'thumb-up-outline'}
                         size={24}

@@ -37,7 +37,6 @@ export default function App({ navigation }) {
           "type": "login",
           "payload": user.data
         });
-        setIsAuthenticated(true);
         setRole(user.data.role);
       } else {
         console.log('Không tìm thấy token trong AsyncStorage');
@@ -53,19 +52,19 @@ export default function App({ navigation }) {
   }, []);
 
   return (
-    <MyContext.Provider value={[user, dispatch, isAuthenticated, setIsAuthenticated, role, setRole]}>
+    <MyContext.Provider value={[user, dispatch, role, setRole]}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{
           headerTitle: 'Quản lý điểm rèn luyện'
         }}>
-          {isAuthenticated && <Stack.Screen name="Main" component={Main} options={{ headerRight: DangXuat }} />}
-          {!isAuthenticated && <Stack.Screen name="DangNhap" component={DangNhap} />}
+          {user != null && <Stack.Screen name="Main" component={Main} options={{ headerRight: DangXuat }} />}
+          {user == null && <Stack.Screen name="DangNhap" component={DangNhap} />}
           <Stack.Screen name="BaiViet" component={BaiViet} />
           <Stack.Screen name="DangKy" component={DangKy} />
           <Stack.Screen name="OTP" component={OTP} />
           <Stack.Screen name="ThemTaiKhoanTroLy" component={ThemTroLySinhVien} />
 
-          
+
         </Stack.Navigator>
       </NavigationContainer>
     </MyContext.Provider>

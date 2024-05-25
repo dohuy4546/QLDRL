@@ -41,8 +41,9 @@ class HoatDongNgoaiKhoaSerializer(serializers.ModelSerializer):
 
 
 class ThamGiaSerializer(serializers.ModelSerializer):
-    sinh_vien=SinhVienSerializer()
-    hoat_dong_ngoai_khoa=HoatDongNgoaiKhoaSerializer()
+    sinh_vien = SinhVienSerializer()
+    hoat_dong_ngoai_khoa = HoatDongNgoaiKhoaSerializer()
+
     class Meta:
         model = ThamGia
         fields = '__all__'
@@ -143,7 +144,8 @@ class MinhChungSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['anh_minh_chung'] = instance.anh_minh_chung.url
-
+        print(rep)
+        print(instance)
         return rep
 
     class Meta:

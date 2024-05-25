@@ -25,9 +25,9 @@ export default StyleSheet.create({
         flexWrap: "wrap"
     }, margin: {
         margin: 5
-    }, avatar: {
-        width: 80,
-        height: 80,
+    }, anh_minh_chung: {
+        width: '100%',
+        height: 300,
         borderRadius: 20
     }, background_item: {
         backgroundColor: myTheme.colors.background
@@ -45,5 +45,17 @@ export default StyleSheet.create({
     },
     color_outline: {
         color: myTheme.colors.secondaryContainer
+    }, margin_bottom_40: {
+        marginBottom: 40
+    }, margin_bottom_20: {
+        marginBottom: 20
+    }, align_item_center: {
+        alignItems: "center"
+    }, justify_content_center: {
+        justifyContent: "center"
+    }, m_20: {
+        margin: 20
+    }, mt_50: {
+        marginTop: 50
     }
 });

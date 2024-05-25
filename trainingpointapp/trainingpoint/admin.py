@@ -61,23 +61,23 @@ class MyAdminSite(admin.AdminSite):
         lops = Lop.objects.all()
         hockynamhocs = HocKy_NamHoc.objects.all()
 
-        if request.POST.get('malop') and request.POST.get('malop') != "Lớp":
+        if request.POST.get('malop'):
             malop = request.POST.get('malop')
         else:
             malop = ""
 
-        if request.POST.get('hocky') and request.POST.get('hocky') != "Học kỳ":
+        if request.POST.get('hocky'):
             hocky = int(request.POST.get('hocky'))
         else:
             hocky = 0
 
-        if request.POST.get('namhoc') and request.POST.get('namhoc') != "Năm học":
+        if request.POST.get('namhoc') :
             namhoc = request.POST.get('namhoc')
         else:
             namhoc = ""
 
-        if request.POST.get('thanhtich') and request.POST.get('thanhtich') != "Thành tích":
-            thanhtich = request.POST.get('namhoc')
+        if request.POST.get('thanhtich'):
+            thanhtich = request.POST.get('thanhtich')
         else:
             thanhtich = ""
         statsDiemrenluyen = (DiemRenLuyen.objects.select_related('sinh_vien', 'hk_nh')
@@ -98,18 +98,29 @@ class MyAdminSite(admin.AdminSite):
         statsThamgia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
                         .filter(state=1))
 
-        statsThanhTich = (statsDiemrenluyen
-                        .annotate(thanh_tich=Case(
-            When(diem_tong__gte=90, then=Value("Xuất sắc")),
-            When(diem_tong__gte=80, then=Value("Giỏi")),
-            When(diem_tong__gte=70, then=Value("Khá")),
-            When(diem_tong__gte=60, then=Value("Trung bình")),
-            When(diem_tong__gte=50, then=Value("Yếu")),
-            default=Value("Kém"),
-            output_field=CharField(max_length=50)
-        )).filter(thanh_tich__icontains=thanhtich))
 
-        print(statsThanhTich)
+        filtered_hk_nh = (DiemRenLuyen.objects.select_related('sinh_vien', 'hk_nh')
+                         .filter(hk_nh__hoc_ky=hocky, hk_nh__nam_hoc=namhoc)
+            .annotate(
+            thanh_tich=Case(
+                When(diem_tong__gte=90, then=Value("Xuất sắc")),
+                When(diem_tong__gte=80, then=Value("Giỏi")),
+                When(diem_tong__gte=70, then=Value("Khá")),
+                When(diem_tong__gte=60, then=Value("Trung bình")),
+                When(diem_tong__gte=50, then=Value("Yếu")),
+                default=Value("Kém"),
+                output_field=CharField(max_length=50)
+            )
+        ))
+
+        # Lọc theo thành tích và nhóm theo `ma_lop` và `thanh_tich`
+        statsThanhTich = (filtered_hk_nh.filter(
+            thanh_tich__icontains=thanhtich)
+                          .values('sinh_vien__lop__ma_lop')
+                          .annotate(count=Count('id'),)
+                          .order_by('sinh_vien__lop__ma_lop'))
+
+        # print(statsThanhTich)
         return TemplateResponse(request, 'admin/stats.html', {
             'statsDiemrenluyen': statsDiemrenluyen,
             'statsCountThanhTich': statsCountThanhTich,
@@ -169,6 +180,7 @@ class MinhChungAdmin(admin.ModelAdmin):
             minhchung.delete()
 
     unconfirm_missing.short_description = "Hủy xác nhận báo thiếu"
+
 
 class ThamGiaResource(ModelResource):
     sinh_vien_mssv = Field(attribute='sinh_vien__mssv', column_name='MSSV')

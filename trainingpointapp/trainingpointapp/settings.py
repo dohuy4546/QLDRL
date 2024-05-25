@@ -101,9 +101,9 @@ WSGI_APPLICATION = 'trainingpointapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'trainingpointdb2',
+        'NAME': 'trainingpointdb',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'Abc111@',
         # Abc111@
         'HOST': ''  # mặc định localhost
     }

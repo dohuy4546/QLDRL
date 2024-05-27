@@ -103,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'trainingpointdb',
         'USER': 'root',
-        'PASSWORD': 'Abc111@',
+        'PASSWORD': '123456',
         # Abc111@
         'HOST': ''  # mặc định localhost
     }

@@ -20,13 +20,7 @@ class TaiKhoan(AbstractUser):
         return self.username
 
     def save(self, *args, **kwargs):
-        # Call the parent class's save method
-        super().save(*args, **kwargs)
-
-        # Set password using set_password method
         self.set_password(self.password)
-
-        # Save the user
         super().save(*args, **kwargs)
 
 

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.db.models import Count, When, Case, Value, CharField
 from django.template.response import TemplateResponse
 from django.utils.html import mark_safe
@@ -24,38 +25,7 @@ class MyAdminSite(admin.AdminSite):
     site_header = 'iTrainingPoint'
 
     def get_urls(self):
-        return [path('diemrenluyen-stats/', self.stats_view, name='stats_view'),
-                path('sinhvien-info/', self.sinhvien_info_view, name='sinhvien_info_view'), ] + super().get_urls()
-
-    def sinhvien_info_view(self, request):
-        hockynamhocs = HocKy_NamHoc.objects.all()
-        listDieu = Dieu.objects.all()
-
-        if request.POST.get('mssv'):
-            mssv = request.POST.get('mssv')
-        else:
-            mssv = ""
-
-        if request.POST.get('hocky'):
-            hocky = int(request.POST.get('hocky'))
-        else:
-            hocky = 0
-
-        if request.POST.get('namhoc'):
-            namhoc = request.POST.get('namhoc')
-        else:
-            namhoc = ""
-
-        hk_nh = HocKy_NamHoc.objects.get(hoc_ky=hocky, nam_hoc=namhoc)
-
-        listThamGia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
-                       .filter(state=1, sinh_vien__mssv=mssv, hoat_dong_ngoai_khoa__hk_nh=hk_nh))
-
-        return TemplateResponse(request, 'admin/sinhvien-info.html', {
-            'listDieu': listDieu,
-            'hockynamhocs': hockynamhocs,
-            'listThamGia': listThamGia,
-        })
+        return [path('diemrenluyen-stats/', self.stats_view, name='stats_view')] + super().get_urls()
 
     def stats_view(self, request):
         lops = Lop.objects.all()
@@ -71,7 +41,7 @@ class MyAdminSite(admin.AdminSite):
         else:
             hocky = 0
 
-        if request.POST.get('namhoc') :
+        if request.POST.get('namhoc'):
             namhoc = request.POST.get('namhoc')
         else:
             namhoc = ""
@@ -85,7 +55,7 @@ class MyAdminSite(admin.AdminSite):
                                      hk_nh__nam_hoc=namhoc))
 
         statsCountThanhTich = (statsDiemrenluyen
-                          .annotate(thanh_tich=Case(
+                               .annotate(thanh_tich=Case(
             When(diem_tong__gte=90, then=Value("Xuất sắc")),
             When(diem_tong__gte=80, then=Value("Giỏi")),
             When(diem_tong__gte=70, then=Value("Khá")),
@@ -98,10 +68,9 @@ class MyAdminSite(admin.AdminSite):
         statsThamgia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
                         .filter(state=1))
 
-
         filtered_hk_nh = (DiemRenLuyen.objects.select_related('sinh_vien', 'hk_nh')
-                         .filter(hk_nh__hoc_ky=hocky, hk_nh__nam_hoc=namhoc)
-            .annotate(
+        .filter(hk_nh__hoc_ky=hocky, hk_nh__nam_hoc=namhoc)
+        .annotate(
             thanh_tich=Case(
                 When(diem_tong__gte=90, then=Value("Xuất sắc")),
                 When(diem_tong__gte=80, then=Value("Giỏi")),
@@ -117,7 +86,7 @@ class MyAdminSite(admin.AdminSite):
         statsThanhTich = (filtered_hk_nh.filter(
             thanh_tich__icontains=thanhtich)
                           .values('sinh_vien__lop__ma_lop')
-                          .annotate(count=Count('id'),)
+                          .annotate(count=Count('id'), )
                           .order_by('sinh_vien__lop__ma_lop'))
 
         # print(statsThanhTich)
@@ -143,12 +112,38 @@ class MinhChungForm(forms.ModelForm):
         fields = '__all__'
 
 
+class GroupInline(admin.TabularInline):
+    model = TaiKhoan.groups.through
+    extra = 1
+
+
 class TaiKhoanAdmin(admin.ModelAdmin):
     readonly_fields = ['my_avatar']
+    inlines = [GroupInline]
 
     def my_avatar(self, taikhoan):
         if taikhoan.avatar:
             return mark_safe(f"<img width='200' src='{taikhoan.avatar.url}' />")
+
+    def has_add_permission(self, request):
+        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and request.POST.get('is_superuser'):
+            return False
+        return super().has_add_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and obj and obj.is_superuser:
+            return False
+        return super().has_view_permission(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and obj and obj.is_superuser:
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and obj and obj.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
 
 
 class MinhChungAdmin(admin.ModelAdmin):
@@ -210,8 +205,6 @@ class HoatDongNgoaiKhoaAdmin(ExportActionMixin, admin.ModelAdmin):
         return response
 
 
-
-
 class ImportResource(resources.ModelResource):
     class Meta:
         model = ThamGia
@@ -232,6 +225,7 @@ class ThamGiaAdmin(ImportExportModelAdmin):
 
 
 admin_site.register(TaiKhoan, TaiKhoanAdmin)
+admin_site.register(Group)
 admin_site.register(Khoa)
 admin_site.register(Lop)
 admin_site.register(SinhVien)

@@ -126,7 +126,8 @@ class TaiKhoanAdmin(admin.ModelAdmin):
             return mark_safe(f"<img width='200' src='{taikhoan.avatar.url}' />")
 
     def has_add_permission(self, request):
-        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and request.POST.get('is_superuser'):
+        if request.user.groups.filter(name='Chuyên viên công tác sinh viên').exists() and request.POST.get(
+                'is_superuser'):
             return False
         return super().has_add_permission(request)
 
@@ -224,13 +225,38 @@ class ThamGiaAdmin(ImportExportModelAdmin):
     resource_class = ImportResource
 
 
+class HocKyNamHocAdmin(admin.ModelAdmin):
+    actions = ["tinh_diem_ren_luyen"]
+
+    def tinh_diem_ren_luyen(self, request, queryset):
+        for hocky_namhoc in queryset:
+            sinhvienset = SinhVien.objects.all()
+            for sinhvien in sinhvienset:
+                diemTong = 0
+                dieuset = Dieu.objects.all()
+                for dieu in dieuset:
+                    diemDieu = 0
+                    thamgiaset = ThamGia.objects.filter(hoat_dong_ngoai_khoa__hk_nh=hocky_namhoc,
+                                                        hoat_dong_ngoai_khoa__dieu=dieu, state=1, sinh_vien=sinhvien)
+                    for thamgia in thamgiaset:
+                        diemDieu += thamgia.hoat_dong_ngoai_khoa.diem_ren_luyen
+                    if diemDieu > dieu.diem_toi_da:
+                        diemDieu = dieu.diem_toi_da
+                    diemTong += diemDieu
+                diemRenLuyen, created = DiemRenLuyen.objects.update_or_create(
+                    sinh_vien=sinhvien,
+                    hk_nh=hocky_namhoc,
+                    defaults={'diem_tong': diemTong}
+                )
+
+
 admin_site.register(TaiKhoan, TaiKhoanAdmin)
 admin_site.register(Group)
 admin_site.register(Khoa)
 admin_site.register(Lop)
 admin_site.register(SinhVien)
 admin_site.register(Dieu)
-admin_site.register(HocKy_NamHoc)
+admin_site.register(HocKy_NamHoc, HocKyNamHocAdmin)
 admin_site.register(HoatDongNgoaiKhoa, HoatDongNgoaiKhoaAdmin)
 admin_site.register(ThamGia, ThamGiaAdmin)
 admin_site.register(MinhChung, MinhChungAdmin)

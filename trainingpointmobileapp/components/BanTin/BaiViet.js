@@ -64,6 +64,7 @@ const BaiViet = (props) => {
                 setIsDangKy(true);
             }
         } catch (ex) {
+            return;
         }
     }
 

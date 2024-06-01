@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import OTP from './components/TaiKhoan/OTP';
 import MyContext from './configs/MyContext';
-import ThemTroLySinhVien from './components/Home/ThemTroLySinhVien';
 import MyUserReducer from './reducers/MyUserReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DangNhap from './components/TaiKhoan/DangNhap';
@@ -23,7 +22,6 @@ const Stack = createNativeStackNavigator();
 
 export default function App({ navigation }) {
   const [user, dispatch] = React.useReducer(MyUserReducer, null);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [role, setRole] = React.useState();
 
   const getAccessToken = async () => {
@@ -48,7 +46,6 @@ export default function App({ navigation }) {
 
   React.useEffect(() => {
     getAccessToken();
-    console.log(isAuthenticated);
   }, []);
 
   return (
@@ -59,12 +56,8 @@ export default function App({ navigation }) {
         }}>
           {user != null && <Stack.Screen name="Main" component={Main} options={{ headerRight: DangXuat }} />}
           {user == null && <Stack.Screen name="DangNhap" component={DangNhap} />}
-          <Stack.Screen name="BaiViet" component={BaiViet} />
           <Stack.Screen name="DangKy" component={DangKy} />
           <Stack.Screen name="OTP" component={OTP} />
-          <Stack.Screen name="ThemTaiKhoanTroLy" component={ThemTroLySinhVien} />
-
-
         </Stack.Navigator>
       </NavigationContainer>
     </MyContext.Provider>

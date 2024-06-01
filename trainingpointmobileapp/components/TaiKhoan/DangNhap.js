@@ -17,8 +17,8 @@ const DangNhap = ({ navigation }) => {
             let res = await APIs.post(endpoints['dang_nhap'], {
                 'username': username,
                 'password': password,
-                'client_id': "OExYmZeWgGVkOh9VNlZ0EhJHH0xU4nvvPHnRQmuW",
-                'client_secret': "aTb4HYnfulQ38Mz1ZS0ZfbjJWq5pfAjB2NPWeqltioGDbdTVLgT1eWF2f4NDUwKWmQwyAXlkX1K854qcBrOC9zoAa8Vfsxxhmus6rZNqj0LtpOGhvOAnx11dwXQESj8R",
+                'client_id': "gSyJ0fZ4vNY2ULgKf3QpY2iqjJbPuqbo4PvK63Yt",
+                'client_secret': "FpZOpVQqwEyoH3K3bEkHkLDFNTm88M05dbPYERPY4cfzAUbGMT8hj3j1BA8JVymQsNkym4uSyI7jAExlhjA4ohb4LTgGa65EZnFPx55niUtJZVbom2NcJY1I1JgnXUMX",
                 "grant_type": "password"
             }, {
                 headers: {

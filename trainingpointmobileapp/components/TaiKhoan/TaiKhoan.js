@@ -10,12 +10,12 @@ const TaiKhoan = () => {
     const [user] = useContext(MyContext);
 
     return (
-        <Card style={{alignItems: "center"}}>
+        <Card style={{ alignItems: "center" }}>
             <Card.Title title="Thông tin tài khoản" />
             <Card.Cover style={Styles.avatar} source={{ uri: `${user.avatar}` }} />
             <Card.Content>
-            <Text variant="titleLarge">{`${user.first_name} ${user.last_name}`}</Text>
-            <Text variant="bodyMedium">{user.email}</Text>
+                <Text variant="titleLarge">{`${user.username}`}</Text>
+                <Text variant="bodyMedium">{user.email}</Text>
             </Card.Content>
         </Card>
     )

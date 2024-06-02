@@ -3,7 +3,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { View, StyleSheet } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import BanTin from '../BanTin/BanTin';
-import ThemTroLySinhVien from './ThemTroLySinhVien';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import OTP from '../TaiKhoan/OTP';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,13 +16,6 @@ import MinhChungBaoThieu from '../BaoThieu/MinhChungBaoThieu';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
-const StackNavigator = () => (
-    <Stack.Navigator initialRouteName="OTP" screenOptions={{ unmountOnBlur: true }} >
-        <Stack.Screen name="ChiTietHoatDong" component={ChiTietHoatDong} options={{ headerShown: false }} />
-        <Stack.Screen name="OTP" component={OTP} options={{ headerShown: false }} />
-    </Stack.Navigator>
-);
 
 const HoatDongStackNavigator = () => (
     <Stack.Navigator >
@@ -117,16 +109,6 @@ const Main = ({ navigation }) => {
                         return <Icon name="calendar-alert" size={size} color={color} />;
                     },
                 }} />
-            {role != 1 && <Tab.Screen
-                name="ThemTroLySinhVien"
-                component={ThemTroLySinhVien}
-                options={{
-                    tabBarLabel: 'Thêm trợ lý',
-                    tabBarIcon: ({ color, size }) => {
-                        return <Icon name="cog" size={size} color={color} />;
-                    },
-                }}
-            />}
             <Tab.Screen
                 name="Profile"
                 component={TaiKhoan}

@@ -103,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'trainingpointdb',
         'USER': 'root',
-        'PASSWORD': 'Abc111@',
+        'PASSWORD': '123456',
         # Abc111@
         'HOST': ''  # mặc định localhost
     }
@@ -160,5 +160,5 @@ EMAIL_HOST_USER = 'dohuy4547@gmail.com'  # Thay bằng email của bạn
 EMAIL_HOST_PASSWORD = 'fmhu gltf mnrn vwrs'  # Thay bằng mật khẩu của bạn
 
 
-CLIENT_ID = 'OExYmZeWgGVkOh9VNlZ0EhJHH0xU4nvvPHnRQmuW'
-CLIENT_SECRET = 'aTb4HYnfulQ38Mz1ZS0ZfbjJWq5pfAjB2NPWeqltioGDbdTVLgT1eWF2f4NDUwKWmQwyAXlkX1K854qcBrOC9zoAa8Vfsxxhmus6rZNqj0LtpOGhvOAnx11dwXQESj8R'
+CLIENT_ID = 'gSyJ0fZ4vNY2ULgKf3QpY2iqjJbPuqbo4PvK63Yt'
+CLIENT_SECRET = 'FpZOpVQqwEyoH3K3bEkHkLDFNTm88M05dbPYERPY4cfzAUbGMT8hj3j1BA8JVymQsNkym4uSyI7jAExlhjA4ohb4LTgGa65EZnFPx55niUtJZVbom2NcJY1I1JgnXUMX'

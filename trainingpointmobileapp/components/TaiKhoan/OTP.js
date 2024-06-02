@@ -50,7 +50,7 @@ const OTP = ({ route, navigation }) => {
     const handleSubmit = () => {
         const otpString = otp.join('');
         if (otpString == randomOTP) {
-            navigation.navigate('DangKy', { success: true });
+            navigation.replace('DangKy', { success: true });
         } else {
             Alert.alert("Mã OTP nhập không đúng!", "Vui lòng kiểm tra lại OTP");
         }

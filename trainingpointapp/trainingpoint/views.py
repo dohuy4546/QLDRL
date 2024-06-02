@@ -243,7 +243,7 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             sinhvien = SinhVien.objects.get(email=request.user.email)
             thamgia = ThamGia.objects.get(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
             return Response(serializers.ThamGiaSerializer(thamgia).data, status=status.HTTP_200_OK)
-        except ThamGia.DoesNotExist:
+        except (ThamGia.DoesNotExist, SinhVien.DoesNotExist):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'], url_path='danhsach')
@@ -373,8 +373,7 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
     @action(methods=['get'], url_path='tac_gia', detail=True)
     def getTacGia(self, request, pk):
         baiviet = self.get_object()
-        print(baiviet.id)
-        tacgia = TaiKhoan.objects.get(id=baiviet.id)
+        tacgia = TaiKhoan.objects.get(id=baiviet.tro_ly.id)
         return Response(serializers.TaiKhoanSerializer(tacgia).data,
                         status=status.HTTP_200_OK)
 

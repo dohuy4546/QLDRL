@@ -23,6 +23,7 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
             });
             setComment('');
             setHeight(45);
+            setPage(1);
             getComments(baiviet);
         }
     };
@@ -30,6 +31,7 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
     const getComments = async (id) => {
         setLoading(true);
         try {
+            console.log(page);
             if (page > 0) {
                 const token = await AsyncStorage.getItem("access-token");
                 let res = await authAPI(token).get(`${endpoints['comments'](id)}?page=${page}`);
@@ -54,8 +56,6 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
         } finally {
             setLoading(false);
         }
-
-        // console.log(comments[0].taikhoan.id);
     }
 
     const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {

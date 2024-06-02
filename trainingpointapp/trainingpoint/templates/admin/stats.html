@@ -1,6 +1,7 @@
 {% extends 'admin/base_site.html' %}
 {% block content %}
 <h1>Thống kê điểm rèn luyện</h1>
+
 <div>
     <form method="POST" action="{% url 'admin:stats_view' %}">
         {% csrf_token %}
@@ -29,6 +30,11 @@
             <option value="Yếu">Yếu</option>
             <option value="Kém">Kém</option>
         </select>
+        <select id="tenkhoa" name="tenkhoa">
+           {% for k in khoa %}
+            <option value="{{k.ten_khoa}}">{{k.ten_khoa}}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="Tìm">
     </form>
 
@@ -43,11 +49,17 @@
         {% endfor %}
     </div>
     {% endfor %}
-    <div style="width: 50%;">
-         <canvas id="myChart"></canvas>
-    </div>
-    <div style="width: 50%;">
-         <canvas id="chartThanhTich"></canvas>
+    <div style="margin-top: 50px;">
+            <div style="margin-bottom: 50px;">
+                <canvas id="myChart" width="200" height="100"></canvas>
+            </div>
+            <div style="margin-bottom: 50px;">
+                <canvas id="chartThanhTich" width="200" height="100"></canvas>
+            </div>
+            <div style="margin-bottom: 50px;">
+                <canvas id="chartKhoa" width="200" height="100"></canvas>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -105,6 +117,16 @@
               {% endfor %}
           {% endif %}
 
+          const ctx3 = document.getElementById('chartKhoa');
+          let labels3 = [];
+          let data3 = [];
+          {% if statsKhoa %}
+              {% for k in statsKhoa %}
+                labels3.push('{{ k.thanh_tich }}')
+                data3.push({{ k.count }})
+              {% endfor %}
+          {% endif %}
+
           new Chart(ctx1, {
             type: 'bar',
             data: {
@@ -145,6 +167,25 @@
             }
           });
 
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+              labels: labels3,
+              datasets: [{
+                label: 'Thống kê theo khoa',
+                data: data3,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
     }
 </script>
 {% endblock %}

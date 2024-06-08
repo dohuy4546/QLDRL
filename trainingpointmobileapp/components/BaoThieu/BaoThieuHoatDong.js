@@ -130,7 +130,7 @@ const BaoThieuHoatDong = ({ navigation, route }) => {
                     <>
                         <Searchbar placeholder="Nhập từ khóa..." onChangeText={setMssv} value={mssv} />
                         {loading && <ActivityIndicator />}
-                        {hoatDong.map(hd => {
+                        {mssv != "" && hoatDong.map(hd => {
                             return (
                                 <ItemHoatDong hd={hd} description="Đang báo thiếu" baoThieu={true} daBaoThieu={true} key={`thamgia${hd.id}`} />
                             )

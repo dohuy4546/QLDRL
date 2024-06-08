@@ -3,45 +3,95 @@
 <h1>Thống kê điểm rèn luyện</h1>
 
 <div>
+    <h3>Thống kê toàn trường</h3>
     <form method="POST" action="{% url 'admin:stats_view' %}">
         {% csrf_token %}
-        <select id="hocky" name="hocky">
-            {% for hk in hockynamhocs %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
             <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
             {% endfor %}
         </select>
-        <select id="namhoc" name="namhoc">
-            {% for nh in hockynamhocs %}
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
             <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
             {% endfor %}
         </select>
-    <label for="malop">Chọn lớp: </label>
-        <select id="malop" name="malop">
+        <label>Theo thành tích: </label>
+<!--        <label for="thanhtich">Hoặc chọn thành tích: </label>-->
+<!--        <select id="thanhtich" name="thanhtich">-->
+<!--            <option value="Xuất sắc">Xuất sắc</option>-->
+<!--            <option value="Giỏi">Giỏi</option>-->
+<!--            <option value="Khá">Khá</option>-->
+<!--            <option value="Trung bình">Trung bình</option>-->
+<!--            <option value="Yếu">Yếu</option>-->
+<!--            <option value="Kém">Kém</option>-->
+<!--        </select>-->
+        <input type="submit" value="Tìm">
+    </form>
+
+    <h3>Thống kê theo lớp</h3>
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+        {% csrf_token %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+    <label for="lop">Chọn lớp: </label>
+        <select id="lop" name="malop">
             {% for l in lops %}
             <option value={{l.ma_lop}}>{{l.ma_lop}}</option>
             {% endfor %}
         </select>
-    <label for="thanhtich">Hoặc chọn thành tích: </label>
-        <select id="thanhtich" name="thanhtich">
-            <option value="Xuất sắc">Xuất sắc</option>
-            <option value="Giỏi">Giỏi</option>
-            <option value="Khá">Khá</option>
-            <option value="Trung bình">Trung bình</option>
-            <option value="Yếu">Yếu</option>
-            <option value="Kém">Kém</option>
+        <input type="submit" value="Tìm">
+    </form>
+
+    {% if is_cvctsv %}
+    <h3>Thống kê theo khoa</h3>
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+        {% csrf_token %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
         </select>
-        <select id="tenkhoa" name="tenkhoa">
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+    <label for="khoa">Chọn khoa: </label>
+        <select id="khoa" name="tenkhoa">
            {% for k in khoa %}
             <option value="{{k.ten_khoa}}">{{k.ten_khoa}}</option>
             {% endfor %}
         </select>
         <input type="submit" value="Tìm">
     </form>
-
+    {% endif %}
 <div id="statspdf">
     {% for s in statsDiemrenluyen %}
     <div style="color: blue; font-size: 20px">
-        Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }} , Điểm rèn luyện: {{s.diem_tong}}
+        Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }}, xếp loại:
+        {% if s.diem_tong >= 90 %}
+            Xuất sắc
+        {% elif s.diem_tong >= 80 %}
+            Giỏi
+        {% elif s.diem_tong >= 70 %}
+            Khá
+        {% elif s.diem_tong >= 60 %}
+            Trung bình
+        {% elif s.diem_tong >= 50 %}
+            Yếu
+        {% else %}
+            Kém
+        {% endif %},
+        Điểm rèn luyện: {{s.diem_tong}}
         {% for stg in statsThamgia %}
             {% if stg.sinh_vien.mssv == s.sinh_vien.mssv %}
             ({{stg.hoat_dong_ngoai_khoa.dieu.ten_dieu}} - {{stg.hoat_dong_ngoai_khoa.diem_ren_luyen}}đ)
@@ -49,6 +99,9 @@
         {% endfor %}
     </div>
     {% endfor %}
+    <div style="margin-top: 10px;">
+        <button onclick="exportToPDF()">Xuất PDF</button>
+    </div>
     <div style="margin-top: 50px;">
             <div style="margin-bottom: 50px;">
                 <canvas id="myChart" width="200" height="100"></canvas>
@@ -56,17 +109,16 @@
             <div style="margin-bottom: 50px;">
                 <canvas id="chartThanhTich" width="200" height="100"></canvas>
             </div>
+            {% if is_cvctsv %}
             <div style="margin-bottom: 50px;">
                 <canvas id="chartKhoa" width="200" height="100"></canvas>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 
-<div>
-    <button onclick="exportToPDF()">Xuất PDF</button>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 <script>
@@ -110,10 +162,10 @@
           const ctx2 = document.getElementById('chartThanhTich');
           let labels2 = [];
           let data2 = [];
-          {% if statsThanhTich %}
-              {% for s in statsThanhTich %}
-              labels2.push('{{ s.sinh_vien__lop__ma_lop }}')
-              data2.push({{ s.count }})
+          {% if statsThanhTichLop %}
+              {% for s in statsThanhTichLop %}
+              labels2.push('{{ s.thanh_tich }}')
+              data2.push({{ s.count_thanhTich }})
               {% endfor %}
           {% endif %}
 
@@ -123,7 +175,7 @@
           {% if statsKhoa %}
               {% for k in statsKhoa %}
                 labels3.push('{{ k.thanh_tich }}')
-                data3.push({{ k.count }})
+                data3.push({{ k.count_thanhTich }})
               {% endfor %}
           {% endif %}
 
@@ -132,7 +184,7 @@
             data: {
               labels: labels1,
               datasets: [{
-                label: 'Thống kê theo sinh viên',
+                label: 'Thống kê toàn trường',
                 data: data1,
                 borderWidth: 1,
                 backgroundColor: ['red', 'green', 'blue', 'gold']

@@ -62,6 +62,7 @@ class TaiKhoanSerializer(serializers.ModelSerializer):
         print(rep)
         rep['avatar'] = instance.avatar.url
         return rep
+
     class Meta:
         model = TaiKhoan
         fields = ['id', 'email', 'username', 'password', 'avatar', 'role', 'first_name', 'last_name']
@@ -100,9 +101,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class BaiVietSerializer(ItemSerializer):
+    so_luot_like = serializers.SerializerMethodField()
+
+    def get_so_luot_like(self, bai_viet):
+        return Like.objects.filter(bai_viet=bai_viet).count()
+
     class Meta:
         model = BaiViet
-        fields = ['id', 'title', 'image', 'created_date', 'updated_date', 'tro_ly', 'hoat_dong_ngoai_khoa']
+        fields = ['id', 'title', 'image', 'created_date', 'updated_date', 'tro_ly', 'hoat_dong_ngoai_khoa',
+                  'so_luot_like']
 
 
 class BaivietTagSerializer(BaiVietSerializer):

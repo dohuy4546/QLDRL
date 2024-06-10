@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, useWindowDimensions, Pressable, Alert } from 'react-native';
-import { IconButton, Button as PaperButton } from 'react-native-paper'
+import { Badge, IconButton, Button as PaperButton } from 'react-native-paper'
 import Styles from './Styles';
 import CommentModal from './CommentModal';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
@@ -175,6 +175,7 @@ const BaiViet = (props) => {
                             >
                                 {!isDiemDanh ? (isDangKy ? 'Hủy đăng ký' : 'Đăng ký') : 'Đã tham gia'}
                             </PaperButton>}
+                        <Text style={{ fontSize: 20, marginLeft: 5 }}>{baiViet.so_luot_like}</Text>
                         <PaperButton
                             icon={liked ? 'thumb-up' : 'thumb-up-outline'}
                             size={24}

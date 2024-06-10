@@ -5,7 +5,7 @@ import { TextInput as PaperTextInput, Title, Button as PaperButton } from "react
 import APIs, { endpoints, authAPI } from "../../configs/APIs";
 import MyContext from "../../configs/MyContext";
 import Styles from "./Styles";
-
+import { CLIENT_ID, CLIENT_SECRET } from "@env";
 
 const DangNhap = ({ navigation }) => {
     const [username, setUsername] = useState();
@@ -17,8 +17,8 @@ const DangNhap = ({ navigation }) => {
             let res = await APIs.post(endpoints['dang_nhap'], {
                 'username': username,
                 'password': password,
-                'client_id': "gSyJ0fZ4vNY2ULgKf3QpY2iqjJbPuqbo4PvK63Yt",
-                'client_secret': "FpZOpVQqwEyoH3K3bEkHkLDFNTm88M05dbPYERPY4cfzAUbGMT8hj3j1BA8JVymQsNkym4uSyI7jAExlhjA4ohb4LTgGa65EZnFPx55niUtJZVbom2NcJY1I1JgnXUMX",
+                'client_id': CLIENT_ID,
+                'client_secret': CLIENT_SECRET,
                 "grant_type": "password"
             }, {
                 headers: {

@@ -129,6 +129,11 @@ const QuanLyHoatDong = ({ navigation }) => {
         } else {
             sinhvien = mssv;
         }
+        if (listDieu.length != 0 && hoatDong.length == 0 && sinhvien) {
+            for (dieu of listDieu) {
+                tongDiemDieu[dieu.id] = 0;
+            }
+        }
         if (listDieu.length != 0 && hoatDong.length != 0 && sinhvien) {
             console.log("ok con de");
             for (dieu of listDieu) {

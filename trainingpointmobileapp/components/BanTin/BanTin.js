@@ -32,6 +32,7 @@ const BanTin = ({ route, navigation }) => {
             setLoading(false);
         }
     }
+
     React.useEffect(() => {
         loadBaiViets();
     }, [q, page]);

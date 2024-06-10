@@ -17,8 +17,15 @@ import MinhChungBaoThieu from '../BaoThieu/MinhChungBaoThieu';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+const BanTinStackNavigator = () => (
+    <Stack.Navigator>
+        <Stack.Screen name="BanTin" component={BanTin} options={{ headerShown: false }} />
+        <Stack.Screen name="ChiTietHoatDong" title="Chi tiết hoạt động" component={ChiTietHoatDong} options={{ title: "", headerTransparent: true }} />
+    </Stack.Navigator>
+);
+
 const HoatDongStackNavigator = () => (
-    <Stack.Navigator >
+    <Stack.Navigator>
         <Stack.Screen name="QuanLiHoatDong" component={QuanLyHoatDong} options={{ headerShown: false }} />
         <Stack.Screen name="ChiTietHoatDong" title="Chi tiết hoạt động" component={ChiTietHoatDong} options={{ title: "", headerTransparent: true }} />
     </Stack.Navigator>
@@ -37,6 +44,7 @@ const Main = ({ navigation }) => {
         <Tab.Navigator
             screenOptions={{
                 headerShown: false,
+                unmountOnBlur: true
             }}
             tabBar={({ navigation, state, descriptors, insets }) => (
                 <BottomNavigation.Bar
@@ -81,8 +89,8 @@ const Main = ({ navigation }) => {
             )}
         >
             <Tab.Screen
-                name="BanTin"
-                component={BanTin}
+                name="BanTinStack"
+                component={BanTinStackNavigator}
                 options={{
                     tabBarLabel: 'Bản tin',
                     tabBarIcon: ({ color, size }) => {

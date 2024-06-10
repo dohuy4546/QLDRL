@@ -126,63 +126,71 @@ const BaiViet = (props) => {
     return (
         <View style={[Styles.container, Styles.baiViet]}>
             {author === null ? <></> :
-                <View style={Styles.header}>
-                    <Image source={{ uri: author.avatar }} style={Styles.avatar} />
-                    <View>
-                        <Text numberOfLines={1} ellipsizeMode="tail" style={Styles.username}>
-                            {author.username}
-                        </Text>
-                        <Text style={{ color: 'gray' }} >{moment(baiViet.created_date).fromNow()}</Text>
+                <View style={[Styles.header, { justifyContent: 'space-between' }]}>
+                    <View style={[Styles.header, { width: '70%' }]} >
+                        <Image source={{ uri: author.avatar }} style={Styles.avatar} />
+                        <View>
+                            <Text numberOfLines={1} ellipsizeMode="tail" style={Styles.username}>
+                                {author.username}
+                            </Text>
+                            <Text style={{ color: 'gray' }} >{moment(baiViet.created_date).fromNow()}</Text>
+                        </View>
                     </View>
+                    <PaperButton icon="information-variant" mode='contained' labelStyle={{ marginHorizontal: 15 }}
+                        onPress={() => navigation.navigate("ChiTietHoatDong", {
+                            'hoat_dong_id': baiViet.hoat_dong_ngoai_khoa,
+                            'xuatExcel': role != 1 ? true : null,
+                        })} ></PaperButton>
                 </View>
             }
-            {baiViet === null ? <></> : <>
-                <Text numberOfLines={1} ellipsizeMode="tail" style={Styles.title}>{baiViet.title}</Text>
-                <ScrollView style={{ maxHeight: expanded ? undefined : 50 }}>
-                    <Pressable onPress={toggleExpand}>
-                        <RenderHTML
-                            ellipsizeMode="tail"
-                            style={Styles.content}
-                            onPress={toggleExpand}
-                            source={{ html: baiViet.content }}
-                            contentWidth={width}
-                        />
-                    </Pressable>
-                </ScrollView>
-                {!expanded && (
-                    <Text>...</Text>
-                )}
-                {baiViet.tags.map(h => <Text key={`${baiViet.id}-${h.id}`} style={Styles.hashtag}>#{h.name}</Text>)}
-                {!expanded && (
-                    <PaperButton onPress={toggleExpand}>Xem thêm</PaperButton>
-                )}
-                <Image source={{ uri: baiViet.image }} style={Styles.image} />
-                <View style={Styles.bottom}>
-                    {role == 1 &&
+            {
+                baiViet === null ? <></> : <>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={Styles.title}>{baiViet.title}</Text>
+                    <ScrollView style={{ maxHeight: expanded ? undefined : 50 }}>
+                        <Pressable onPress={toggleExpand}>
+                            <RenderHTML
+                                ellipsizeMode="tail"
+                                style={Styles.content}
+                                onPress={toggleExpand}
+                                source={{ html: baiViet.content }}
+                                contentWidth={width}
+                            />
+                        </Pressable>
+                    </ScrollView>
+                    {!expanded && (
+                        <Text>...</Text>
+                    )}
+                    {baiViet.tags.map(h => <Text key={`${baiViet.id}-${h.id}`} style={Styles.hashtag}>#{h.name}</Text>)}
+                    {!expanded && (
+                        <PaperButton onPress={toggleExpand}>Xem thêm</PaperButton>
+                    )}
+                    <Image source={{ uri: baiViet.image }} style={Styles.image} />
+                    <View style={Styles.bottom}>
+                        {role == 1 &&
+                            <PaperButton
+                                mode={isDangKy ? 'contained' : 'elevated'}
+                                style={{ marginRight: 5, borderRadius: 10 }}
+                                onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
+                                disabled={isDiemDanh}
+                            >
+                                {!isDiemDanh ? (isDangKy ? 'Hủy đăng ký' : 'Đăng ký') : 'Đã tham gia'}
+                            </PaperButton>}
                         <PaperButton
-                            mode={isDangKy ? 'contained' : 'elevated'}
-                            style={{ marginRight: 5, borderRadius: 10 }}
-                            onPress={() => handleThamGia(baiViet.hoat_dong_ngoai_khoa)}
-                            disabled={isDiemDanh}
-                        >
-                            {!isDiemDanh ? isDangKy ? 'Hủy đăng ký' : 'Đăng ký' : 'Đã tham gia'}
-                        </PaperButton>}
-                    <PaperButton
-                        icon={liked ? 'thumb-up' : 'thumb-up-outline'}
-                        size={24}
-                        onPress={handleLiked}
-                        style={{ marginRight: 5 }}
-                        labelStyle={{
-                            marginHorizontal: 0, marginVertical: 0, paddingRight: 20, paddingVertical: 10
-                            , fontSize: 30
-                        }}
-                    />
-                    <PaperButton onPress={handleModalVisible} mode='elevated'>Bình luận</PaperButton>
-                    <CommentModal visible={modalVisible} onClose={handleCloseModal} baiviet={baiVietId}></CommentModal>
-                </View>
-            </>
+                            icon={liked ? 'thumb-up' : 'thumb-up-outline'}
+                            size={24}
+                            onPress={handleLiked}
+                            style={{ marginRight: 5 }}
+                            labelStyle={{
+                                marginHorizontal: 0, marginVertical: 0, paddingRight: 20, paddingVertical: 10
+                                , fontSize: 30
+                            }}
+                        />
+                        <PaperButton onPress={handleModalVisible} mode='elevated'>Bình luận</PaperButton>
+                        <CommentModal visible={modalVisible} onClose={handleCloseModal} baiviet={baiVietId}></CommentModal>
+                    </View>
+                </>
             }
-        </View>
+        </View >
     );
 };
 

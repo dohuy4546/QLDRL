@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import APIs, { authAPI, endpoints } from "../../configs/APIs";
 import Styles from "./Styles";
-import { ActivityIndicator, Checkbox, List, Chip, Title, TextInput, Searchbar } from "react-native-paper";
+import { ActivityIndicator, Checkbox, List, Chip, Title, TextInput, Searchbar, Button as PaperButton } from "react-native-paper";
 import MyContext from "../../configs/MyContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
@@ -14,6 +14,8 @@ const BaoThieuHoatDong = ({ navigation, route }) => {
     const [loading, setLoading] = useState(false);
     const [screenId, setScreenId] = useState(1);
     const [mssv, setMssv] = useState("");
+    const [selectedHoatDong, setSelectedHoatDong] = useState();
+    const [listHoatDong, setListHoatDong] = useState([]);
 
     const screen = [{
         "id": 1,
@@ -62,8 +64,42 @@ const BaoThieuHoatDong = ({ navigation, route }) => {
         }
     }
 
+    const loadListHoatDong = async () => {
+        let token = await AsyncStorage.getItem("access-token");
+        let res = await authAPI(token).get(endpoints['hoat_dong']);
+        setListHoatDong(res.data);
+        setSelectedHoatDong(res.data[0].id);
+    }
+
+    const handleBaoThieu = async () => {
+        let token = await AsyncStorage.getItem("access-token");
+        let res = await authAPI(token).get(`${endpoints['tham_gia']}?email=${user.email}&hoat_dong=${selectedHoatDong}`);
+        if (res.data.length == 0) {
+            let thamgia = await authAPI(token).post(endpoints['tham_gia_hoat_dong'](selectedHoatDong));
+            let res2 = await authAPI(token).get(`${endpoints['tham_gia']}?email=${user.email}&hoat_dong=${selectedHoatDong}`);
+            navigation.navigate('MinhChungBaoThieu', {
+                'tham_gia': res2.data[0],
+                'da_bao_thieu': false
+            });
+        } else if (res.data[0].state == 0) {
+            navigation.navigate('MinhChungBaoThieu', {
+                'tham_gia': res.data[0],
+                'da_bao_thieu': false
+            });
+        } else if (res.data[0].state == 1) {
+            Alert.alert("Hoạt động đã được điểm danh");
+        } else if (res.data[0].state == 2) {
+            navigation.navigate('MinhChungBaoThieu', {
+                'tham_gia': res.data[0],
+                'da_bao_thieu': true
+            });
+        }
+    }
+
+
     useEffect(() => {
         if (role == 1) {
+            loadListHoatDong();
             loadHoatDong(user.email);
         } else if (role != 1) {
             loadHoatDong(mssv);
@@ -108,6 +144,16 @@ const BaoThieuHoatDong = ({ navigation, route }) => {
                 }
                 {!loading && role == 1 && screenId == 2 &&
                     <>
+                        <Text style={{ margin: 15, fontSize: 16 }}>Chọn hoạt động báo thiếu: </Text>
+                        <Picker
+                            selectedValue={selectedHoatDong}
+                            onValueChange={(itemValue, itemIndex) => setSelectedHoatDong(itemValue)}
+                            prompt="Hoạt động">
+                            {listHoatDong.map(hd => (
+                                <Picker.Item label={hd.ten_hoat_dong} value={hd.id} key={`hocky${hd.ten_hoat_dong}`} />
+                            ))}
+                        </Picker>
+                        <PaperButton mode="contained" style={{ marginTop: 10 }} onPress={handleBaoThieu}>Báo thiếu hoạt động</PaperButton>
                         {hoatDong.map(hd => {
                             return (
                                 <ItemHoatDong hd={hd} description="Đang báo thiếu" baoThieu={true} daBaoThieu={true} key={`thamgia${hd.id}`} />

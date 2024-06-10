@@ -437,7 +437,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
     parser_classes = [parsers.MultiPartParser, ]
 
     def get_permissions(self):
-        if self.action in ['taikhoan_is_valid']:
+        if self.action in ['taikhoan_is_valid', 'update_mat_khau']:
             return [permissions.AllowAny()]
         if self.action in ['get_current_user']:
             return [permissions.IsAuthenticated()]
@@ -469,6 +469,25 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
             user.save()
 
         return Response(serializers.TaiKhoanSerializer(user).data)
+
+    @action(methods=['patch'], url_path='quen_mat_khau', detail=False, parser_classes=[parsers.JSONParser])
+    def update_mat_khau(self, request):
+        secret_key = "japsdnfkoansokdfnaoksndfoaasojdbfiabwijebfjoansdkmfnlmabsdjonfojabsdnfjonok2n3o4h1oi2n4kobijwnk12oj3no124on12o41"
+        email = request.data.get('email')
+        try:
+            tai_khoan = TaiKhoan.objects.get(email=email)
+        except TaiKhoan.DoesNotExist:
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+
+        new_password = request.data.get('new_password')
+
+        # Băm mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+        if request.data.get('secret_key') == secret_key:
+            tai_khoan.password = new_password
+            tai_khoan.save()
+            return Response({'message': 'Mật khẩu đã được cập nhật'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Không có quyền truy cập'},status=status.HTTP_403_FORBIDDEN)
 
     @action(methods=['get'], url_path='is_valid', detail=False)
     def taikhoan_is_valid(self, request):
@@ -534,10 +553,10 @@ class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics
 
             sv_email = self.request.query_params.get("email")
             if sv_email:
-                queries = queries.filter(sinh_vien__email = sv_email)
+                queries = queries.filter(sinh_vien__email=sv_email)
             sv_mssv = self.request.query_params.get("mssv")
             if sv_mssv:
-                queries = queries.filter(sinh_vien__mssv = sv_mssv)
+                queries = queries.filter(sinh_vien__mssv=sv_mssv)
             sv_id = self.request.query_params.get("sv_id")
             if sv_id:
                 queries = queries.filter(sinh_vien__icontains=sv_id)
@@ -627,8 +646,9 @@ class MinhChungViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Up
         print(thamgia)
         anhminhchung = request.data.get('anh_minh_chung')
         description = request.data.get('description')
-        minhchung = MinhChung.objects.get_or_create(tham_gia_id=int(thamgia), anh_minh_chung=request.data.get('anh_minh_chung')
-                                   , description=request.data.get('description'))
+        minhchung = MinhChung.objects.get_or_create(tham_gia_id=int(thamgia),
+                                                    anh_minh_chung=request.data.get('anh_minh_chung')
+                                                    , description=request.data.get('description'))
         return Response(data={'created': True},
                         status=status.HTTP_201_CREATED)
 

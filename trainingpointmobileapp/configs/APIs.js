@@ -41,7 +41,8 @@ export const endpoints = {
     'tong_diem': '/diemrenluyens/',
     'minh_chung': '/minhchungs/',
     'huy_minh_chung': (minh_chung_id) => `/minhchungs/${minh_chung_id}/huyminhchung/`,
-    'xuat_danh_sach': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/danhsach/`
+    'xuat_danh_sach': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/danhsach/`,
+    'quen_mat_khau': `/taikhoans/quen_mat_khau/`,
 }
 
 export const authAPI = (accessToken) => axios.create({

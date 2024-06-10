@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { View, Button, Text, Alert } from "react-native";
 import { Title, Button as PaperButton, TextInput } from "react-native-paper";
 import axios from "axios";
@@ -8,6 +8,8 @@ import Styles from "./Styles";
 const OTP = ({ route, navigation }) => {
     const [otp, setOtp] = React.useState(['', '', '', '']);
     const [randomOTP, setRandomOTP] = React.useState(null);
+    const inputRefs = useRef(otp.map(() => React.createRef()));
+
     React.useEffect(() => {
         let randomNumber = Math.floor(Math.random() * 10000);
         let otpNum = randomNumber.toString().padStart(4, '0');
@@ -44,13 +46,37 @@ const OTP = ({ route, navigation }) => {
             const newOtp = [...otp];
             newOtp[index] = num;
             setOtp(newOtp);
+            let nextIndex;
+
+            if (num === "") {
+                if (index == 0) {
+                    console.log("ok");
+                    nextIndex = 0
+                } else {
+                    nextIndex = index - 1;
+                }
+            }
+            if (num !== "") {
+                if (index == otp.length - 1) {
+                    nextIndex = otp.length - 1;
+                }
+                else {
+                    nextIndex = index + 1;
+                }
+            }
+            const inputRef = inputRefs.current[nextIndex];
+            inputRef.current.focus();
         }
     };
 
     const handleSubmit = () => {
         const otpString = otp.join('');
         if (otpString == randomOTP) {
-            navigation.replace('DangKy', { success: true });
+            if (route.params?.quen_mat_khau == true) {
+                navigation.navigate('QuenMatKhau', { success: true });
+            } else {
+                navigation.navigate('DangKy', { success: true });
+            }
         } else {
             Alert.alert("Mã OTP nhập không đúng!", "Vui lòng kiểm tra lại OTP");
         }
@@ -68,6 +94,7 @@ const OTP = ({ route, navigation }) => {
                         onChangeText={(num) => handleChangeText(num, index)}
                         keyboardType="numeric"
                         maxLength={1}
+                        ref={inputRefs.current[index]}
                     />
                 ))}
             </View>

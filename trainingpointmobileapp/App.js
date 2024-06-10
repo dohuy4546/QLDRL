@@ -14,6 +14,7 @@ import BaiViet from './components/BanTin/BaiViet';
 import DangXuat from './components/TaiKhoan/DangXuat';
 import QuanLyHoatDong from './components/HoatDong/QuanLyHoatDong';
 import ChiTietHoatDong from './components/HoatDong/ChiTietHoatDong';
+import QuenMatKhau from './components/TaiKhoan/QuenMatKhau';
 
 
 
@@ -58,6 +59,7 @@ export default function App({ navigation }) {
           {user == null && <Stack.Screen name="DangNhap" component={DangNhap} />}
           <Stack.Screen name="DangKy" component={DangKy} />
           <Stack.Screen name="OTP" component={OTP} />
+          <Stack.Screen name="QuenMatKhau" component={QuenMatKhau} />
         </Stack.Navigator>
       </NavigationContainer>
     </MyContext.Provider>

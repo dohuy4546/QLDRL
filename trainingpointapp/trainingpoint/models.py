@@ -20,23 +20,15 @@ class TaiKhoan(AbstractUser):
         return self.username
 
     def save(self, *args, **kwargs):
-        # Kiểm tra xem đây có phải là lần đầu tiên tạo không
         if self.pk is None:
-            # Nếu là lần đầu tiên tạo, thực hiện bình thường
             super().save(*args, **kwargs)
         else:
-            # Nếu không phải là lần đầu tiên tạo
             try:
-                # Lấy đối tượng người dùng từ cơ sở dữ liệu
                 old_user = self.__class__.objects.get(pk=self.pk)
-                # Kiểm tra xem mật khẩu có thay đổi không
                 if self.password != old_user.password:
-                    # Nếu mật khẩu thay đổi, thực hiện set_password
                     self.set_password(self.password)
             except self.__class__.DoesNotExist:
-                pass  # Xử lý ngoại lệ nếu cần
-
-            # Tiếp tục với việc lưu đối tượng
+                pass
             super().save(*args, **kwargs)
 
 

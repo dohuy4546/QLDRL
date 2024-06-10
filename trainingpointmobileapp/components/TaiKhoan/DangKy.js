@@ -14,6 +14,7 @@ const DangKy = ({ route, navigation }) => {
         "avatar": "",
         'role': "1"
     })
+    const [rePasword, setRePassword] = React.useState("");
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
 
@@ -54,7 +55,7 @@ const DangKy = ({ route, navigation }) => {
     };
 
     const validatePassword = (password) => {
-        return password.length >= 8; // Đủ dài ít nhất 8 ký tự
+        return password.length >= 8 && password == rePasword;
     };
 
     const validateDangKy = async () => {
@@ -87,9 +88,12 @@ const DangKy = ({ route, navigation }) => {
                 ToastAndroid.show(ex.message, ToastAndroid.LONG);
                 Alert.alert('Có lỗi gì đó đã xảy ra', 'Tài khoản không hợp lệ!');
             }
+            // Thành công
             if (sv_valid == true && tk_valid == false) {
                 navigation.navigate('OTP', { email: user.email });
-            } else if (sv_valid == false) {
+            }
+            // Trường hợp thất bại
+            else if (sv_valid == false) {
                 setLoading(false);
                 Alert.alert('Có lỗi gì đó xảy ra', 'Sinh viên không tồn tại!');
             } else if (tk_valid == true) {
@@ -104,13 +108,18 @@ const DangKy = ({ route, navigation }) => {
             Alert.alert('Có lỗi gì đó xảy ra', 'Email nhập không hợp lệ!');
         } else if (!validatePassword(user.password)) {
             setLoading(false);
-            Alert.alert('Pasword nhập không hợp lệ!', 'Password phải có từ 8 ký tự trở lên');
+            if (user.password == rePasword) {
+                Alert.alert('Pasword nhập không hợp lệ!', 'Password phải có từ 8 ký tự trở lên');
+            } else {
+                Alert.alert('Pasword nhập không hợp lệ!', 'Password không trùng khớp với confirm password');
+            }
         }
         setLoading(false);
     };
 
     const PostTaiKhoan = async () => {
         if (success) {
+            console.log("trong ham post");
             let formData = new FormData();
             for (let key in user) {
                 if (key === 'avatar') {
@@ -122,6 +131,7 @@ const DangKy = ({ route, navigation }) => {
                 } else
                     formData.append(key, user[key])
             }
+
             try {
                 const response = await APIs.post(endpoints['dang_ky'], formData, {
                     headers: {
@@ -137,6 +147,7 @@ const DangKy = ({ route, navigation }) => {
                 Alert.alert('Có lỗi gì đó đã xảy ra');
             } finally {
                 setLoading(false);
+                setSuccess(false);
             }
         }
     };
@@ -149,10 +160,13 @@ const DangKy = ({ route, navigation }) => {
     React.useEffect(() => {
         if (route.params && route.params.success) {
             setSuccess(route.params.success);
-            PostTaiKhoan();
-            setSuccess(false);
+
         }
     }, [route.params])
+
+    React.useEffect(() => {
+        PostTaiKhoan();
+    }, [success])
 
     return (
         <ScrollView automaticallyAdjustKeyboardInsets={true}>
@@ -192,6 +206,14 @@ const DangKy = ({ route, navigation }) => {
                     label="Password"
                     value={user.password}
                     onChangeText={handlePasswordChange}
+                    secureTextEntry
+                    mode="outlined"
+                    style={Styles.margin_bottom_20}
+                />
+                <PaperTextInput
+                    label="Confirm Password"
+                    value={rePasword}
+                    onChangeText={setRePassword}
                     secureTextEntry
                     mode="outlined"
                     style={Styles.margin_bottom_20}

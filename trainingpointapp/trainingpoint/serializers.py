@@ -41,6 +41,9 @@ class HoatDongNgoaiKhoaSerializer(serializers.ModelSerializer):
 
 
 class ThamGiaSerializer(serializers.ModelSerializer):
+    sinh_vien = SinhVienSerializer()
+    hoat_dong_ngoai_khoa = HoatDongNgoaiKhoaSerializer()
+
     class Meta:
         model = ThamGia
         fields = '__all__'
@@ -59,9 +62,10 @@ class TaiKhoanSerializer(serializers.ModelSerializer):
         print(rep)
         rep['avatar'] = instance.avatar.url
         return rep
+
     class Meta:
         model = TaiKhoan
-        fields = ['id', 'email', 'username', 'password', 'avatar', 'role']
+        fields = ['id', 'email', 'username', 'password', 'avatar', 'role', 'first_name', 'last_name']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -85,6 +89,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    tai_khoan = TaiKhoanSerializer()
     class Meta:
         model = Comment
         fields = '__all__'
@@ -97,9 +102,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class BaiVietSerializer(ItemSerializer):
+    so_luot_like = serializers.SerializerMethodField()
+    tro_ly = TaiKhoanSerializer()
+    def get_so_luot_like(self, bai_viet):
+        return Like.objects.filter(bai_viet=bai_viet).count()
+
     class Meta:
         model = BaiViet
-        fields = ['id', 'title', 'image', 'created_date', 'updated_date', 'tro_ly']
+        fields = ['id', 'title', 'image', 'created_date', 'updated_date', 'tro_ly', 'hoat_dong_ngoai_khoa',
+                  'so_luot_like']
 
 
 class BaivietTagSerializer(BaiVietSerializer):
@@ -129,19 +140,12 @@ class DiemRenLuyenSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class DiemRenLuyenDetails(DiemRenLuyenSerializer):
-#     sinh_vien = SinhVienSerializer(many=True)
-#     hk_nh = HockyNamhocSerializer(many=True)
-#
-#     class Meta:
-#         model = DiemRenLuyenSerializer.Meta.model
-#         fields = DiemRenLuyenSerializer.Meta.fields + ['sinh_vien', 'hk_nh']
-
 class MinhChungSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['anh_minh_chung'] = instance.anh_minh_chung.url
-
+        print(rep)
+        print(instance)
         return rep
 
     class Meta:

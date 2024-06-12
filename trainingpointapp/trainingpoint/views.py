@@ -1,9 +1,14 @@
+import csv
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 from rest_framework import viewsets, generics, status, parsers, permissions, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from trainingpoint.models import *
 from trainingpoint import serializers, paginators, perms
 from django.contrib.auth.models import AnonymousUser
+from rest_framework.views import APIView
 
 
 class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -40,11 +45,13 @@ class SinhVienViewSet(viewsets.ViewSet, generics.ListAPIView):
     @action(methods=['get'], url_path='is_valid', detail=False)
     def sinhvien_is_valid(self, request):
         email = self.request.query_params.get('email')
-        if email:
-            sinhvien = SinhVien.objects.filter(email=email)
-            if sinhvien:
-                return Response(data={'is_valid': True}, status=status.HTTP_200_OK)
-        return Response(data={'is_valid': False}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            if email:
+                sinhvien = SinhVien.objects.get(email=email)
+                if sinhvien:
+                    return Response(data={'first_name': sinhvien.ho, 'last_name': sinhvien.ten, 'is_valid': True}, status=status.HTTP_200_OK)
+        except SinhVien.DoesNotExist:
+            return Response(data={'is_valid': False}, status=status.HTTP_200_OK)
 
 
 class LopViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -151,15 +158,6 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
 
     @action(methods=['get'], url_path='hoatdongs', detail=True)
     def get_hoatdongs(self, request, pk):
-        # print(self)
-        # #######
-        # # Ét o ét cứu
-        # #######
-        # dieu = self.get_object()
-        # print(dieu)
-        # hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
-        # return Response(serializers.HoatDongNgoaiKhoaSerializer(hoatdongngoaikhoas, many=True).data,
-        #                 status=status.HTTP_200_OK)
         dieu = Dieu.objects.prefetch_related('hoatdongngoaikhoa_set').get(id=pk)
         hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
         q = self.request.query_params.get('ten_hoat_dong')
@@ -170,8 +168,8 @@ class DieuViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateA
 
 
 class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView,
-                               generics.DestroyAPIView):
-    queryset = HoatDongNgoaiKhoa.objects.filter(active=True)
+                               generics.DestroyAPIView, ):
+    queryset = HoatDongNgoaiKhoa.objects.all()
     serializer_class = serializers.HoatDongNgoaiKhoaSerializer
 
     def get_queryset(self):
@@ -180,14 +178,22 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
             q = self.request.query_params.get('ten_hoat_dong')
             if q:
                 queryset = queryset.filter(ten_hoat_dong__icontains=q)
-            ma_hoat_dong = self.request.query_params.get('ma_hoat_dong')
-            if ma_hoat_dong:
-                queryset = queryset.filter(ma_hoat_dong=ma_hoat_dong)
+            id = self.request.query_params.get('id')
+            if id:
+                queryset = queryset.filter(id=id)
 
-            return queryset
+            hoc_ky = self.request.query_params.get("hoc_ky")
+            if hoc_ky:
+                queryset = queryset.filter(hk_nh__hoc_ky=hoc_ky)
+
+            nam_hoc = self.request.query_params.get("nam_hoc")
+            if nam_hoc:
+                queryset = queryset.filter(hk_nh__nam_hoc=nam_hoc)
+
+        return queryset
 
     def get_permissions(self):
-        if self.action in ['get_thamgias']:
+        if self.action in ['get_thamgias', 'getCurrentThamGia']:
             return [permissions.IsAuthenticated()]
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             if isinstance(self.request.user, AnonymousUser):
@@ -201,22 +207,64 @@ class HoatDongNgoaiKhoaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, gen
                     raise exceptions.PermissionDenied()
         return [permissions.AllowAny()]
 
-    @action(methods=['get'], url_path='thamgias', detail=True)
+    @action(methods=['get', 'post'], url_path='thamgias', detail=True)
     def get_thamgias(self, request, pk):
-        hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
-        thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoatdong)
-        return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,
-                        status=status.HTTP_200_OK)
-        # dieu = Dieu.objects.prefetch_related('hoatdongngoaikhoa_set').get(id=pk)
-        # hoatdongngoaikhoas = dieu.hoatdongngoaikhoa_set.all()
-        # q = self.request.query_params.get('ten_hoat_dong')
-        # if q:
-        #     hoatdongngoaikhoas = hoatdongngoaikhoas.filter(ten_hoat_dong__icontains=q)
-        # return Response(serializers.HoatDongNgoaiKhoaSerializer(hoatdongngoaikhoas, many=True).data,
-        #                 status=status.HTTP_200_OK)
+        if request.method == 'GET':
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoatdong)
+            return Response(serializers.ThamGiaSerializer(thamgias, many=True).data,
+                            status=status.HTTP_200_OK)
+        elif request.method == 'POST':
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            if hoatdong.active != True:
+                raise exceptions.PermissionDenied()
+            else:
+                sinhvien = SinhVien.objects.get(email=request.user.email)
+                if sinhvien:
+                    thamgias, created = ThamGia.objects.get_or_create(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
+                    if created:
+                        return Response(data={'created': True},
+                                        status=status.HTTP_201_CREATED)
+                    else:
+                        thamgias.delete()
+                    return Response(data={'deleted': True}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='current_thamgia', detail=True)
+    def getCurrentThamGia(self, request, pk):
+        try:
+            hoatdong = HoatDongNgoaiKhoa.objects.get(id=pk)
+            sinhvien = SinhVien.objects.get(email=request.user.email)
+            thamgia = ThamGia.objects.get(hoat_dong_ngoai_khoa=hoatdong, sinh_vien=sinhvien)
+            return Response(serializers.ThamGiaSerializer(thamgia).data, status=status.HTTP_200_OK)
+        except (ThamGia.DoesNotExist, SinhVien.DoesNotExist):
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['get'], url_path='danhsach')
+    def export_tham_gia(self, request, pk=None):
+        hoat_dong = HoatDongNgoaiKhoa.objects.get(id=pk)
+        tham_gia_queryset = ThamGia.objects.filter(hoat_dong_ngoai_khoa=hoat_dong)
+        serializer = serializers.ThamGiaSerializer(tham_gia_queryset, many=True)
+
+        # Create CSV file
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="danh_sach_export.csv"'
+        response.write(u'\ufeff'.encode('utf8'))
+        writer = csv.writer(response)
+        writer.writerow(['id', 'MSSV', 'Họ và tên', 'Trạng Thái'])
+
+        for tham_gia in tham_gia_queryset:
+            writer.writerow([
+                tham_gia.id,
+                tham_gia.sinh_vien.mssv,
+                tham_gia.sinh_vien.ho_ten,
+                tham_gia.state
+            ])
+
+        return response
 
 
-class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
+class HocKyNamHocViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveAPIView,
+                         generics.DestroyAPIView):
     queryset = HocKy_NamHoc.objects.all()
     serializer_class = serializers.HockyNamhocSerializer
 
@@ -235,9 +283,11 @@ class HocKyNamHocViewset(viewsets.ViewSet, generics.RetrieveAPIView):
         return [permissions.AllowAny()]
 
 
-class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
-    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True)
+class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView,
+                     generics.RetrieveAPIView):
+    queryset = BaiViet.objects.prefetch_related('tags').filter(active=True).order_by("-created_date")
     serializer_class = serializers.BaivietTagSerializer
+    pagination_class = paginators.BaiVietPaginator
 
     def get_serializer_class(self):
         if self.request.user.is_authenticated:
@@ -256,7 +306,6 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
         if tag:
             tag_ids = Tag.objects.filter(name__icontains=tag).values_list('id', flat=True)
             queries = queries.filter(tags__in=tag_ids)
-            # print(queries.query.__str__())
         return queries
 
     def get_permissions(self):
@@ -276,36 +325,25 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
 
         return [permissions.AllowAny()]
 
-    #
-    # @action(methods=['post'], url_path='comments', detail=True)
-    # def add_comment(self, request, pk):
-    #     print("add")
-    #     c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
-    #                                , content=request.data.get('content'))
-    #
-    #     return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
-
     @action(methods=['get', 'post'], url_path="comments", detail=True)
     def get_add_comment(self, request, pk):
         if request.method == 'GET':
-            print("get")
-            comments = self.get_object().comment_set.select_related('tai_khoan').all()
-            return Response(serializers.CommentSerializer(comments, many=True).data,
-                            status=status.HTTP_200_OK)
+            custom_paginator = paginators.CommentPaginator()
+            comments = self.get_object().comment_set.select_related('tai_khoan').order_by('-created_date').all()
+            page_data = custom_paginator.paginate_queryset(comments, request, view=self)
+            serializer = serializers.CommentSerializer(page_data, many=True)
+            next_page_url = custom_paginator.get_next_link()
+            response_data = {
+                'next': next_page_url,
+                'results': serializer.data
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
         elif request.method == 'POST':
             print("add")
             c = Comment.objects.create(tai_khoan=request.user, bai_viet=self.get_object()
                                        , content=request.data.get('content'))
 
             return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
-
-    @action(methods=['get'], url_path='tac_gia', detail=True)
-    def getTacGia(self, request, pk):
-        baiviet = self.get_object()
-        print(baiviet.id)
-        tacgia = TaiKhoan.objects.get(id=baiviet.id)
-        return Response(serializers.TaiKhoanSerializer(tacgia).data,
-                        status=status.HTTP_200_OK)
 
     @action(methods=['post'], url_path='likes', detail=True)
     def like(self, request, pk):
@@ -319,6 +357,12 @@ class BaiVietViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Upda
         return Response(
             serializers.AuthenticatedBaiVietTagSerializer(self.get_object(), context={'request': request}).data,
             status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], url_path='hoatdong', detail=True)
+    def getHoatDong(self, request, pk):
+        baiviet = self.get_object()
+        return Response(serializers.HoatDongNgoaiKhoaSerializer(baiviet.hoat_dong_ngoai_khoa).data,
+                        status=status.HTTP_200_OK)
 
 
 class TagViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
@@ -361,14 +405,13 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
     parser_classes = [parsers.MultiPartParser, ]
 
     def get_permissions(self):
-        if self.action in ['taikhoan_is_valid']:
+        if self.action in ['taikhoan_is_valid', 'update_mat_khau']:
             return [permissions.AllowAny()]
-        if self.action in ['get_current_user']:
+        if self.action in ['get_current_user', 'get_public_info', 'get_tro_ly', 'get_tai_khoan_sinh_vien']:
             return [permissions.IsAuthenticated()]
         elif self.action == "create":
             if isinstance(self.request.user, AnonymousUser):
                 if self.request.data and (self.request.data.get('role') == str(TaiKhoan.RoleChoices.SinhVien)):
-                    print("hello")
                     return [permissions.AllowAny()]
                 else:
                     return [permissions.IsAuthenticated()]
@@ -377,7 +420,8 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
                     return [permissions.IsAuthenticated()]
                 else:
                     raise exceptions.PermissionDenied()
-            elif self.request.data and self.request.data.get('role') in [str(TaiKhoan.RoleChoices.CVCTSV), str(TaiKhoan.RoleChoices.ADMIN)]:
+            elif self.request.data and self.request.data.get('role') in [str(TaiKhoan.RoleChoices.CVCTSV),
+                                                                         str(TaiKhoan.RoleChoices.ADMIN)]:
                 if self.request.user.role == TaiKhoan.RoleChoices.ADMIN.value:
                     return [permissions.IsAuthenticated()]
                 else:
@@ -393,6 +437,50 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
             user.save()
 
         return Response(serializers.TaiKhoanSerializer(user).data)
+
+    @action(methods=['patch'], url_path='quen_mat_khau', detail=False, parser_classes=[parsers.JSONParser])
+    def update_mat_khau(self, request):
+        secret_key = "japsdnfkoansokdfnaoksndfoaasojdbfiabwijebfjoansdkmfnlmabsdjonfojabsdnfjonok2n3o4h1oi2n4kobijwnk12oj3no124on12o41"
+        email = request.data.get('email')
+        try:
+            tai_khoan = TaiKhoan.objects.get(email=email)
+        except TaiKhoan.DoesNotExist:
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+
+        new_password = request.data.get('new_password')
+
+        # Băm mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+        if request.data.get('secret_key') == secret_key:
+            tai_khoan.password = new_password
+            tai_khoan.save()
+            return Response({'message': 'Mật khẩu đã được cập nhật'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Không có quyền truy cập'}, status=status.HTTP_403_FORBIDDEN)
+
+    @action(methods=['get'], url_path='tro_ly', detail=False)
+    def get_tro_ly(self, request):
+        q = request.query_params.get('q')
+        tro_ly = TaiKhoan.objects.filter(role__in=[2, 3])
+        if q:
+            tro_ly = tro_ly.filter(first_name__icontains=q) | tro_ly.filter(last_name__icontains=q)
+        return Response(serializers.TaiKhoanSerializer(tro_ly, many=True).data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='sinh_vien', detail=False)
+    def get_tai_khoan_sinh_vien(self, request):
+        q = request.query_params.get('q')
+        sinh_vien = TaiKhoan.objects.filter(role=1)
+        if q:
+            sinh_vien = sinh_vien.filter(first_name__icontains=q) | sinh_vien.filter(last_name__icontains=q)
+        return Response(serializers.TaiKhoanSerializer(sinh_vien, many=True).data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], url_path='public_info', detail=False)
+    def get_public_info(self, request):
+        email = request.data.get('email')
+        try:
+            tai_khoan = TaiKhoan.objects.get(email=email)
+        except TaiKhoan.DoesNotExist:
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializers.TaiKhoanSerializer(tai_khoan).data, status=status.HTTP_200_OK)
 
     @action(methods=['get'], url_path='is_valid', detail=False)
     def taikhoan_is_valid(self, request):
@@ -415,6 +503,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
 class CommentViewset(viewsets.ViewSet, generics.CreateAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
+    pagination_class = paginators.CommentPaginator
     permission_classes = [perms.CommentOwner, ]
 
 
@@ -439,39 +528,47 @@ class DiemRenLuyenViewset(viewsets.ViewSet, generics.ListCreateAPIView, generics
         return [permissions.AllowAny()]
 
     def get_queryset(self):
-        queries = self.queryset
-        diem = self.request.query_params.get("diem")
-        if diem:
-            queries = queries.filter(diem_tong__icontains=diem)
+        try:
+            queries = self.queryset
+            diem = self.request.query_params.get("diem")
+            if diem:
+                queries = queries.filter(diem_tong__icontains=diem)
 
-        sv_id = self.request.query_params.get("sv_id")
-        if sv_id:
-            queries = queries.filter(sinh_vien__icontains=sv_id)
+            sv_email = self.request.query_params.get("email")
+            if sv_email:
+                queries = queries.filter(sinh_vien__email=sv_email)
+            sv_mssv = self.request.query_params.get("mssv")
+            if sv_mssv:
+                queries = queries.filter(sinh_vien__mssv=sv_mssv)
+            sv_id = self.request.query_params.get("sv_id")
+            if sv_id:
+                queries = queries.filter(sinh_vien__icontains=sv_id)
 
-        sv_name = self.request.query_params.get("sv_name")
-        if sv_name:
-            sv_ids = SinhVien.objects.filter(ho_ten__icontains=sv_name).values_list('id', flat=True)
-            queries = queries.filter(sinh_vien__in=sv_ids)
+            sv_name = self.request.query_params.get("sv_name")
+            if sv_name:
+                sv_ids = SinhVien.objects.filter(ho_ten__icontains=sv_name).values_list('id', flat=True)
+                queries = queries.filter(sinh_vien__in=sv_ids)
 
-        hk = self.request.query_params.get("hk")
-        if hk:
-            hk_ids = HocKy_NamHoc.objects.filter(hoc_ky=hk).values_list('id', flat=True)
-            queries = queries.filter(hk_nh__in=hk_ids)
+            hk = self.request.query_params.get("hk")
+            if hk:
+                hk_ids = HocKy_NamHoc.objects.filter(hoc_ky=hk).values_list('id', flat=True)
+                queries = queries.filter(hk_nh__in=hk_ids)
 
-        nh = self.request.query_params.get("nh")
-        if nh:
-            nh_ids = HocKy_NamHoc.objects.filter(nam_hoc__icontains=nh).values_list('id', flat=True)
-            queries = queries.filter(hk_nh__in=nh_ids)
+            nh = self.request.query_params.get("nh")
+            if nh:
+                nh_ids = HocKy_NamHoc.objects.filter(nam_hoc__icontains=nh).values_list('id', flat=True)
+                queries = queries.filter(hk_nh__in=nh_ids)
+            return queries
+        except Exception as e:
+            return None
 
-        return queries
 
-
-class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):
+class ThamGiaViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, ):
     queryset = ThamGia.objects.all()
     serializer_class = serializers.ThamGiaSerializer
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = ThamGia.objects.all()
         if self.action == 'list':
             namhoc = self.request.query_params.get('nam_hoc')
             if namhoc:
@@ -483,12 +580,26 @@ class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):
                 hocky_namhoc = HocKy_NamHoc.objects.filter(hoc_ky=hocky)
                 hoatdong_ids = HoatDongNgoaiKhoa.objects.filter(hk_nh__in=hocky_namhoc).values_list('id', flat=True)
                 queryset = queryset.filter(hoat_dong_ngoai_khoa_id__in=hoatdong_ids)
+            email = self.request.query_params.get('email')
+            if email:
+                sinhvien = SinhVien.objects.get(email=email)
+                queryset = queryset.filter(sinh_vien=sinhvien)
+            hoat_dong_id = self.request.query_params.get('hoat_dong')
+            if hoat_dong_id:
+                hoat_dong_id = HoatDongNgoaiKhoa.objects.get(id=hoat_dong_id)
+                queryset = queryset.filter(hoat_dong_ngoai_khoa=hoat_dong_id)
+            state = self.request.query_params.get('state')
+            if state:
+                queryset = queryset.filter(state=state)
             mssv = self.request.query_params.get('mssv')
             if mssv:
-                sinhvien = SinhVien.objects.get(mssv=mssv)
-                queryset = queryset.filter(sinh_vien=sinhvien)
+                try:
+                    sinhvien = SinhVien.objects.get(mssv=mssv)
+                    queryset = queryset.filter(sinh_vien=sinhvien)
+                except ObjectDoesNotExist:
+                    queryset = None
 
-            return queryset
+        return queryset
 
     @action(methods=['get'], url_path='minhchungs', detail=True)
     def get_thamgias(self, request, pk):
@@ -499,16 +610,37 @@ class ThamGiaViewSet(viewsets.ViewSet, generics.ListAPIView):
         return Response(serializers.MinhChungSerializer(minhchung, many=True).data,
                         status=status.HTTP_200_OK)
 
+    @action(methods=['patch'], url_path='baothieu', detail=True)
+    def bao_thieu(self, request, pk):
+        thamgia = ThamGia.objects.get(id=pk)
+        thamgia.state = 2
+        thamgia.save()
+        return Response(serializers.ThamGiaSerializer(thamgia).data,
+                        status=status.HTTP_200_OK)
+
 
 class MinhChungViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = MinhChung.objects.filter(active=True)
     serializer_class = serializers.MinhChungSerializer
+    parser_classes = [parsers.MultiPartParser, ]
+
+    def create(self, request, *args, **kwargs):
+        thamgia = request.data.get('tham_gia')
+        print(thamgia)
+        anhminhchung = request.data.get('anh_minh_chung')
+        description = request.data.get('description')
+        minhchung = MinhChung.objects.get_or_create(tham_gia_id=int(thamgia),
+                                                    anh_minh_chung=request.data.get('anh_minh_chung')
+                                                    , description=request.data.get('description'))
+        return Response(data={'created': True},
+                        status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         queryset = self.queryset
         if self.action == 'list':
             mssv = self.request.query_params.get('mssv')
             hoatdong = self.request.query_params.get('hoat_dong')
+            thamgia = self.request.query_params.get('tham_gia')
             if mssv:
                 sinhvien = SinhVien.objects.get(mssv=mssv)
                 thamgias = ThamGia.objects.filter(sinh_vien=sinhvien)
@@ -517,5 +649,15 @@ class MinhChungViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Up
                 hoatdongs = HoatDongNgoaiKhoa.objects.filter(ten_hoat_dong__icontains=hoatdong)
                 thamgias = ThamGia.objects.filter(hoat_dong_ngoai_khoa__in=hoatdongs)
                 queryset = queryset.filter(tham_gia__in=thamgias)
+            if thamgia:
+                thamgias = ThamGia.objects.get(id=int(thamgia))
+                queryset = queryset.filter(tham_gia=thamgias).order_by('-created_date')
 
             return queryset
+
+    @action(methods=['delete'], url_path="huyminhchung", detail=True)
+    def huyminhchung(self, request, pk):
+        minhchung = MinhChung.objects.get(id=pk)
+        minhchung.delete()
+        return Response(data={'deleted': True},
+                        status=status.HTTP_204_NO_CONTENT)

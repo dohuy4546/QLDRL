@@ -4,6 +4,8 @@ import { TextInput as PaperTextInput, Title, Button as PaperButton } from "react
 import * as ImagePicker from 'expo-image-picker';
 import APIs, { endpoints } from "../../configs/APIs";
 import Styles from "./Styles";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 
 const DangKy = ({ route, navigation }) => {
@@ -14,6 +16,7 @@ const DangKy = ({ route, navigation }) => {
         "avatar": "",
         'role': "1"
     })
+    const [rePasword, setRePassword] = React.useState("");
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
 
@@ -54,7 +57,7 @@ const DangKy = ({ route, navigation }) => {
     };
 
     const validatePassword = (password) => {
-        return password.length >= 8; // Đủ dài ít nhất 8 ký tự
+        return password.length >= 8 && password == rePasword;
     };
 
     const validateDangKy = async () => {
@@ -63,9 +66,8 @@ const DangKy = ({ route, navigation }) => {
             let sv_valid = false; // Đã có sinh viên
             let tk_valid = false; // Đã có tài khoản
             try {
-                let url = `${endpoints['sinh_vien_is_valid']}?email=${user.email}`;
                 let check = await APIs.get(`${endpoints['sinh_vien_is_valid']}?email=${user.email}`);
-                if (check.status == 200) {
+                if (check.status == 200 && check.data.is_valid == true) {
                     sv_valid = true;
                 }
             } catch (ex) {
@@ -87,9 +89,12 @@ const DangKy = ({ route, navigation }) => {
                 ToastAndroid.show(ex.message, ToastAndroid.LONG);
                 Alert.alert('Có lỗi gì đó đã xảy ra', 'Tài khoản không hợp lệ!');
             }
+            // Thành công
             if (sv_valid == true && tk_valid == false) {
                 navigation.navigate('OTP', { email: user.email });
-            } else if (sv_valid == false) {
+            }
+            // Trường hợp thất bại
+            else if (sv_valid == false) {
                 setLoading(false);
                 Alert.alert('Có lỗi gì đó xảy ra', 'Sinh viên không tồn tại!');
             } else if (tk_valid == true) {
@@ -104,13 +109,18 @@ const DangKy = ({ route, navigation }) => {
             Alert.alert('Có lỗi gì đó xảy ra', 'Email nhập không hợp lệ!');
         } else if (!validatePassword(user.password)) {
             setLoading(false);
-            Alert.alert('Pasword nhập không hợp lệ!', 'Password phải có từ 8 ký tự trở lên');
+            if (user.password == rePasword) {
+                Alert.alert('Pasword nhập không hợp lệ!', 'Password phải có từ 8 ký tự trở lên');
+            } else {
+                Alert.alert('Pasword nhập không hợp lệ!', 'Password không trùng khớp với confirm password');
+            }
         }
         setLoading(false);
     };
 
     const PostTaiKhoan = async () => {
         if (success) {
+            console.log("trong ham post");
             let formData = new FormData();
             for (let key in user) {
                 if (key === 'avatar') {
@@ -122,6 +132,9 @@ const DangKy = ({ route, navigation }) => {
                 } else
                     formData.append(key, user[key])
             }
+            const res = await APIs.get(`${endpoints['sinh_vien_is_valid']}?email=${user.email}`);
+            formData.append('first_name', res.data.first_name);
+            formData.append('last_name', res.data.last_name);
             try {
                 const response = await APIs.post(endpoints['dang_ky'], formData, {
                     headers: {
@@ -137,6 +150,7 @@ const DangKy = ({ route, navigation }) => {
                 Alert.alert('Có lỗi gì đó đã xảy ra');
             } finally {
                 setLoading(false);
+                setSuccess(false);
             }
         }
     };
@@ -149,10 +163,13 @@ const DangKy = ({ route, navigation }) => {
     React.useEffect(() => {
         if (route.params && route.params.success) {
             setSuccess(route.params.success);
-            PostTaiKhoan();
-            setSuccess(false);
+
         }
     }, [route.params])
+
+    React.useEffect(() => {
+        PostTaiKhoan();
+    }, [success])
 
     return (
         <ScrollView automaticallyAdjustKeyboardInsets={true}>
@@ -192,6 +209,14 @@ const DangKy = ({ route, navigation }) => {
                     label="Password"
                     value={user.password}
                     onChangeText={handlePasswordChange}
+                    secureTextEntry
+                    mode="outlined"
+                    style={Styles.margin_bottom_20}
+                />
+                <PaperTextInput
+                    label="Confirm Password"
+                    value={rePasword}
+                    onChangeText={setRePassword}
                     secureTextEntry
                     mode="outlined"
                     style={Styles.margin_bottom_20}

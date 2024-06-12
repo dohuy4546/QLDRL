@@ -1,0 +1,243 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<h1>Thống kê điểm rèn luyện</h1>
+
+<div>
+    <h3>Thống kê toàn trường</h3>
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+        {% csrf_token %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+        <label>Theo thành tích: </label>
+<!--        <label for="thanhtich">Hoặc chọn thành tích: </label>-->
+<!--        <select id="thanhtich" name="thanhtich">-->
+<!--            <option value="Xuất sắc">Xuất sắc</option>-->
+<!--            <option value="Giỏi">Giỏi</option>-->
+<!--            <option value="Khá">Khá</option>-->
+<!--            <option value="Trung bình">Trung bình</option>-->
+<!--            <option value="Yếu">Yếu</option>-->
+<!--            <option value="Kém">Kém</option>-->
+<!--        </select>-->
+        <input type="submit" value="Tìm">
+    </form>
+
+    <h3>Thống kê theo lớp</h3>
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+        {% csrf_token %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+    <label for="lop">Chọn lớp: </label>
+        <select id="lop" name="malop">
+            {% for l in lops %}
+            <option value={{l.ma_lop}}>{{l.ma_lop}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Tìm">
+    </form>
+
+    {% if is_cvctsv %}
+    <h3>Thống kê theo khoa</h3>
+    <form method="POST" action="{% url 'admin:stats_view' %}">
+        {% csrf_token %}
+        <select name="hocky">
+            {% for hk in hoc_ky %}
+            <option value={{hk.hoc_ky}}>{{hk.hoc_ky}}</option>
+            {% endfor %}
+        </select>
+        <select name="namhoc">
+            {% for nh in nam_hoc %}
+            <option value={{nh.nam_hoc}}>{{nh.nam_hoc}}</option>
+            {% endfor %}
+        </select>
+    <label for="khoa">Chọn khoa: </label>
+        <select id="khoa" name="tenkhoa">
+           {% for k in khoa %}
+            <option value="{{k.ten_khoa}}">{{k.ten_khoa}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Tìm">
+    </form>
+    {% endif %}
+<div id="statspdf">
+    {% for s in statsDiemrenluyen %}
+    <div style="color: blue; font-size: 20px">
+        Họ tên: {{ s.sinh_vien.ho_ten }}, học kì {{ s.hk_nh.hoc_ky }} năm học {{ s.hk_nh.nam_hoc }}, xếp loại:
+        {% if s.diem_tong >= 90 %}
+            Xuất sắc
+        {% elif s.diem_tong >= 80 %}
+            Giỏi
+        {% elif s.diem_tong >= 70 %}
+            Khá
+        {% elif s.diem_tong >= 60 %}
+            Trung bình
+        {% elif s.diem_tong >= 50 %}
+            Yếu
+        {% else %}
+            Kém
+        {% endif %},
+        Điểm rèn luyện: {{s.diem_tong}}
+        {% for stg in statsThamgia %}
+            {% if stg.sinh_vien.mssv == s.sinh_vien.mssv %}
+            ({{stg.hoat_dong_ngoai_khoa.dieu.ten_dieu}} - {{stg.hoat_dong_ngoai_khoa.diem_ren_luyen}}đ)
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <div style="margin-top: 10px;">
+        <button onclick="exportToPDF()">Xuất PDF</button>
+    </div>
+    <div style="margin-top: 50px;">
+            <div style="margin-bottom: 50px;">
+                <canvas id="myChart" width="200" height="100"></canvas>
+            </div>
+            <div style="margin-bottom: 50px;">
+                <canvas id="chartThanhTich" width="200" height="100"></canvas>
+            </div>
+            {% if is_cvctsv %}
+            <div style="margin-bottom: 50px;">
+                <canvas id="chartKhoa" width="200" height="100"></canvas>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script>
+
+    function AddZero(num) {
+    return (num >= 0 && num < 10) ? "0" + num : num + "";
+}
+
+    function exportToPDF() {
+
+    var now = new Date();
+    var strDateTime = [[AddZero(now.getDate()),
+        AddZero(now.getMonth() + 1),
+        now.getFullYear()].join("/"),
+        [AddZero(now.getHours()),
+        AddZero(now.getMinutes())].join(":"),
+        now.getHours() >= 12 ? "PM" : "AM"].join(" ");
+
+    var config = {
+        filename: `stats_${strDateTime}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    }
+    html2pdf().set(config).from(statspdf).save();
+
+}
+
+    window.onload = function() {
+
+          const ctx1 = document.getElementById('myChart');
+          let labels1 = [];
+          let data1 = [];
+
+          {% if statsCountThanhTich%}
+              {% for s in statsCountThanhTich %}
+              labels1.push('{{ s.thanh_tich }}')
+              data1.push({{ s.count_thanhTich }})
+              {% endfor %}
+          {% endif %}
+
+          const ctx2 = document.getElementById('chartThanhTich');
+          let labels2 = [];
+          let data2 = [];
+          {% if statsThanhTichLop %}
+              {% for s in statsThanhTichLop %}
+              labels2.push('{{ s.thanh_tich }}')
+              data2.push({{ s.count_thanhTich }})
+              {% endfor %}
+          {% endif %}
+
+          const ctx3 = document.getElementById('chartKhoa');
+          let labels3 = [];
+          let data3 = [];
+          {% if statsKhoa %}
+              {% for k in statsKhoa %}
+                labels3.push('{{ k.thanh_tich }}')
+                data3.push({{ k.count_thanhTich }})
+              {% endfor %}
+          {% endif %}
+
+          new Chart(ctx1, {
+            type: 'bar',
+            data: {
+              labels: labels1,
+              datasets: [{
+                label: 'Thống kê toàn trường',
+                data: data1,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+          new Chart(ctx2, {
+            type: 'bar',
+            data: {
+              labels: labels2,
+              datasets: [{
+                label: 'Thống kê theo lớp',
+                data: data2,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+              labels: labels3,
+              datasets: [{
+                label: 'Thống kê theo khoa',
+                data: data3,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+    }
+</script>
+{% endblock %}

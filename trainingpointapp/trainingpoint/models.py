@@ -16,6 +16,9 @@ class TaiKhoan(AbstractUser):
 
     role = models.IntegerField(choices=RoleChoices.choices, null=True)
 
+    class Meta:
+        verbose_name_plural = "Tài Khoản"
+
     def __str__(self):
         return self.username
 
@@ -48,6 +51,8 @@ class Khoa(BaseModel):
     def __str__(self):
         return self.ten_khoa
 
+    class Meta:
+        verbose_name_plural = "Khoa"
 
 class TroLySinhVien_Khoa(BaseModel):
     tro_ly_sinh_vien = models.ForeignKey(TaiKhoan,
@@ -55,6 +60,8 @@ class TroLySinhVien_Khoa(BaseModel):
                                          limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
     khoa = models.ForeignKey(Khoa, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name_plural = "Trợ lý sinh viên - Khoa"
 
 class Lop(BaseModel):
     ma_lop = models.CharField(max_length=10, unique=True)
@@ -64,10 +71,15 @@ class Lop(BaseModel):
     def __str__(self):
         return self.ten_lop
 
+    class Meta:
+        verbose_name_plural = "Lớp"
+
 
 class SinhVien(BaseModel):
     mssv = models.CharField(max_length=10, unique=True)
     ho_ten = models.CharField(max_length=255)
+    ho = models.CharField(max_length=255, null=True)
+    ten = models.CharField(max_length=255, null=True)
     ngay_sinh = models.DateField()
     cccd = models.CharField(max_length=12, null=False, unique=True)
     email = models.EmailField(null=False, unique=True)
@@ -83,6 +95,9 @@ class SinhVien(BaseModel):
     def __str__(self):
         return self.ho_ten
 
+    class Meta:
+        verbose_name_plural = "Sinh viên"
+
 
 class Dieu(BaseModel):
     ma_dieu = models.CharField(max_length=10, unique=True)
@@ -90,6 +105,9 @@ class Dieu(BaseModel):
     diem_toi_da = models.IntegerField(default=30)
     def __str__(self):
         return self.ten_dieu
+
+    class Meta:
+        verbose_name_plural = "Điều"
 
 
 class HocKy_NamHoc(models.Model):
@@ -107,6 +125,9 @@ class HocKy_NamHoc(models.Model):
     def __str__(self):
         return f"{self.hoc_ky} - {self.nam_hoc}"
 
+    class Meta:
+        verbose_name_plural = "Học kỳ - Năm học"
+
 
 class HoatDongNgoaiKhoa(BaseModel):
     ma_hoat_dong = models.CharField(max_length=10, unique=True)
@@ -120,6 +141,9 @@ class HoatDongNgoaiKhoa(BaseModel):
 
     def __str__(self):
         return self.ten_hoat_dong
+
+    class Meta:
+        verbose_name_plural = "Hoạt động ngoại khóa"
 
 
 # Bảng trung gian giữa hoạt động ngoại khóa và sinh viên
@@ -139,12 +163,18 @@ class ThamGia(models.Model):
     def __str__(self):
         return f"{self.sinh_vien.mssv} - {self.hoat_dong_ngoai_khoa.ten_hoat_dong}"
 
+    class Meta:
+        verbose_name_plural = "Tham gia"
+
 
 class MinhChung(BaseModel):
     description = RichTextField()
     anh_minh_chung = CloudinaryField()
     tham_gia = models.ForeignKey(ThamGia, on_delete=models.CASCADE,
                                  limit_choices_to={'state': ThamGia.StateChoices.BaoThieu})
+
+    class Meta:
+        verbose_name_plural = "Minh chứng (Báo thiếu)"
 
 
 class Tag(BaseModel):
@@ -153,18 +183,24 @@ class Tag(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "Tag"
+
 
 class BaiViet(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField(null=True)
     image = CloudinaryField()
     tro_ly = models.ForeignKey(TaiKhoan, on_delete=models.CASCADE,
-                               limit_choices_to={'role': TaiKhoan.RoleChoices.TroLySinhVien})
+                               limit_choices_to={'role__in': [TaiKhoan.RoleChoices.TroLySinhVien, TaiKhoan.RoleChoices.CVCTSV]})
     hoat_dong_ngoai_khoa = models.ForeignKey(HoatDongNgoaiKhoa, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True, related_name='baiviets')
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name_plural = "Bài viết"
 
 
 class TuongTac(BaseModel):
@@ -178,13 +214,20 @@ class TuongTac(BaseModel):
 class Comment(TuongTac):
     content = models.CharField(max_length=255)
 
+    class Meta:
+        verbose_name_plural = "Bình luận"
+
 
 class Like(TuongTac):
     class Meta:
         unique_together = ('tai_khoan', 'bai_viet')
+        verbose_name_plural = "Like"
 
 
 class DiemRenLuyen(BaseModel):
     sinh_vien = models.ForeignKey(SinhVien, on_delete=models.CASCADE)
     hk_nh = models.ForeignKey(HocKy_NamHoc, on_delete=models.CASCADE)
     diem_tong = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = "Điểm rèn luyện"

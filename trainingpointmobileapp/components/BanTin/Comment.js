@@ -8,10 +8,10 @@ import 'moment/locale/vi';
 const Comment = ({ comment }) => {
     return (
         <View style={[Styles.header, { alignSelf: 'flex-start' }]}>
-            <Image source={{ uri: comment.taikhoan.avatar }} style={[Styles.avatar, { alignSelf: 'flex-start' }]} />
+            <Image source={{ uri: comment.tai_khoan.avatar }} style={[Styles.avatar, { alignSelf: 'flex-start' }]} />
             <View style={{ maxWidth: '85%' }}>
                 <View style={{ backgroundColor: 'lightgray', borderRadius: 15, padding: 8, paddingRight: 20 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{comment.taikhoan.username}</Text>
+                    <Text style={{ fontWeight: 'bold' }}>{comment.tai_khoan.username}</Text>
                     <Text>
                         {comment.content}
                     </Text>

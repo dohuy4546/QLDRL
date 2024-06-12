@@ -13,6 +13,9 @@ import QuanLyHoatDong from '../HoatDong/QuanLyHoatDong';
 import BaoThieuHoatDong from '../BaoThieu/BaoThieuHoatDong';
 import TaiKhoan from '../TaiKhoan/TaiKhoan';
 import MinhChungBaoThieu from '../BaoThieu/MinhChungBaoThieu';
+import UserChats from '../Chat/UserChats';
+import AddUserChats from '../Chat/AddUsersChat';
+import Chats from '../Chat/Chats';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -31,6 +34,15 @@ const HoatDongStackNavigator = () => (
     </Stack.Navigator>
 );
 
+
+const ChatStackNavigator = () => (
+    <Stack.Navigator>
+        <Stack.Screen name="UserChats" component={UserChats} options={{ headerShown: false }} />
+        <Stack.Screen name="AddUserChat" component={AddUserChats} options={{ title: "Thêm cuộc trò chuyện", headerTransparent: true }} />
+        <Stack.Screen name="Chats" component={Chats} options={{ title: "", headerTransparent: true }} />
+    </Stack.Navigator>
+);
+
 const BaoThieuStackNavigator = () => (
     <Stack.Navigator >
         <Stack.Screen name="BaoThieu" component={BaoThieuHoatDong} options={{ headerShown: false }} />
@@ -39,7 +51,6 @@ const BaoThieuStackNavigator = () => (
 );
 
 const Main = ({ navigation }) => {
-    const [user, dispatch, role, setRole] = React.useContext(MyContext);
     return (
         <Tab.Navigator
             screenOptions={{
@@ -95,6 +106,16 @@ const Main = ({ navigation }) => {
                     tabBarLabel: 'Bản tin',
                     tabBarIcon: ({ color, size }) => {
                         return <Icon name="home" size={size} color={color} />;
+                    },
+                }}
+            />
+            <Tab.Screen
+                name="ChatStack"
+                component={ChatStackNavigator}
+                options={{
+                    tabBarLabel: 'Chat',
+                    tabBarIcon: ({ color, size }) => {
+                        return <Icon name="chat-processing-outline" size={size} color={color} />;
                     },
                 }}
             />

@@ -5,15 +5,6 @@ const BASE_URL = 'http://192.168.3.154:8000/';
 
 
 export const endpoints = {
-    // 'categories': '/categories/',
-    // 'courses': '/courses/',
-    // 'lessons': (courseId) => `/courses/${courseId}/lessons/`,
-    // 'lesson-details': (lessonId) => `/lessons/${lessonId}/`,
-    // 'comments': (lessonId) => `/lessons/${lessonId}/comments/`,
-    // 'login': '/o/token/',
-    // 'current-user': '/users/current-user/',
-    // 'register': '/users/',
-    // 'add-comment': (lessonId) => `/lessons/${lessonId}/comments/`
     'dang_ky': '/taikhoans/',
     'dang_nhap': '/o/token/',
     'current_taikhoan': '/taikhoans/current-taikhoans/',
@@ -43,6 +34,9 @@ export const endpoints = {
     'huy_minh_chung': (minh_chung_id) => `/minhchungs/${minh_chung_id}/huyminhchung/`,
     'xuat_danh_sach': (hoat_dong_id) => `/hoatdongs/${hoat_dong_id}/danhsach/`,
     'quen_mat_khau': `/taikhoans/quen_mat_khau/`,
+    'tro_ly': `/taikhoans/tro_ly/`,
+    'tai_khoan_info': `/taikhoans/public_info/`,
+    'tai_khoan_sinh_vien': `/taikhoans/sinh_vien/`
 }
 
 export const authAPI = (accessToken) => axios.create({

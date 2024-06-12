@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext, useState } from "react";
-import { Text, View, TextInput, TouchableOpacity } from "react-native"
+import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native"
 import { TextInput as PaperTextInput, Title, Button as PaperButton } from "react-native-paper";
 import APIs, { endpoints, authAPI } from "../../configs/APIs";
 import MyContext from "../../configs/MyContext";
@@ -30,16 +30,20 @@ const DangNhap = ({ navigation }) => {
             await AsyncStorage.setItem('access-token', res.data.access_token)
 
             let user = await authAPI(res.data.access_token).get(endpoints['current_taikhoan']);
+            try {
+                console.log("hello");
+                console.log("dang nhap thanh cong");
+            } catch (ex) {
+                console.log("Dang nhap that bai");
+            }
             let user_role = user.data.role;
             setRole(user_role);
             dispatch({
                 "type": "login",
                 "payload": user.data
             });
-            console.log(user.data.role);
-            console.log(user_role);
         } catch (ex) {
-            console.error(ex);
+            Alert.alert("Đăng nhập thất bại", "Username hoặc mật khẩu sai");
         }
     };
 

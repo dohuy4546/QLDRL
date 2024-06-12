@@ -27,6 +27,7 @@ class MyAdminSite(admin.AdminSite):
     def get_urls(self):
 
         return [path('diemrenluyen-stats/', self.stats_view, name='stats_view')] + super().get_urls()
+
     def stats_view(self, request):
         lops = Lop.objects.all()
         hoc_ky = HocKy_NamHoc.objects.all().values("hoc_ky").distinct()
@@ -55,20 +56,6 @@ class MyAdminSite(admin.AdminSite):
 
         statsThamgia = (ThamGia.objects.select_related('sinh_vien', 'hoat_dong_ngoai_khoa')
                         .filter(state=1))
-
-        # filtered_hk_nh = (DiemRenLuyen.objects.select_related('sinh_vien', 'hk_nh')
-        # .filter(hk_nh__hoc_ky=hocky, hk_nh__nam_hoc=namhoc)
-        # .annotate(
-        #     thanh_tich=Case(
-        #         When(diem_tong__gte=90, then=Value("Xuất sắc")),
-        #         When(diem_tong__gte=80, then=Value("Giỏi")),
-        #         When(diem_tong__gte=70, then=Value("Khá")),
-        #         When(diem_tong__gte=60, then=Value("Trung bình")),
-        #         When(diem_tong__gte=50, then=Value("Yếu")),
-        #         default=Value("Kém"),
-        #         output_field=CharField(max_length=50)
-        #     )
-        # ))
 
         statsThanhTichLop = statsDiemrenluyen.filter(
             sinh_vien__lop__ma_lop=malop).annotate(thanh_tich=Case(

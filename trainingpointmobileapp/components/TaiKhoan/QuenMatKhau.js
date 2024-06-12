@@ -7,7 +7,6 @@ import APIs, { endpoints, authAPI } from "../../configs/APIs";
 import MyContext from "../../configs/MyContext";
 import Styles from "./Styles";
 
-
 const QuenMatKhau = ({ route, navigation }) => {
     const [email, setEmail] = useState();
     const [verify, setVerify] = useState(false);

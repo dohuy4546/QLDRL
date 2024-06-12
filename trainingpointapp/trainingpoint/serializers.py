@@ -89,6 +89,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    tai_khoan = TaiKhoanSerializer()
     class Meta:
         model = Comment
         fields = '__all__'
@@ -102,7 +103,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class BaiVietSerializer(ItemSerializer):
     so_luot_like = serializers.SerializerMethodField()
-
+    tro_ly = TaiKhoanSerializer()
     def get_so_luot_like(self, bai_viet):
         return Like.objects.filter(bai_viet=bai_viet).count()
 
@@ -138,14 +139,6 @@ class DiemRenLuyenSerializer(serializers.ModelSerializer):
         model = DiemRenLuyen
         fields = '__all__'
 
-
-# class DiemRenLuyenDetails(DiemRenLuyenSerializer):
-#     sinh_vien = SinhVienSerializer(many=True)
-#     hk_nh = HockyNamhocSerializer(many=True)
-#
-#     class Meta:
-#         model = DiemRenLuyenSerializer.Meta.model
-#         fields = DiemRenLuyenSerializer.Meta.fields + ['sinh_vien', 'hk_nh']
 
 class MinhChungSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):

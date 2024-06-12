@@ -38,12 +38,6 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
                 let comments = res.data;
                 if (comments.next === null)
                     setPage(0);
-                for (let comment of comments.results) {
-                    let res = await authAPI(token).get(endpoints['commentUser'](comment.id));
-                    console.log(res.data);
-                    let taikhoan = res.data;
-                    comment.taikhoan = taikhoan;
-                }
                 if (page === 1)
                     setListComment(comments.results);
                 else

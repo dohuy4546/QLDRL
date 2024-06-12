@@ -162,19 +162,6 @@ const QuanLyHoatDong = ({ navigation }) => {
     }, [listDieu, hoatDong, mssv])
 
 
-    // const stateDisplay = (state) => {
-    //     switch (state) {
-    //         case 0:
-    //             return "Đã đăng kí";
-    //         case 1:
-    //             return "Đã điểm danh";
-    //         case 2:
-    //             return "Đang báo thiếu";
-    //         default:
-    //             break;
-    //     }
-    // }
-
     return (
         <View style={[Styles.container, Styles.margin]}>
             <ScrollView>

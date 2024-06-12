@@ -109,6 +109,8 @@ const MinhChungBaoThieu = ({ route, navigation }) => {
                 <Title style={[Styles.subject, Styles.margin_bottom_20, { alignSelf: "center" }]}>Báo thiếu</Title>
                 <Text style={[Styles.margin_bottom_20, { fontSize: 18 }]}>Mã hoạt động: <Text style={Styles.title}>{thamGia.hoat_dong_ngoai_khoa.ma_hoat_dong}</Text></Text>
                 <Text style={[Styles.margin_bottom_20, { fontSize: 18 }]}>Tên hoạt động: <Text style={Styles.title}>{thamGia.hoat_dong_ngoai_khoa.ten_hoat_dong}</Text></Text>
+                <Text style={[Styles.margin_bottom_20, { fontSize: 18 }]}>Họ tên sinh viên: <Text style={Styles.title}>{thamGia.sinh_vien.ho_ten}</Text></Text>
+                <Text style={[Styles.margin_bottom_20, { fontSize: 18 }]}>MSSV: <Text style={Styles.title}>{thamGia.sinh_vien.mssv}</Text></Text>
                 <PaperTextInput
                     label="Ghi chú"
                     autoCapitalize="none"

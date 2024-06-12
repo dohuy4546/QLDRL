@@ -4,6 +4,7 @@ import { Button, Text, Searchbar, ActivityIndicator } from 'react-native-paper';
 import BaiViet from './BaiViet';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
 
 const BanTin = ({ route, navigation }) => {
     const [q, setQ] = React.useState('');

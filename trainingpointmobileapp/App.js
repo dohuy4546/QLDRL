@@ -17,7 +17,6 @@ import ChiTietHoatDong from './components/HoatDong/ChiTietHoatDong';
 import QuenMatKhau from './components/TaiKhoan/QuenMatKhau';
 
 
-
 const Stack = createNativeStackNavigator();
 
 

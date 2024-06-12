@@ -16,7 +16,6 @@ const BaiViet = (props) => {
     const [expanded, setExpanded] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [baiViet, setBaiViet] = useState(null);
-    const [author, setAuthor] = useState(null);
     const [baiVietId, setBaiVietId] = useState(null);
     const [liked, setLiked] = useState(false);
     const [active, setActive] = useState(false);
@@ -37,12 +36,6 @@ const BaiViet = (props) => {
     const handleCloseModal = () => {
         setBaiVietId(null);
         setModalVisible(false);
-    }
-
-    const getAuthor = async (id) => {
-        const token = await AsyncStorage.getItem("access-token");
-        let auth = await authAPI(token).get(endpoints['tac_gia'](id));
-        setAuthor(auth.data);
     }
 
     const handleLiked = async () => {
@@ -86,16 +79,6 @@ const BaiViet = (props) => {
         }
     }
 
-    // navigation.replace("Main", {
-    //     screen: 'Stack',
-    //     params: {
-    //         screen: 'ChiTietHoatDong',
-    //         params: {
-    //             hoatdong: hoatdong_id
-    //         }
-    //     }
-    // });
-
     const checkIsDiemDanh = async (id) => {
         try {
             const token = await AsyncStorage.getItem("access-token");
@@ -115,7 +98,7 @@ const BaiViet = (props) => {
     React.useEffect(() => {
         if (props && props.baiviet) {
             checkIsDiemDanh(props.baiviet.id);
-            getAuthor(props.baiviet.id);
+            // getAuthor(props.baiviet.id);
             getStateHoatDong(props.baiviet.id);
             setLiked(props.baiviet.liked);
             setBaiViet(props.baiviet);
@@ -125,13 +108,13 @@ const BaiViet = (props) => {
 
     return (
         <View style={[Styles.container, Styles.baiViet]}>
-            {author === null ? <></> :
+            {baiViet === null ? <></> :
                 <View style={[Styles.header, { justifyContent: 'space-between' }]}>
                     <View style={[Styles.header, { width: '70%' }]} >
-                        <Image source={{ uri: author.avatar }} style={Styles.avatar} />
+                        <Image source={{ uri: baiViet.tro_ly.avatar }} style={Styles.avatar} />
                         <View>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={Styles.username}>
-                                {author.username}
+                                {baiViet.tro_ly.first_name} {baiViet.tro_ly.last_name}
                             </Text>
                             <Text style={{ color: 'gray' }} >{moment(baiViet.created_date).fromNow()}</Text>
                         </View>

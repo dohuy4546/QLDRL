@@ -4,6 +4,8 @@ import { TextInput as PaperTextInput, Title, Button as PaperButton } from "react
 import * as ImagePicker from 'expo-image-picker';
 import APIs, { endpoints } from "../../configs/APIs";
 import Styles from "./Styles";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 
 const DangKy = ({ route, navigation }) => {
@@ -64,9 +66,8 @@ const DangKy = ({ route, navigation }) => {
             let sv_valid = false; // Đã có sinh viên
             let tk_valid = false; // Đã có tài khoản
             try {
-                let url = `${endpoints['sinh_vien_is_valid']}?email=${user.email}`;
                 let check = await APIs.get(`${endpoints['sinh_vien_is_valid']}?email=${user.email}`);
-                if (check.status == 200) {
+                if (check.status == 200 && check.data.is_valid == true) {
                     sv_valid = true;
                 }
             } catch (ex) {
@@ -131,7 +132,9 @@ const DangKy = ({ route, navigation }) => {
                 } else
                     formData.append(key, user[key])
             }
-
+            const res = await APIs.get(`${endpoints['sinh_vien_is_valid']}?email=${user.email}`);
+            formData.append('first_name', res.data.first_name);
+            formData.append('last_name', res.data.last_name);
             try {
                 const response = await APIs.post(endpoints['dang_ky'], formData, {
                     headers: {

@@ -445,7 +445,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
         try:
             tai_khoan = TaiKhoan.objects.get(email=email)
         except TaiKhoan.DoesNotExist:
-            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_200_OK)
 
         new_password = request.data.get('new_password')
 
@@ -479,7 +479,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
         try:
             tai_khoan = TaiKhoan.objects.get(email=email)
         except TaiKhoan.DoesNotExist:
-            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_204_NO_CONTENT)
         return Response(serializers.TaiKhoanSerializer(tai_khoan).data, status=status.HTTP_200_OK)
 
     @action(methods=['get'], url_path='is_valid', detail=False)

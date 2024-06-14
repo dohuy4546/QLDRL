@@ -6,6 +6,7 @@ import { TextInput as PaperTextInput, Title, Button as PaperButton } from "react
 import APIs, { endpoints, authAPI } from "../../configs/APIs";
 import MyContext from "../../configs/MyContext";
 import Styles from "./Styles";
+import { SECRET_KEY } from "@env";
 
 const QuenMatKhau = ({ route, navigation }) => {
     const [email, setEmail] = useState();
@@ -32,7 +33,7 @@ const QuenMatKhau = ({ route, navigation }) => {
             let res = await APIs.patch(endpoints['quen_mat_khau'], {
                 'email': email,
                 'new_password': password,
-                'secret_key': "japsdnfkoansokdfnaoksndfoaasojdbfiabwijebfjoansdkmfnlmabsdjonfojabsdnfjonok2n3o4h1oi2n4kobijwnk12oj3no124on12o41"
+                'secret_key': SECRET_KEY
             })
             console.log(res.data);
             setVerify(false);

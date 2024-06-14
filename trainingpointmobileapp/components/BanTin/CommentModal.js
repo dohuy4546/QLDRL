@@ -31,7 +31,6 @@ const CommentModal = ({ visible, onClose, baiviet }) => {
     const getComments = async (id) => {
         setLoading(true);
         try {
-            console.log(page);
             if (page > 0) {
                 const token = await AsyncStorage.getItem("access-token");
                 let res = await authAPI(token).get(`${endpoints['comments'](id)}?page=${page}`);

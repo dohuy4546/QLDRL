@@ -120,7 +120,6 @@ const DangKy = ({ route, navigation }) => {
 
     const PostTaiKhoan = async () => {
         if (success) {
-            console.log("trong ham post");
             let formData = new FormData();
             for (let key in user) {
                 if (key === 'avatar') {
@@ -141,7 +140,6 @@ const DangKy = ({ route, navigation }) => {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(response.data);
                 Alert.alert('Tạo tài khoản thành công!');
                 navigation.replace("DangNhap");
             } catch (ex) {

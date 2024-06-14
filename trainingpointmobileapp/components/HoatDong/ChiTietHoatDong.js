@@ -22,7 +22,6 @@ const ChiTietHoatDong = ({ route, navigation }) => {
         try {
             const token = await AsyncStorage.getItem("access-token");
             let res = await authAPI(token).get(`${endpoints['hoat_dong']}?id=${hoatdong}`);
-            // console.log(res.data[0]);
             setHoatDong(res.data[0]);
             const datetime = new Date(res.data[0].ngay);
             const year = datetime.getFullYear();
@@ -33,7 +32,6 @@ const ChiTietHoatDong = ({ route, navigation }) => {
             setDate(`${day}-${month}-${year}`);
             setTime(`${hours}:${minutes}`);
             const hoc_ky = await authAPI(token).get(endpoints['hocky_namhoc_id'](res.data[0].hk_nh));
-            // console.log(hoc_ky.data);
             setHocKyNamHoc(hoc_ky.data);
         } catch (ex) {
             console.log(ex);
@@ -49,7 +47,7 @@ const ChiTietHoatDong = ({ route, navigation }) => {
         if (supported) {
             await Linking.openURL(xuatdanhsach.request.responseURL);
         } else {
-            console.error("Không thể mở url");
+            Alert.alert("Không thể mở url");
         }
     }
 

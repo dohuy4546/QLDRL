@@ -36,7 +36,6 @@ const AddUserChats = ({ route, navigation }) => {
             if (!querySnapshot.empty) {
                 let check = false;
                 querySnapshot.forEach((doc) => {
-                    console.log(doc.id, " => ", doc.data());
                     if (doc.data().users.includes(email)) {
                         check = true;
                         Alert.alert("Người dùng này đã có trò chuyện");

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, useWindowDimensions, Pressable, Alert } from 'react-native';
-import { Badge, IconButton, Button as PaperButton } from 'react-native-paper'
+import { ActivityIndicator, Badge, IconButton, Button as PaperButton } from 'react-native-paper'
 import Styles from './Styles';
 import CommentModal from './CommentModal';
 import APIs, { authAPI, endpoints } from '../../configs/APIs';
@@ -23,6 +23,7 @@ const BaiViet = (props) => {
     const [isDiemDanh, setIsDiemDanh] = useState(false);
     const { width } = useWindowDimensions();
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
     const toggleExpand = () => {
         setExpanded(!expanded);
@@ -46,6 +47,7 @@ const BaiViet = (props) => {
 
     const getStateHoatDong = async (id) => {
         try {
+            setLoading(true);
             const token = await AsyncStorage.getItem("access-token");
             let res = await authAPI(token).get(endpoints['bai_viet_hoat_dong'](id));
             let hoatdong = res.data;
@@ -58,6 +60,8 @@ const BaiViet = (props) => {
             }
         } catch (ex) {
             return;
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -98,7 +102,6 @@ const BaiViet = (props) => {
     React.useEffect(() => {
         if (props && props.baiviet) {
             checkIsDiemDanh(props.baiviet.id);
-            // getAuthor(props.baiviet.id);
             getStateHoatDong(props.baiviet.id);
             setLiked(props.baiviet.liked);
             setBaiViet(props.baiviet);
@@ -149,7 +152,8 @@ const BaiViet = (props) => {
                     )}
                     <Image source={{ uri: baiViet.image }} style={Styles.image} />
                     <View style={Styles.bottom}>
-                        {role == 1 &&
+                        {role == 1 && loading == true && <ActivityIndicator></ActivityIndicator>}
+                        {role == 1 && loading == false &&
                             <PaperButton
                                 mode={isDangKy ? 'contained' : 'elevated'}
                                 style={{ marginRight: 5, borderRadius: 10 }}

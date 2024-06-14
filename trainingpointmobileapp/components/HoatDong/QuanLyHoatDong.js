@@ -58,10 +58,8 @@ const QuanLyHoatDong = ({ navigation }) => {
             else {
                 url = `${endpoints['tham_gia']}?email=${q}&hoc_ky=${selectedHocKy}&nam_hoc=${selectedNamHoc}&state=${screenId == 1 ? 1 : 0}`;
             }
-            console.log(url);
             let token = await AsyncStorage.getItem("access-token");
             let res = await authAPI(token).get(url);
-            console.log(res.data);
             setHoatDong(res.data);
         } catch (error) {
             console.info("hello");
@@ -135,7 +133,6 @@ const QuanLyHoatDong = ({ navigation }) => {
             }
         }
         if (listDieu.length != 0 && hoatDong.length != 0 && sinhvien) {
-            console.log("ok con de");
             for (dieu of listDieu) {
                 tongDiemDieu[dieu.id] = 0;
                 for (hd of hoatDong) {
@@ -147,7 +144,6 @@ const QuanLyHoatDong = ({ navigation }) => {
                     else if (hd.sinh_vien.mssv == sinhvien && hd.state == 1 && hd.hoat_dong_ngoai_khoa.dieu == dieu.id) {
                         tongDiemDieu[dieu.id] += hd.hoat_dong_ngoai_khoa.diem_ren_luyen;
                     }
-                    console.log(tongDiemDieu[dieu.id]);
                 }
                 if (tongDiemDieu[dieu.id] > dieu.diem_toi_da) {
                     tongDiemDieu[dieu.id] = dieu.diem_toi_da;

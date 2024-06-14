@@ -50,7 +50,6 @@ const OTP = ({ route, navigation }) => {
 
             if (num === "") {
                 if (index == 0) {
-                    console.log("ok");
                     nextIndex = 0
                 } else {
                     nextIndex = index - 1;

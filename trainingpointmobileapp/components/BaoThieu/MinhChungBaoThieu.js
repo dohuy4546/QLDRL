@@ -38,7 +38,6 @@ const MinhChungBaoThieu = ({ route, navigation }) => {
             name: anhMinhChung.fileName,
             type: anhMinhChung.mimeType
         })
-        console.log(thamGia);
         formData.append('tham_gia', thamGia.id);
         try {
             const token = await AsyncStorage.getItem("access-token");
@@ -53,7 +52,7 @@ const MinhChungBaoThieu = ({ route, navigation }) => {
             Alert.alert("Báo thiếu thành công");
             navigation.replace('BaoThieu', { baoThieu: true });
         } catch (ex) {
-            console.log("Loi vai beep");
+            console.log(ex);
         }
     }
 
@@ -65,7 +64,7 @@ const MinhChungBaoThieu = ({ route, navigation }) => {
                 message: message,
                 recipient: thamGia.sinh_vien.email,
             });
-            console.log(response.data); // In ra dữ liệu trả về từ Django
+            console.log(response.data);
         } catch (error) {
             console.error(error);
         }

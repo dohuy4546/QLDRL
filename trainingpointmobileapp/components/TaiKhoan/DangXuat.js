@@ -12,6 +12,7 @@ const DangXuat = ({ navigation }) => {
         })
         setRole(null);
         AsyncStorage.setItem('access-token', "null");
+        AsyncStorage.setItem('refresh-token', "null");
     }
 
 

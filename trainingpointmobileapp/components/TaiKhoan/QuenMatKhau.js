@@ -29,13 +29,11 @@ const QuenMatKhau = ({ route, navigation }) => {
 
     const doiMatKhau = async () => {
         if (verify) {
-            console.log("ok");
             let res = await APIs.patch(endpoints['quen_mat_khau'], {
                 'email': email,
                 'new_password': password,
                 'secret_key': SECRET_KEY
             })
-            console.log(res.data);
             setVerify(false);
             Alert.alert("Đổi mật khẩu thành công");
             navigation.replace("DangNhap");

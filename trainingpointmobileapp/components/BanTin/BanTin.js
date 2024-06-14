@@ -46,7 +46,6 @@ const BanTin = ({ route, navigation }) => {
 
     const loadMore = ({ nativeEvent }) => {
         if (!loading && page > 0 && isCloseToBottom(nativeEvent)) {
-            console.log("ok");
             setPage(page + 1);
         }
     }

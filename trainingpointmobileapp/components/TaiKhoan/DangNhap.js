@@ -28,14 +28,9 @@ const DangNhap = ({ navigation }) => {
             console.info(res.data)
 
             await AsyncStorage.setItem('access-token', res.data.access_token)
+            await AsyncStorage.setItem('refresh-token', res.data.refresh_token)
 
             let user = await authAPI(res.data.access_token).get(endpoints['current_taikhoan']);
-            try {
-                console.log("hello");
-                console.log("dang nhap thanh cong");
-            } catch (ex) {
-                console.log("Dang nhap that bai");
-            }
             let user_role = user.data.role;
             setRole(user_role);
             dispatch({

@@ -445,7 +445,7 @@ class TaiKhoanViewset(viewsets.ViewSet, generics.CreateAPIView):
         try:
             tai_khoan = TaiKhoan.objects.get(email=email)
         except TaiKhoan.DoesNotExist:
-            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Tài khoản không tồn tại'}, status=status.HTTP_204_NO_CONTENT)
 
         new_password = request.data.get('new_password')
 

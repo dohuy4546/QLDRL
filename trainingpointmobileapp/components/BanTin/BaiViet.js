@@ -152,7 +152,7 @@ const BaiViet = (props) => {
                     )}
                     <Image source={{ uri: baiViet.image }} style={Styles.image} />
                     <View style={Styles.bottom}>
-                        {loading == true && <ActivityIndicator></ActivityIndicator>}
+                        {role == 1 && loading == true && <ActivityIndicator></ActivityIndicator>}
                         {role == 1 && loading == false &&
                             <PaperButton
                                 mode={isDangKy ? 'contained' : 'elevated'}

@@ -78,6 +78,8 @@ const BaiViet = (props) => {
                     Alert.alert("Đăng ký thành công!");
                 }
                 setIsDangKy(!isDangKy);
+            } else {
+                Alert.alert("Hoạt động đang báo thiếu");
             }
         } catch (ex) {
         }
@@ -101,7 +103,9 @@ const BaiViet = (props) => {
 
     React.useEffect(() => {
         if (props && props.baiviet) {
-            checkIsDiemDanh(props.baiviet.id);
+            if (role == 1) {
+                checkIsDiemDanh(props.baiviet.id);
+            }
             getStateHoatDong(props.baiviet.id);
             setLiked(props.baiviet.liked);
             setBaiViet(props.baiviet);

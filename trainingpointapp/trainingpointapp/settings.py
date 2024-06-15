@@ -34,7 +34,8 @@ import cloudinary
 cloudinary.config(
     cloud_name="dluxogrmn",
     api_key="958699327246893",
-    api_secret="sL64XQ_2Djr4kg8Gi2vZyR-f5MA"
+    api_secret="sL64XQ_2Djr4kg8Gi2vZyR-f5MA",
+    api_proxy="http://proxy.server:3128"
 )
 
 # Application definition

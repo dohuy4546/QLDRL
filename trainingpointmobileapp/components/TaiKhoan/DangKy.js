@@ -126,7 +126,7 @@ const DangKy = ({ route, navigation }) => {
                     formData.append(key, {
                         uri: user[key].uri,
                         name: user[key].fileName,
-                        type: 'image/jpeg'
+                        type: user[key].mimeType
                     })
                 } else
                     formData.append(key, user[key])
